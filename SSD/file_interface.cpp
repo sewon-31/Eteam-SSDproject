@@ -3,23 +3,29 @@
 bool FileInterface::fileOpen(const std::string& fileName) {
 	ssd_nand_file.open(fileName);
 	read_point = 0;
-	return !ssd_nand_file.fail();
+	return ssd_nand_file.is_open();
 }
 bool FileInterface::fileReadOneline(std::string& str) {
+	if (!ssd_nand_file.is_open()) return false;
+
 	ssd_nand_file.seekg(read_point, std::ios::beg);
 	getline(ssd_nand_file, str);
 	read_point = ssd_nand_file.tellg();
-	return !ssd_nand_file.fail();
+	return true;
 }
 bool FileInterface::setRead_Point(unsigned point) {
+	if (!ssd_nand_file.is_open()) return false;
+
 	read_point = point;
-	return !ssd_nand_file.fail();
+	return true;
 }
 bool FileInterface::fileWriteOneline(const std::string str) {
+	if (!ssd_nand_file.is_open()) return false;
+
 	std::string write_str = str + "\n";
 	ssd_nand_file.seekg(0, std::ios::end);
 	ssd_nand_file.write(str.c_str(), str.length());
-	return !ssd_nand_file.fail();
+	return true;
 }
 void FileInterface::fileClose() {
 	ssd_nand_file.close();
