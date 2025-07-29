@@ -28,5 +28,10 @@ SSDCommandParser::validateCommand()
 		return false;
 	}
 
+	string opCommand = commandVector.at(1);
+	if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
+		return false;
+	}
+
 	return true;
 }
