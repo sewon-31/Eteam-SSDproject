@@ -1,8 +1,6 @@
 #include "gmock/gmock.h"
 #include "SSDCommandParser.h"
 
-#define interface struct
-
 using namespace testing;
 
 TEST(SSDCommandParserTest, SettingCommand)

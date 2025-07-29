@@ -7,12 +7,10 @@ using std::istringstream;
 void
 SSDCommandParser::setCommand(const string& command)
 {
+	// set commandStr
 	this->commandStr = command;
-}
 
-bool
-SSDCommandParser::validateCommand()
-{
+	// set commandVector
 	commandVector.clear();
 
 	istringstream ss{ commandStr };
@@ -21,7 +19,11 @@ SSDCommandParser::validateCommand()
 	while (getline(ss, strBuf, ' ')) {
 		commandVector.push_back(strBuf);
 	}
-	
+}
+
+bool
+SSDCommandParser::validateCommand()
+{
 	if (commandVector.at(0) != "ssd") {
 		return false;
 	}
