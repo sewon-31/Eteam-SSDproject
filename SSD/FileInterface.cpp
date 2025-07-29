@@ -17,6 +17,10 @@ public:
 		fd_nand.write(str.c_str(), str.length());
 		return true;
 	};
+	bool fileClose() {
+		fd_nand.close();
+		return true;
+	};
 private:
 	std::fstream fd_nand;
 };

@@ -18,6 +18,7 @@ TEST(FILEINTERFACE, TC_BASE) {
 TEST(FILEINTERFACE, TC_FILE_OPEN) {
 	FileInterface FI;
 	EXPECT_TRUE(FI.fileOpen("ssd_nand.txt"));
+	EXPECT_TRUE(FI.fileClose());
 }
 
 TEST(FILEINTERFACE, TC_FILE_OPEN_WRITE) {
@@ -29,4 +30,5 @@ TEST(FILEINTERFACE, TC_FILE_OPEN_WRITE) {
 	EXPECT_TRUE(FI.fileWrite(expected_str));
 	EXPECT_TRUE(FI.fileRead(read_str));
 	EXPECT_EQ(read_str, expected_str);
+	EXPECT_TRUE(FI.fileClose());
 }
