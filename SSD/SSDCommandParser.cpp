@@ -55,5 +55,17 @@ SSDCommandParser::validateCommand()
 		return false;
 	}
 
+	// check lba range
+	string lbaStr = commandVector.at(2);
+	try {
+		int lba = std::stoi(lbaStr);
+		if (lba < 0 || lba > 99) {
+			return false;
+		}
+	}
+	catch (const std::exception& e) {
+		return false;
+	}
+
 	return true;
 }
