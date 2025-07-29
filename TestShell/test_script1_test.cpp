@@ -9,7 +9,7 @@ class TestScript1Fixture : public Test {
 public:
 };
 
-TEST_F(TestScript1Fixture, FullWriteAndReadCompareSuccess) {
+TEST_F(TestScript1Fixture, Success) {
 	NiceMock<MockSSD> mockSSD;
 	FullWriteAndReadCompare script(mockSSD);
 	ostringstream oss;
@@ -31,4 +31,23 @@ TEST_F(TestScript1Fixture, FullWriteAndReadCompareSuccess) {
 
 	std::cout.rdbuf(oldCoutStreamBuf);
 	EXPECT_EQ("PASS", oss.str());
+}
+
+TEST_F(TestScript1Fixture, FailWithInvalidData) {
+	NiceMock<MockSSD> mockSSD;
+	FullWriteAndReadCompare script(mockSSD);
+	string invalidData = "0xFFFFFFFF";
+	ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	EXPECT_CALL(mockSSD, read(0))
+		.WillOnce(Return(script.getExpectData(0)));
+	EXPECT_CALL(mockSSD, read(1))
+		.WillOnce(Return(invalidData));
+
+	script.Run();
+
+	std::cout.rdbuf(oldCoutStreamBuf);
+	EXPECT_EQ("FAIL", oss.str());
 }

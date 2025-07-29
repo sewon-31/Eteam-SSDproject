@@ -15,7 +15,7 @@ void FullWriteAndReadCompare::Run(void) {
 			string output = ssd.read(lba);
 
 			if (output != data){
-				cout << "Fail";
+				cout << "FAIL";
 				return;
 			}
 		}
