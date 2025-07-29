@@ -46,5 +46,14 @@ SSDCommandParser::validateCommand()
 		return false;
 	}
 
+	// check parameter count for each operation case
+	if (opCommand == CMD_READ && commandVector.size() != 3) {
+		return false;
+	}
+
+	if (opCommand == CMD_WRITE && commandVector.size() != 4) {
+		return false;
+	}
+
 	return true;
 }

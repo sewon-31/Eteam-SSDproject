@@ -27,7 +27,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidAppName)
 	EXPECT_FALSE(parser.validateCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidParameterCount)
+TEST_F(SSDCommandParserTestFixture, InvalidParameterCount1)
 {
 	string cmdStr = APP_NAME;
 	parser.setCommand(cmdStr);
@@ -41,6 +41,17 @@ TEST_F(SSDCommandParserTestFixture, InvalidParameterCount)
 TEST_F(SSDCommandParserTestFixture, InvalidOperationCommand)
 {
 	string cmdStr = APP_NAME + " E " + VALID_VALUE;
+	parser.setCommand(cmdStr);
+	EXPECT_FALSE(parser.validateCommand());
+}
+
+TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
+{
+	string cmdStr = APP_NAME + " " + CMD_WRITE + " " + VALID_LBA;
+	parser.setCommand(cmdStr);
+	EXPECT_FALSE(parser.validateCommand());
+
+	cmdStr = APP_NAME + " " + CMD_READ + " " + VALID_LBA + " " + VALID_VALUE;
 	parser.setCommand(cmdStr);
 	EXPECT_FALSE(parser.validateCommand());
 }
