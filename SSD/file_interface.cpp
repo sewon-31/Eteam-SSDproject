@@ -24,7 +24,7 @@ bool FileInterface::fileWriteOneline(const std::string str) {
 
 	std::string write_str = str + "\n";
 	ssd_nand_file.seekg(0, std::ios::end);
-	ssd_nand_file.write(str.c_str(), str.length());
+	ssd_nand_file.write(write_str.c_str(), write_str.length());
 	return true;
 }
 void FileInterface::fileClose() {
