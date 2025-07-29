@@ -18,7 +18,8 @@ public:
 	const string INVALID_LBA_NOT_A_NUMBER = "FF";
 
 	const string VALID_VALUE = "0xAAAABBBB";
-	const string INVALID_VALUE = "0xG112BBBB";
+	const string INVALID_VALUE1 = "0xG112BBBB";
+	const string INVALID_VALUE2 = "0xAAA";
 };
 
 TEST_F(SSDCommandParserTestFixture, InvalidAppName)
@@ -64,6 +65,21 @@ TEST_F(SSDCommandParserTestFixture, InvalidLBA)
 	EXPECT_FALSE(parser.validateCommand());
 
 	cmdStr = APP_NAME + " " + CMD_READ + " " + INVALID_LBA_NOT_A_NUMBER;
+	parser.setCommand(cmdStr);
+	EXPECT_FALSE(parser.validateCommand());
+}
+
+TEST_F(SSDCommandParserTestFixture, InvalidValue)
+{
+	string cmdStr = APP_NAME + " " + CMD_WRITE + " " + VALID_LBA + " " + INVALID_VALUE1;
+	parser.setCommand(cmdStr);
+	EXPECT_FALSE(parser.validateCommand());
+
+	cmdStr = APP_NAME + " " + CMD_WRITE + " " + VALID_LBA + " " + INVALID_VALUE2;
+	parser.setCommand(cmdStr);
+	EXPECT_FALSE(parser.validateCommand());
+
+	cmdStr = APP_NAME + " " + CMD_WRITE + " " + VALID_LBA + " FFFFFFFFFF";
 	parser.setCommand(cmdStr);
 	EXPECT_FALSE(parser.validateCommand());
 }

@@ -13,6 +13,8 @@ public:
 	bool validateCommand();
 
 private:
+	bool validateValue(const string& valueStr);
+
 	string commandStr;
 	vector<string> commandVector;
 
