@@ -24,7 +24,8 @@ TEST(TestScript3Test, TestScript2) {
         .WillRepeatedly(Return(randomNum));
 
     partialLbaWrite.run(ssd);
-    // °ª ºñ±³	
+
+    // Act
     std::cout.rdbuf(oldCoutStreamBuf);
     EXPECT_EQ("PASS", oss.str());
 }
