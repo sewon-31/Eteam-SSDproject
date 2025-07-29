@@ -2,6 +2,8 @@
 
 class TestShell {
 public:
+	TestShell () {}
+	TestShell(SSDInterface* ssd) :ssd(ssd) {}
 	void setSSD(SSDInterface* ssd) {
 		this->ssd = ssd;
 	}
