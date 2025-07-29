@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "SSDCommandParser.h"
+#include "ssd_command_parser.h"
 
 using namespace testing;
 
