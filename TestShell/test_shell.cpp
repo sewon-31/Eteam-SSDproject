@@ -13,3 +13,8 @@ void TestShell::write(int lba, std::string value) {
 	ssd->write(lba, value);
 	std::cout << "[WRITE] Done" << std::endl;
 }
+
+void TestShell::fullWrite(std::string value) {
+	for (int i = 0; i < 100; i++)
+		ssd->write(i, value);
+}
