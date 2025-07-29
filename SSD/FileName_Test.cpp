@@ -1,8 +1,15 @@
 #include "gmock/gmock.h"
+#include "FileInterface.cpp"
 
 using namespace testing;
 
-TEST(TC, TC_BASE) {
+TEST(FILEINTERFACE, TC_BASE) {
 
 	EXPECT_EQ(1,1);
+}
+
+TEST(FILEINTERFACE, TC_FILE_OPEN) {
+	FileInterface FI;
+	bool ret = FI.fileOpen("ssd_nand.txt");
+	EXPECT_TRUE(ret);
 }
