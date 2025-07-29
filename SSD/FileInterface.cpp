@@ -9,7 +9,7 @@ public:
 		return !fd_nand.fail();
 	};
 	bool fileRead(std::string &str) {
-		fd_nand.seekg(0, 0);
+		fd_nand.seekg(0, std::ios::beg);
 		getline(fd_nand, str);
 		return true;
 	};
@@ -17,7 +17,6 @@ public:
 		fd_nand.write(str.c_str(), str.length());
 		return true;
 	};
-
 private:
 	std::fstream fd_nand;
 };

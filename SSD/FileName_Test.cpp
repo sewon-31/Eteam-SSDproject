@@ -5,6 +5,11 @@
 
 using namespace testing;
 
+class TCFixture :public testing::Test {
+public:
+
+};
+
 TEST(FILEINTERFACE, TC_BASE) {
 
 	EXPECT_EQ(1,1);
@@ -12,21 +17,16 @@ TEST(FILEINTERFACE, TC_BASE) {
 
 TEST(FILEINTERFACE, TC_FILE_OPEN) {
 	FileInterface FI;
-	bool ret = FI.fileOpen("ssd_nand.txt");
-	EXPECT_TRUE(ret);
+	EXPECT_TRUE(FI.fileOpen("ssd_nand.txt"));
 }
 
 TEST(FILEINTERFACE, TC_FILE_OPEN_WRITE) {
 	FileInterface FI;
-	std::string str_test = "Write dummy.txt";
-	std::string str;
+	std::string expected_str = "12341234";
+	std::string read_str;
 
-	bool ret = FI.fileOpen("ssd_nand.txt");
-	EXPECT_TRUE(ret);
-	ret = FI.fileWrite(str_test);
-	EXPECT_TRUE(ret);
-	ret = FI.fileRead(str);
-
-	EXPECT_EQ(str, str_test);
-	EXPECT_TRUE(ret);
+	EXPECT_TRUE(FI.fileOpen("ssd_nand.txt"));
+	EXPECT_TRUE(FI.fileWrite(expected_str));
+	EXPECT_TRUE(FI.fileRead(read_str));
+	EXPECT_EQ(read_str, expected_str);
 }
