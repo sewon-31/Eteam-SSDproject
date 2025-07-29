@@ -30,3 +30,11 @@ bool FileInterface::fileWriteOneline(const std::string str) {
 void FileInterface::fileClose() {
 	ssd_nand_file.close();
 }
+bool FileInterface::fileRemove(const std::string& fileName) {
+	std::ofstream file(fileName, std::ios::trunc);
+	if (file.is_open()) {
+		file.close();
+		return true;
+	}
+	return false;
+};

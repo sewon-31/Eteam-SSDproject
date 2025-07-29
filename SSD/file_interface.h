@@ -10,7 +10,7 @@ public:
 	bool setRead_Point(unsigned point);
 	bool fileWriteOneline(const std::string str);
 	void fileClose();
-	bool FileInterface::fileRemove(const std::string& fileName);
+	bool fileRemove(const std::string& fileName);
 private:
 	std::fstream ssd_nand_file;
 	unsigned int read_point;
