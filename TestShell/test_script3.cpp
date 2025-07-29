@@ -3,31 +3,32 @@
 #include <cstdio>
 
 void TestScript3::writeReadAging(SSDInterface& ssd) {
-
     for (int i = 0; i < 200; ++i) {
-        std::string val0 = TestScript3::GenerateRandomHexValue();
-        std::string val99 = TestScript3::GenerateRandomHexValue();
+        std::string val0 = GenerateRandomHexValue();
+        std::string val99 = GenerateRandomHexValue();
 
-        ReadCompare(ssd, 0, val0);
-        ReadCompare(ssd, 99, val99);
+        ssd.write(0, val0);
+        ssd.write(99, val99);
+
+        if (!ReadCompare(ssd, 0, val0)) {
+            std::cout << "FAIL" << std::endl;
+            return;
+        }
+
+        if (!ReadCompare(ssd, 99, val99)) {
+            std::cout << "FAIL" << std::endl;
+            return;
+        }
     }
+
+    std::cout << "PASS" << std::endl;
 }
 
-bool TestScript3::ReadCompare(SSDInterface& ssd, int lba, const std::string& valueToWrite) {
-    // 1. Write
-    ssd.write(lba, valueToWrite);
-
-    // 2. Read
+bool TestScript3::ReadCompare(SSDInterface& ssd, int lba, const std::string& expectedValue) {
     std::string readValue = ssd.read(lba);
-
-    // 3. Compare
-    if (readValue != valueToWrite) {
-        std::cout << "[FAIL] LBA: " << lba
-            << ", Written: " << valueToWrite
-            << ", Read: " << readValue << std::endl;
+    if (readValue != expectedValue) {
         return false;
     }
-
     return true;
 }
 

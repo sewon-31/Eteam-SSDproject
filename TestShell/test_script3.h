@@ -5,6 +5,6 @@
 class TestScript3 {
 public:
     void writeReadAging(SSDInterface& ssd);
-    static bool ReadCompare(SSDInterface& ssd, int lba, const std::string& valueToWrite);
+    bool ReadCompare(SSDInterface& ssd, int lba, const std::string& expectedValue);
     static std::string GenerateRandomHexValue();
 };
