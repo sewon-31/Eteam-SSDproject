@@ -30,14 +30,17 @@ SSDCommandParser::setCommand(const string& command)
 bool
 SSDCommandParser::validateCommand()
 {
+	// check parameter count
 	if (commandVector.size() < 3 || commandVector.size() > 4) {
 		return false;
 	}
 
+	// check app name
 	if (commandVector.at(0) != "ssd") {
 		return false;
 	}
 
+	// check operation command
 	string opCommand = commandVector.at(1);
 	if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
 		return false;
