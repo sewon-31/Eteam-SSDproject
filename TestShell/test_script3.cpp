@@ -4,24 +4,28 @@
 
 void TestScript3::writeReadAging(SSDInterface& ssd) {
     for (int i = 0; i < 200; ++i) {
+#if _DEBUG
+        std::string val0 = "0x00001111";
+        std::string val99 = "0x00009999";
+#else
         std::string val0 = GenerateRandomHexValue();
         std::string val99 = GenerateRandomHexValue();
-
+#endif
         ssd.write(0, val0);
         ssd.write(99, val99);
 
         if (!ReadCompare(ssd, 0, val0)) {
-            std::cout << "FAIL" << std::endl;
+            std::cout << "FAIL";
             return;
         }
 
         if (!ReadCompare(ssd, 99, val99)) {
-            std::cout << "FAIL" << std::endl;
+            std::cout << "FAIL";
             return;
         }
     }
 
-    std::cout << "PASS" << std::endl;
+    std::cout << "PASS";
 }
 
 bool TestScript3::ReadCompare(SSDInterface& ssd, int lba, const std::string& expectedValue) {

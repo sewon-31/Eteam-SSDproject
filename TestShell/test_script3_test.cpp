@@ -9,24 +9,28 @@ TEST(TestScript3Test, WriteReadAging_CallsExpectedSequence) {
     MockSSD mockSSD;
     TestScript3 testScript3;
 
-    // Temporary storage to simulate SSD memory
-    std::unordered_map<int, std::string> lbaMap;
+    // For check "PASS" output
+    std::ostringstream oss;
+    auto oldCoutStreamBuf = std::cout.rdbuf();
+    std::cout.rdbuf(oss.rdbuf());
 
-    // Store value on write calls
-    ON_CALL(mockSSD, write(_, _))
-        .WillByDefault([&](int lba, const std::string& val) {
-        lbaMap[lba] = val;
-            });
+    std::string val0 = "0x00001111";
+    std::string val99 = "0x00009999";
 
-    // Return stored value on read calls
-    ON_CALL(mockSSD, read(_))
-        .WillByDefault([&](int lba) {
-        return lbaMap.count(lba) ? lbaMap[lba] : "0x00000000";
-            });
-
-    EXPECT_CALL(mockSSD, write(_, _)).Times(200 * 2);
-    EXPECT_CALL(mockSSD, read(_)).Times(200 * 2);
+    EXPECT_CALL(mockSSD, write(0, val0))
+        .Times(200);
+     EXPECT_CALL(mockSSD, write(99, val99))
+        .Times(200);
+    EXPECT_CALL(mockSSD, read(0))
+        .Times(200)
+        .WillRepeatedly(Return(val0));
+    EXPECT_CALL(mockSSD, read(99))
+        .Times(200)
+        .WillRepeatedly(Return(val99));
 
     // Act
     testScript3.writeReadAging(mockSSD);
+
+    std::cout.rdbuf(oldCoutStreamBuf);
+    EXPECT_EQ("PASS", oss.str());
 }
