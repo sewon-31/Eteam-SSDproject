@@ -14,9 +14,8 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="테스트 파일">
-      <UniqueIdentifier>{7a6d2b06-2be1-4a9c-9188-a80b2cbb171a}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
+      <UniqueIdentifier>{d03eb97b-ec32-4c6c-9498-5df240420bcc}</UniqueIdentifier>
+    </Filter>  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
       <Filter>소스 파일</Filter>
@@ -33,13 +32,15 @@
     <ClCompile Include="test_shell.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="shell_read_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
     <ClCompile Include="test_script1.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="test_script1_test.cpp">
       <Filter>테스트 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
+    </ClCompile>  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_interface.h">
       <Filter>헤더 파일</Filter>
