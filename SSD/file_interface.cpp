@@ -8,12 +8,13 @@ public:
 		fd_nand.open(fileName);
 		return !fd_nand.fail();
 	};
-	bool fileRead(std::string &str) {
-		fd_nand.seekg(0, std::ios::beg);
+	bool fileReadOneline(std::string &str) {
+		fd_nand.seekg(read_point, std::ios::beg);
 		getline(fd_nand, str);
+		read_point = fd_nand.tellg();
 		return true;
 	};
-	bool fileWrite(std::string str) {
+	bool fileWriteOneline(std::string str) {
 		fd_nand.seekg(0, std::ios::end);
 		fd_nand.write(str.c_str(), str.length());
 		return true;
@@ -24,4 +25,5 @@ public:
 	};
 private:
 	std::fstream fd_nand;
+	unsigned int read_point = 0;
 };
