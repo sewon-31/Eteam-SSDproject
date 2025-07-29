@@ -1,8 +1,5 @@
 #include "gmock/gmock.h"
 #include "file_interface.h"
-#include <string>
-#include <iostream>
-#include <vector>
 
 using namespace testing;
 using std::vector;
