@@ -38,50 +38,50 @@ public:
 TEST_F(SSDCommandParserTestFixture, InvalidAppName)
 {
 	parser.setCommand(createCommand({ INVALID_APP_NAME, CMD_READ, VALID_VALUE }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidParameterCount1)
 {
 	parser.setCommand(createCommand({ APP_NAME }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 
 	parser.setCommand(createCommand({ APP_NAME, CMD_READ, VALID_LBA, VALID_VALUE, VALID_VALUE }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidOperationCommand)
 {
 	parser.setCommand(createCommand({ APP_NAME, CMD_INVALID, VALID_VALUE }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
 {
 	parser.setCommand(createCommand({ APP_NAME, CMD_WRITE, VALID_LBA }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 
 	parser.setCommand(createCommand({ APP_NAME, CMD_READ, VALID_LBA, VALID_VALUE }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidLBA)
 {
 	parser.setCommand(createCommand({ APP_NAME, CMD_READ, INVALID_LBA_NOT_A_NUMBER }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 
 	parser.setCommand(createCommand({ APP_NAME, CMD_READ, INVALID_LBA_OUT_OF_RANGE }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidValue)
 {
 	parser.setCommand(createCommand({ APP_NAME, CMD_WRITE, VALID_LBA, INVALID_VALUE1 }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 
 	parser.setCommand(createCommand({ APP_NAME, CMD_WRITE, VALID_LBA, INVALID_VALUE2 }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 
 	parser.setCommand(createCommand({ APP_NAME, CMD_WRITE, VALID_LBA, INVALID_VALUE3 }));
-	EXPECT_FALSE(parser.validateCommand());
+	EXPECT_FALSE(parser.isValidCommand());
 }
