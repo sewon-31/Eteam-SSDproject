@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <iostream>
 
 class FileInterface {
 public:
@@ -7,8 +8,10 @@ public:
 		fd_nand.open(fileName);
 		return !fd_nand.fail();
 	};
-	std::string fileRead(std::string fileName) {
-		return "";
+	bool fileRead(std::string &str) {
+		fd_nand.seekg(0, 0);
+		getline(fd_nand, str);
+		return true;
 	};
 	bool fileWrite(std::string str) {
 		fd_nand.write(str.c_str(), str.length());
@@ -16,5 +19,5 @@ public:
 	};
 
 private:
-	std::ofstream fd_nand;
+	std::fstream fd_nand;
 };
