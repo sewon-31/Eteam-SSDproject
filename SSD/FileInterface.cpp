@@ -3,7 +3,7 @@
 
 class FileInterface {
 public:
-	bool fileOpen(std::string fileName) {
+	bool fileOpen(const std::string &fileName) {
 		fd_nand.open(fileName);
 		return !fd_nand.fail();
 	};
@@ -14,5 +14,6 @@ public:
 		return true;
 	};
 
+private:
 	std::ofstream fd_nand;
 };
