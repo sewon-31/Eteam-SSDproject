@@ -17,3 +17,12 @@ TEST(ShellTest, TestWriteInvalidLBA) {
 	EXPECT_CALL(ssd, write(lba, value)).Times(0);
 	shell.write(lba, value);
 }
+
+TEST(ShellTest, TestWriteInvalidLBA2) {
+	MockSSD ssd;
+	TestShell shell{ &ssd };
+	int lba = -1;
+	std::string value = "0x12345678";
+	EXPECT_CALL(ssd, write(lba, value)).Times(0);
+	shell.write(lba, value);
+}
