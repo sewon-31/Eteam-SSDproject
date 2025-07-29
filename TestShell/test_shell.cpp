@@ -1,5 +1,4 @@
 #include "test_shell.h"
-<<<<<<< HEAD
 
 using std::cout;
 
