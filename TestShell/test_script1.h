@@ -9,4 +9,8 @@ public:
 
 private:
 	SSDInterface& ssd;
+
+	const static int MAX_LBA = 100;
+	const static int OPERATE_COUNT_PER_LOOP = 5;
+	const static int LOOP_COUNT = MAX_LBA / OPERATE_COUNT_PER_LOOP;
 };

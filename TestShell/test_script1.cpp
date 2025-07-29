@@ -3,15 +3,17 @@
 void TestScript1::Run(void) {
 	string data = "0x12341234";
 
-	for (int i = 0; i < (100 / 5); i++) {
+	for (int LoopIdx = 0; LoopIdx < LOOP_COUNT; LoopIdx++) {
 		// Write
-		for (int j = 0; j < 5; j++) {
-			ssd.write(i*5+j, data);
+		for (int OperateIdx = 0; OperateIdx < OPERATE_COUNT_PER_LOOP; OperateIdx++) {
+			int lba = LoopIdx * OPERATE_COUNT_PER_LOOP + OperateIdx;
+			ssd.write(lba, data);
 		}
 
 		// Read & Compare
-		for (int j = 0; j < 5; j++) {
-			string output = ssd.read(i * 5 + j);
+		for (int OperateIdx = 0; OperateIdx < OPERATE_COUNT_PER_LOOP; OperateIdx++) {
+			int lba = LoopIdx * OPERATE_COUNT_PER_LOOP + OperateIdx;
+			string output = ssd.read(lba);
 			if (output != data)
 				// Fail
 				return;
