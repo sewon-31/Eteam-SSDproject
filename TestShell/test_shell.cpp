@@ -8,7 +8,7 @@ void TestShell::read(int lba) {
 }
 
 void TestShell::write(int lba, std::string value) {
-	if (lba >= 100)
+	if (lba >= 100 || lba<0)
 		return;
 	ssd->write(lba, value);
 	std::cout << "[WRITE] Done" << std::endl;
