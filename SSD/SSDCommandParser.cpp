@@ -67,5 +67,37 @@ SSDCommandParser::validateCommand()
 		return false;
 	}
 
+	if (opCommand == CMD_WRITE) {
+		string valueStr = commandVector.at(3);
+		return(validateValue(valueStr));
+	}
+
 	return true;
+}
+
+bool
+SSDCommandParser::validateValue(const string& valueStr)
+{
+	if (valueStr.length() != 10) {
+		return false;
+	}
+
+	try {
+		size_t pos = 0;
+		unsigned long value = std::stoul(valueStr, &pos, 0);
+
+		if (pos != valueStr.length()) {
+			return false;
+		}
+
+		if (value > 0xFFFFFFFF) {
+			return false;
+		}
+
+		uint32_t out = static_cast<uint32_t>(value);
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
 }
