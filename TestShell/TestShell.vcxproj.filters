@@ -35,6 +35,9 @@
     <ClCompile Include="test_script2_test.cpp">
       <Filter>test_file</Filter>
     </ClCompile>
+    <ClCompile Include="test_shell_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_interface.h">
