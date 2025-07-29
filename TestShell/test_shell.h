@@ -9,6 +9,7 @@ public:
 	}
 	void read(int lba);
 	void write(int lba, std::string value);
+	void fullWrite(std::string value);
 private:
 	SSDInterface* ssd;
 };
