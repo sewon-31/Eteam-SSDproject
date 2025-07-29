@@ -1,6 +1,7 @@
 #include "SSDCommandParser.h"
 
 #include <sstream>
+#include <iostream>
 
 using std::istringstream;
 
@@ -19,11 +20,20 @@ SSDCommandParser::setCommand(const string& command)
 	while (getline(ss, strBuf, ' ')) {
 		commandVector.push_back(strBuf);
 	}
+
+	//for (auto x : commandVector)
+	//{
+	//	std::cout << x << std::endl;
+	//}
 }
 
 bool
 SSDCommandParser::validateCommand()
 {
+	if (commandVector.size() < 3 || commandVector.size() > 4) {
+		return false;
+	}
+
 	if (commandVector.at(0) != "ssd") {
 		return false;
 	}
