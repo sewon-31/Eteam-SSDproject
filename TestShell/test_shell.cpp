@@ -1,5 +1,7 @@
 #include "test_shell.h"
 
-string TestShell::read(int lba) {
-	return ssd->read(lba);
+using std::cout;
+
+void TestShell::read(int lba) {
+	cout << ssd->read(lba);
 }
