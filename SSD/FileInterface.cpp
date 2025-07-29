@@ -10,7 +10,8 @@ public:
 	std::string fileRead(std::string fileName) {
 		return "";
 	};
-	bool fileWrite(std::string fileName, std::string str) {
+	bool fileWrite(std::string str) {
+		fd_nand.write(str.c_str(), str.length());
 		return true;
 	};
 

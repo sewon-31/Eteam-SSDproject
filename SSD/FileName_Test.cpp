@@ -13,3 +13,11 @@ TEST(FILEINTERFACE, TC_FILE_OPEN) {
 	bool ret = FI.fileOpen("ssd_nand.txt");
 	EXPECT_TRUE(ret);
 }
+
+TEST(FILEINTERFACE, TC_FILE_OPEN_WRITE) {
+	FileInterface FI;
+	bool ret = FI.fileOpen("ssd_nand.txt");
+	EXPECT_TRUE(ret);
+	ret = FI.fileWrite("write dummy");
+	EXPECT_TRUE(ret);
+}
