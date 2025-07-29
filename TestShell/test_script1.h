@@ -4,12 +4,12 @@
 
 using namespace std;
 
-class TestScript1 {
+class FullWriteAndReadCompare {
 public:
-	TestScript1(SSDInterface& ssd)
+	FullWriteAndReadCompare(SSDInterface& ssd)
 		: ssd(ssd) {};
 	void Run();
-	string getExpectData(int loopIdx);
+	string getExpectData(int lba);
 
 	const static int MAX_LBA = 100;
 	const static int OPERATE_COUNT_PER_LOOP = 5;

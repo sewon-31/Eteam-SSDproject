@@ -11,7 +11,7 @@ public:
 
 TEST_F(TestScript1Fixture, FullWriteAndReadCompareSuccess) {
 	NiceMock<MockSSD> mockSSD;
-	TestScript1 script(mockSSD);
+	FullWriteAndReadCompare script(mockSSD);
 	ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
