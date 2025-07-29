@@ -20,68 +20,66 @@ SSDCommandParser::setCommand(const string& command)
 	while (getline(ss, strBuf, ' ')) {
 		commandVector.push_back(strBuf);
 	}
-
-	//for (auto x : commandVector)
-	//{
-	//	std::cout << x << std::endl;
-	//}
 }
 
 bool
-SSDCommandParser::validateCommand()
+SSDCommandParser::isValidCommand() const
 {
-	// check parameter count
-	if (commandVector.size() < 3 || commandVector.size() > 4) {
-		return false;
-	}
-
-	// check app name
-	if (commandVector.at(0) != "ssd") {
-		return false;
-	}
-
-	// check operation command
-	string opCommand = commandVector.at(1);
-	if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
-		return false;
-	}
-
-	// check parameter count for each operation case
-	if (opCommand == CMD_READ && commandVector.size() != 3) {
-		return false;
-	}
-
-	if (opCommand == CMD_WRITE && commandVector.size() != 4) {
-		return false;
-	}
-
-	// check lba range
-	string lbaStr = commandVector.at(2);
 	try {
+		// check parameter count
+		if (commandVector.size() < 3 || commandVector.size() > 4) {
+			return false;
+		}
+
+		// check app name
+		if (commandVector.at(0) != APP_NAME) {
+			return false;
+		}
+
+		// check operation command
+		string opCommand = commandVector.at(1);
+		if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
+			return false;
+		}
+
+		// check parameter count for each operation case
+		if (opCommand == CMD_READ && commandVector.size() != 3) {
+			return false;
+		}
+
+		if (opCommand == CMD_WRITE && commandVector.size() != 4) {
+			return false;
+		}
+
+		// check lba range
+		string lbaStr = commandVector.at(2);
 		int lba = std::stoi(lbaStr);
 		if (lba < 0 || lba > 99) {
 			return false;
 		}
+
+		// check value
+		if (opCommand == CMD_WRITE) {
+			if (isValidValue(commandVector.at(3)) == false) {
+				return false;
+			}
+		}
+
+		return true;
 	}
-	catch (const std::exception& e) {
+	catch (...) {
 		return false;
 	}
-
-	if (opCommand == CMD_WRITE) {
-		string valueStr = commandVector.at(3);
-		return(validateValue(valueStr));
-	}
-
-	return true;
 }
 
 bool
-SSDCommandParser::validateValue(const string& valueStr)
+SSDCommandParser::isValidValue(const string& valueStr) const
 {
 	if (valueStr.length() != 10) {
 		return false;
 	}
 
+	// try to parse value into hex number
 	try {
 		size_t pos = 0;
 		unsigned long value = std::stoul(valueStr, &pos, 0);
