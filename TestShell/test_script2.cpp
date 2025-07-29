@@ -8,7 +8,6 @@
 
 bool testScript2::run(SSDInterface &ssd)
 {
-    // 주소를 요구사항에 따라 같은 값을 write 후, readcompare하는 과정을 30회 반복
     for (int i = 0; i < 30; i++) {
 #if _DEBUG
         std::string num = "0x0000000A";

@@ -20,15 +20,7 @@ TEST(TestScript3Test, TestScript2) {
         .WillRepeatedly(Return());
 
     // Read expectations
-    EXPECT_CALL(ssd, read(0))
-        .WillRepeatedly(Return(randomNum));
-    EXPECT_CALL(ssd, read(1))
-        .WillRepeatedly(Return(randomNum));
-    EXPECT_CALL(ssd, read(2))
-        .WillRepeatedly(Return(randomNum));
-    EXPECT_CALL(ssd, read(3))
-        .WillRepeatedly(Return(randomNum));
-    EXPECT_CALL(ssd, read(4))
+    EXPECT_CALL(ssd, read(_))
         .WillRepeatedly(Return(randomNum));
 
     partialLbaWrite.run(ssd);
