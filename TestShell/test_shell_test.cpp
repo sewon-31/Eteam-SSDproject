@@ -1,28 +1,28 @@
 #include "gmock/gmock.h"
 #include "test_shell.h"
-TEST(ShellTest, TestBasicWrite) {
+class WriteTestFixture : public testing::Test {
+public:
+	const int VALID_LBA = 10;
+	const int OVER_LBA = 100;
+	const int UNDER_LBA = -1;
 	MockSSD ssd;
-	TestShell shell{ &ssd };
-	int lba = 10;
 	std::string value = "0x12345678";
-	EXPECT_CALL(ssd, write(lba, value)).Times(1);
-	shell.write(lba, value);
+};
+TEST_F(WriteTestFixture, TestBasicWrite) {
+	TestShell shell{ &ssd };
+	EXPECT_CALL(ssd, write(VALID_LBA, value)).Times(1);
+	shell.write(VALID_LBA, value);
 }
 
-TEST(ShellTest, TestWriteInvalidLBA) {
-	MockSSD ssd;
+TEST_F(WriteTestFixture, TestWriteInvalidLBAOverUpperBound) {
 	TestShell shell{ &ssd };
-	int lba = 100;
 	std::string value = "0x12345678";
-	EXPECT_CALL(ssd, write(lba, value)).Times(0);
-	shell.write(lba, value);
+	EXPECT_CALL(ssd, write(OVER_LBA, value)).Times(0);
+	shell.write(OVER_LBA, value);
 }
 
-TEST(ShellTest, TestWriteInvalidLBA2) {
-	MockSSD ssd;
+TEST_F(WriteTestFixture, TestWriteInvalidLBAUnderLowerBound) {
 	TestShell shell{ &ssd };
-	int lba = -1;
-	std::string value = "0x12345678";
-	EXPECT_CALL(ssd, write(lba, value)).Times(0);
-	shell.write(lba, value);
+	EXPECT_CALL(ssd, write(UNDER_LBA, value)).Times(0);
+	shell.write(UNDER_LBA, value);
 }
