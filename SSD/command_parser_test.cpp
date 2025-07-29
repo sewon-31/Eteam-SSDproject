@@ -26,3 +26,10 @@ TEST_F(SSDCommandParserTestFixture, InvalidAppName)
 	parser.setCommand(cmdStr);
 	EXPECT_FALSE(parser.validateCommand());
 }
+
+TEST_F(SSDCommandParserTestFixture, InvalidOperationCommand)
+{
+	string cmdStr = APP_NAME + " E " + VALID_VALUE;
+	parser.setCommand(cmdStr);
+	EXPECT_FALSE(parser.validateCommand());
+}
