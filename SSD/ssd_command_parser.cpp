@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <regex>
 
 using std::istringstream;
 
@@ -75,27 +76,6 @@ SSDCommandParser::isValidCommand() const
 bool
 SSDCommandParser::isValidValue(const string& valueStr) const
 {
-	if (valueStr.length() != 10) {
-		return false;
-	}
-
-	// try to parse value into hex number
-	try {
-		size_t pos = 0;
-		unsigned long value = std::stoul(valueStr, &pos, 0);
-
-		if (pos != valueStr.length()) {
-			return false;
-		}
-
-		if (value > 0xFFFFFFFF) {
-			return false;
-		}
-
-		uint32_t out = static_cast<uint32_t>(value);
-		return true;
-	}
-	catch (...) {
-		return false;
-	}
+	std::regex re("^0x[0-9A-F]{8}$");
+	return std::regex_match(valueStr, re);
 }
