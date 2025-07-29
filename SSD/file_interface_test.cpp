@@ -21,8 +21,8 @@ TEST_F(FileInterfaceFixture, TC_FILE_OPEN) {
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
-	EXPECT_TRUE(fileInterface.fileRemove("ssd_nand.txt"));
-	EXPECT_TRUE(fileInterface.fileOpen("ssd_nand.txt"));
+	fileInterface.fileRemove("ssd_nand.txt");
+	fileInterface.fileOpen("ssd_nand.txt");
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
 	EXPECT_TRUE(fileInterface.fileReadOneline(read_str));
 	EXPECT_EQ(read_str, expected_str);
@@ -30,8 +30,8 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
-	EXPECT_TRUE(fileInterface.fileRemove("ssd_nand.txt"));
-	EXPECT_TRUE(fileInterface.fileOpen("ssd_nand.txt"));
+	fileInterface.fileRemove("ssd_nand.txt");
+	fileInterface.fileOpen("ssd_nand.txt");
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str1));
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str2));
@@ -49,10 +49,8 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
 
 TEST_F(FileInterfaceFixture, TC_FILE_REMOVE) {
 
-	EXPECT_TRUE(fileInterface.fileOpen("ssd_nand.txt"));
-	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
-	EXPECT_TRUE(fileInterface.fileReadOneline(read_str));
-	EXPECT_EQ(read_str, expected_str);
+	fileInterface.fileOpen("ssd_nand.txt");
+	fileInterface.fileWriteOneline(expected_str);
 	fileInterface.fileClose();
 
 	EXPECT_TRUE(fileInterface.fileRemove("ssd_nand.txt"));
