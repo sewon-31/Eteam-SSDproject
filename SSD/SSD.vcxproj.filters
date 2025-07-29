@@ -21,7 +21,7 @@
     <ClCompile Include="command_parser_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SSDCommandParser.cpp">
+    <ClCompile Include="ssd_command_parser.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -32,7 +32,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SSDCommandParser.h">
+    <ClInclude Include="ssd_command_parser.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
