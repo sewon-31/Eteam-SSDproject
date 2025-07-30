@@ -26,7 +26,31 @@ const std::vector<std::string>& CommandParser::getCommandVector() const
 	return commandVector;
 }
 
-bool CommandParser::isValidCommand() const
+bool CommandParser::isValidOpCommand() const
+{
+	if (commandVector.size() < 1) return false;
+
+	// check operation command
+	string opCommand = commandVector.at(0);
+
+	// check valid commands
+	if (opCommand != CMD_READ
+		&& opCommand != CMD_WRITE
+		&& opCommand != CMD_EXIT
+		&& opCommand != CMD_HELP
+		&& opCommand != CMD_FULLREAD
+		&& opCommand != CMD_FULLWRITE
+		&& opCommand != CMD_SCRIPT1
+		&& opCommand != CMD_SCRIPT1_NAME
+		&& opCommand != CMD_SCRIPT2
+		&& opCommand != CMD_SCRIPT2_NAME
+		&& opCommand != CMD_SCRIPT3
+		&& opCommand != CMD_SCRIPT3_NAME) {
+		return false;
+	}
+}
+
+bool CommandParser::isValidCommandParameter() const
 {
 	try {
 		// check parameter count
@@ -34,25 +58,7 @@ bool CommandParser::isValidCommand() const
 			return false;
 		}
 
-		// check operation command
 		string opCommand = commandVector.at(0);
-
-		// check valid commands
-		if (opCommand != CMD_READ
-			&& opCommand != CMD_WRITE
-			&& opCommand != CMD_EXIT
-			&& opCommand != CMD_HELP
-			&& opCommand != CMD_FULLREAD
-			&& opCommand != CMD_FULLWRITE
-			&& opCommand != CMD_SCRIPT1
-			&& opCommand != CMD_SCRIPT1_NAME
-			&& opCommand != CMD_SCRIPT2
-			&& opCommand != CMD_SCRIPT2_NAME
-			&& opCommand != CMD_SCRIPT3
-			&& opCommand != CMD_SCRIPT3_NAME) {
-			return false;
-		}
-
 		// check parameter count for each operation case
 		if ((opCommand == CMD_READ && commandVector.size() != 2) ||
 			(opCommand == CMD_WRITE && commandVector.size() != 3) ||

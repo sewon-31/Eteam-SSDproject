@@ -54,13 +54,13 @@
     <ClCompile Include="command_parser.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="testshell_execute_command_test.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="test_script.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="test_scripts_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="testshell_execute_command_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>

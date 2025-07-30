@@ -45,9 +45,6 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         std::cout << "Running script 3: WriteReadAging" << std::endl;
         // TestScript3::writeReadAging();
     }
-    else {
-        std::cout << "[Error] Unknown command: " << opCommand << std::endl;
-    }
 
     return true;
 }
@@ -64,8 +61,13 @@ void TestShell::runShell()
 
         commandParser.setCommand(inputLine);
 
-        if (!commandParser.isValidCommand()) {
-            std::cout << "[Error] Invalid command or arguments." << std::endl;
+        if (!commandParser.isValidOpCommand()) {
+            std::cout << "INVALID COMMAND" << std::endl;
+            continue;
+        }
+
+        if (!commandParser.isValidCommandParameter()) {
+            std::cout << "INVALID PARAMETER" << std::endl;
             continue;
         }
 

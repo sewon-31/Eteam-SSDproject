@@ -11,7 +11,8 @@ class CommandParser
 public:
 	void setCommand(const string& command);
 	const std::vector<std::string>& getCommandVector() const;
-	bool isValidCommand() const;
+	bool isValidOpCommand() const;
+	bool isValidCommandParameter() const;
 
 	static constexpr const char* CMD_READ = "read";
 	static constexpr const char* CMD_WRITE = "write";
