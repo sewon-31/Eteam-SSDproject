@@ -84,8 +84,10 @@ TEST_F(SSDTestFixture, WriteText) {
 		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
 
 	app.run("W 0 0x11112222");
-
 	EXPECT_EQ("0x11112222", app.getData(0));
+
+	app.clearData();
+	EXPECT_EQ("0x00000000", app.getData(0));
 }
 
 TEST_F(SSDTestFixture, TC_FULL_WRITE) {
@@ -129,7 +131,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 	char ret = true;
 	std::string expected_str = "0x12341234";
-	
+
 	EXPECT_TRUE(app.writeOutputFile(expected_str));
 	EXPECT_EQ(12, app.outputFile.checkSize());
 }
