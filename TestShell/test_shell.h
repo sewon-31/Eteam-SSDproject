@@ -8,6 +8,7 @@ public:
 		this->ssd = ssd;
 	}
 	void read(int lba);
+	void fullRead();
 	void write(int lba, std::string value);
 private:
 	SSDInterface* ssd;

@@ -14,6 +14,13 @@ void TestShell::read(int lba) {
 	file.close();
 }
 
+void TestShell::fullRead()
+{
+	for (int i = 0; i < 100; i++) {
+		read(i);
+	}
+}
+
 void TestShell::write(int lba, std::string value) {
 	if (ssd == nullptr) return;
 	if (lba >= 100 || lba < 0)
