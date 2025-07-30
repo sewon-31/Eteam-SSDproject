@@ -149,10 +149,10 @@
   <ItemGroup>
     <ClInclude Include="file_interface.h" />
     <ClInclude Include="ssd_command_parser.h" />
+    <ClInclude Include="ssd.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ssd.h" />
-    <ClInclude Include="ssd_command_parser.h" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
