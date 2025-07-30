@@ -5,7 +5,7 @@ FileInterface::FileInterface(const std::string& file) {
 }
 
 bool FileInterface::fileOpen() {
-	ssdNandFile.open(fileName, std::ios::in | std::ios::out | std::ios::app);
+	ssdNandFile.open(fileName, std::ios::in | std::ios::out);
 	readPoint = 0;
 	return ssdNandFile.is_open();
 }
