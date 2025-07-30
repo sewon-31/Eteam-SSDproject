@@ -1,5 +1,7 @@
 ﻿#include "test_shell.h"
 #include "command_parser.h"
+#include "test_script.h"
+
 #include <iostream>
 
 using std::cout;
@@ -34,16 +36,22 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         fullRead();
     }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
+        ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
+
         std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-        // TestScript1::Run();
+        scriptCommand->run();
     }
     else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
+        ScriptsCommand* scriptCommand = new ScriptsPartialLBAWrite(ssd);
+        
         std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-        // TestScript2::Run();
+        scriptCommand->run();
     }
     else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
+        ScriptsCommand* scriptCommand = new ScriptsWriteReadAging(ssd);
+
         std::cout << "Running script 3: WriteReadAging" << std::endl;
-        // TestScript3::writeReadAging();
+        scriptCommand->run();
     }
     else {
         std::cout << "[Error] Unknown command: " << opCommand << std::endl;

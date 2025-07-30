@@ -35,7 +35,7 @@ TEST_F(TestScriptsFixture, Success) {
 	script->run();
 
 	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("PASS", oss.str());
+	EXPECT_EQ("PASS\n", oss.str());
 }
 
 TEST_F(TestScriptsFixture, FailWithInvalidData) {
@@ -51,7 +51,7 @@ TEST_F(TestScriptsFixture, FailWithInvalidData) {
 	script->run();
 
 	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("FAIL", oss.str());
+	EXPECT_EQ("FAIL\n", oss.str());
 }
 
 TEST_F(TestScriptsFixture, TestScript2) {
@@ -73,7 +73,7 @@ TEST_F(TestScriptsFixture, TestScript2) {
 
 	// Act
 	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("PASS", oss.str());
+	EXPECT_EQ("PASS\n", oss.str());
 }
 
 TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
@@ -102,5 +102,5 @@ TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
 	script->run();
 
 	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("PASS", oss.str());
+	EXPECT_EQ("PASS\n", oss.str());
 }
