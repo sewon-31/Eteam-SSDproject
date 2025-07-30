@@ -39,6 +39,9 @@
     <ClCompile Include="ssd.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="file_interface_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -56,9 +59,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="file_interface.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="file_interface_test.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">

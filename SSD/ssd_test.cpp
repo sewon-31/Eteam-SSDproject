@@ -11,20 +11,33 @@ public:
 	MOCK_METHOD(vector<string>, getCommandVector, (), (const, override));
 };
 
-TEST(SSDTest, GetCommandTest) {
+class SSDTestFixture : public Test
+{
+protected:
+	void SetUp() override
+	{
+		app.setParser(&mockParser);
+	}
+public:
 	MockParser mockParser;
+	SSD app;
 
-	EXPECT_CALL(mockParser, setCommand)
-		.Times(1);
+	void processMockParserFunctions()
+	{
+		EXPECT_CALL(mockParser, setCommand)
+			.Times(1);
 
-	EXPECT_CALL(mockParser, isValidCommand)
-		.WillRepeatedly(Return(true));
+		EXPECT_CALL(mockParser, isValidCommand)
+			.WillRepeatedly(Return(true));
+	}
+};
+
+TEST_F(SSDTestFixture, GetCommandTest) {
+	processMockParserFunctions();
 
 	EXPECT_CALL(mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "ssd", "R", "0" }));
 
-	SSD app;
-	app.setParser(&mockParser);
 	app.run("ssd R 0");
 
 	EXPECT_EQ("R", app.parsedCommand.at(1));
