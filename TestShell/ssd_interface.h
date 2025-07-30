@@ -57,7 +57,7 @@ public:
 		return content;
 	}
 private:
-	const string SSD_READ_RESULT = "ssd_output.txt";
+	const string SSD_READ_RESULT = "../ssd_output.txt";
 };
 
 class MockSSDDriver : public SSDDriver {

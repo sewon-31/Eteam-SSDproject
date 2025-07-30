@@ -5,10 +5,26 @@ FileInterface::FileInterface(const std::string& file) {
 }
 
 bool FileInterface::fileOpen() {
-	ssdNandFile.open(fileName, std::ios::in | std::ios::out | std::ios::app);
+	if (ssdNandFile.is_open())
+		ssdNandFile.close();
+
+	ssdNandFile.open(fileName, std::ios::in | std::ios::out);
+
+	if (!ssdNandFile.is_open()) {
+		std::cout << "[Debug] Creating new file: " << fileName << std::endl;
+
+		std::ofstream create(fileName);
+		create.close();
+
+		ssdNandFile.open(fileName, std::ios::in | std::ios::out);
+	}
+
 	readPoint = 0;
-	return ssdNandFile.is_open();
+	bool is_open = ssdNandFile.is_open();
+	std::cout << "[Debug] fileOpen: is_open=" << is_open << std::endl;
+	return is_open;
 }
+
 bool FileInterface::fileReadOneline(std::string& str) {
 	if (!ssdNandFile.is_open()) return false;
 
@@ -24,16 +40,24 @@ bool FileInterface::setReadPoint(unsigned point) {
 	readPoint = point;
 	return ssdNandFile.good();
 }
+
 bool FileInterface::fileWriteOneline(const std::string str) {
 	if (!ssdNandFile.is_open()) return false;
 
-	ssdNandFile.seekg(0, std::ios::end);
 	ssdNandFile << str << '\n';
+
+	if (!ssdNandFile.good()) {
+		std::cout << "[Error] write failed: fail=" << ssdNandFile.fail()
+			<< ", bad=" << ssdNandFile.bad() << std::endl;
+	}
+
 	return ssdNandFile.good();
 }
+
 void FileInterface::fileClose() {
 	ssdNandFile.close();
 }
+
 bool FileInterface::fileRemove() {
 	std::ofstream file(fileName, std::ios::trunc);
 	if (file.is_open()) {

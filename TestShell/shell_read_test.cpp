@@ -14,7 +14,7 @@ public:
 	const string EXPECT_AA = "0xAAAAAAAA";
 
 	void ssdReadFileSetUp() {
-		std::string filePath = "ssd_output.txt";
+		std::string filePath = "../ssd_output.txt";
 		std::ofstream outfile(filePath);
 		outfile << EXPECT_AA << std::endl;
 		outfile.close();
