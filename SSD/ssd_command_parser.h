@@ -9,8 +9,9 @@ using std::vector;
 class SSDCommandParser
 {
 public:
-	void setCommand(const string& command);
-	bool isValidCommand() const;
+	virtual void setCommand(const string& command);
+	virtual bool isValidCommand() const;
+	virtual vector<string> getCommandVector() const;
 
 private:
 	bool isValidValue(const string& valueStr) const;

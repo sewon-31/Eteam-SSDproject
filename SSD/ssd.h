@@ -16,13 +16,14 @@ nand_txt 파일을 쭉 읽어서 -> data 변수에 저장
 read/write 수행*/
 
     void readSSDfile(FileInterface& fileInterface);
-    string runReadCommand(FileInterface& fileInterface, int lba);
-    void runWriteCommand(FileInterface& fileInterface, int lab, const string& value);
+    string runReadCommand(FileInterface& fileInterface);
+    void runWriteCommand(FileInterface& fileInterface);
 
 private:
     string data[100];
     vector<string> parsedCommand;
-
+    FileInterface* outputFile;
+    FileInterface* nandFile;
     // 0. ssd
     // 1. R/W
     // 2. lba
