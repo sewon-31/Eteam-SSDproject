@@ -24,7 +24,7 @@ SSD::run(const string& commandStr)
 	/*
 	// read ssd_nand.txt
 	readSSDfile();
-
+	*/
 	// run command
 	string operation = parsedCommand.at(1);
 	int lba = std::stoi(parsedCommand.at(2));
@@ -34,9 +34,8 @@ SSD::run(const string& commandStr)
 	}
 	else if (operation == "W") {
 		runWriteCommand(lba, parsedCommand.at(3));
-		writeSSDfile();
+		// writeSSDfile();
 	}
-	*/
 }
 
 string
@@ -49,4 +48,16 @@ void
 SSD::clearData()
 {
 	std::fill(std::begin(data), std::end(data), "0x00000000");
+}
+
+void 
+SSD::runWriteCommand(int lba, const string& value)
+{
+	data[lba] = value;
+}
+
+string
+SSD::getData(int lba) const
+{
+	return data[lba];
 }

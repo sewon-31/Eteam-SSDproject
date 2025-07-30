@@ -13,11 +13,13 @@ public:
 	*/
 
 	void readSSDfile();
-	void clearData();
 	void writeSSDfile();
 
 	string runReadCommand(int lba);
-	void runWriteCommand(int lab, const string& value);
+	void runWriteCommand(int lba, const string& value);
+
+	void clearData();
+	string getData(int lba) const;
 
 	vector<string> parsedCommand;
 private:
