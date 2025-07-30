@@ -59,8 +59,10 @@ TEST_F(SSDTestFixture, ReadTest) {
 	string expected;
 
 	nandFile.fileOpen();
-	nandFile.fileWriteOneline("0x00000000");
-	nandFile.fileReadOneline(expected);
+	if (nandFile.checkSize() >= 12)
+		nandFile.fileReadOneline(expected);
+	else
+		expected = "0x00000000";
 	nandFile.fileClose();
 
 	EXPECT_EQ(expected, app.getData(0));
