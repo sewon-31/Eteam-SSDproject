@@ -17,24 +17,22 @@ SSD::run(const string& commandStr)
 		// print ERROR to ssd_output.txt
 		return;
 	}
-
 	parsedCommand = parser->getCommandVector();
 
 	clearData();
-	/*
-	// read ssd_nand.txt
-	readSSDfile();
-	*/
+	readNandFile();
+
 	// run command
 	string operation = parsedCommand.at(1);
 	int lba = std::stoi(parsedCommand.at(2));
 
 	if (operation == "R") {
 		string result = runReadCommand(lba);
+		writeOutputFile(result);
 	}
 	else if (operation == "W") {
 		runWriteCommand(lba, parsedCommand.at(3));
-		// writeSSDfile();
+		writeNandFile();
 	}
 }
 
