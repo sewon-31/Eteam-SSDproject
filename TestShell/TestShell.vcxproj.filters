@@ -29,16 +29,23 @@
     </ClCompile>
     <ClCompile Include="shell_read_test.cpp">
       <Filter>테스트 파일</Filter>
+    </ClCompile>
     <ClCompile Include="test_script2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="test_script2_test.cpp">
-      <Filter>test_file</Filter>
+      <Filter>테스트 파일</Filter>
     </ClCompile>
     <ClCompile Include="shell_write_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
     <ClCompile Include="shell_write_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_script3.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_script3_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,6 +54,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="test_script2.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="test_script3.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
