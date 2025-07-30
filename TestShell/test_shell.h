@@ -14,10 +14,9 @@ public:
 	}
 	void runShell();
 	bool ExecuteCommand(vector<string> commandVector);
+	void ssdReadAndPrint(int addr);
 	virtual void read(int lba);
 	virtual void fullRead();
-
-	void ssdReadAndPrint(int addr);
 	virtual void write(int lba, std::string value);
 	virtual void fullWrite(std::string value);
 	virtual void help();
