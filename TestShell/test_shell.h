@@ -1,5 +1,6 @@
 #include "ssd_interface.h"
 #include "command_parser.h"
+#include <vector>
 
 class TestShell {
 public:
@@ -9,7 +10,8 @@ public:
 		this->ssd = ssd;
 	}
 	void runShell();
-	void read(int lba);
+	void ExecuteCommand(std::vector<string> commandVector);
+	virtual void read(int lba);
 	void fullRead();
 	void write(int lba, std::string value);
 	void fullWrite(std::string value);
