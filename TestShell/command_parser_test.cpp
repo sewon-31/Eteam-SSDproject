@@ -80,3 +80,48 @@ TEST_F(CommandParserTest, ExtraSpacesTab_StillValid) {
     parser.setCommand("   write   3                     0x1234ABCD   ");
     EXPECT_TRUE(parser.isValidCommand());
 }
+
+TEST_F(CommandParserTest, ValidScript1ShortCommand_ReturnsTrue) {
+    parser.setCommand("1_");
+    EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, ValidScript1FullCommand_ReturnsTrue) {
+    parser.setCommand("1_FullWriteAndReadCompare");
+    EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, ValidScript2ShortCommand_ReturnsTrue) {
+    parser.setCommand("2_");
+    EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, ValidScript2FullCommand_ReturnsTrue) {
+    parser.setCommand("2_PartialLBAWrite");
+    EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, ValidScript3ShortCommand_ReturnsTrue) {
+    parser.setCommand("3_");
+    EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, ValidScript3FullCommand_ReturnsTrue) {
+    parser.setCommand("3_WriteReadAging");
+    EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, Script1CommandWithExtraArgs_ReturnsFalse) {
+    parser.setCommand("1_ extraArg");
+    EXPECT_FALSE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, Script2CommandWithExtraArgs_ReturnsFalse) {
+    parser.setCommand("2_PartialLBAWrite unexpected");
+    EXPECT_FALSE(parser.isValidCommand());
+}
+
+TEST_F(CommandParserTest, Script3CommandWithExtraArgs_ReturnsFalse) {
+    parser.setCommand("3_WriteReadAging junk1 junk2");
+    EXPECT_FALSE(parser.isValidCommand());
+}

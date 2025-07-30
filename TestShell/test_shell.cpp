@@ -1,4 +1,5 @@
 ﻿#include "test_shell.h"
+#include "command_parser.h"
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -14,62 +15,59 @@ void TestShell::runShell()
         std::cout << "shell > ";
         std::getline(std::cin, inputLine);
 
-        // Skip empty input
-
         if (inputLine.empty()) continue;
 
-        // Tokenize command
-        std::istringstream ss(inputLine);
-        std::string command;
-        ss >> command;
+        commandParser.setCommand(inputLine);
 
-        if (command == "exit") {
+        if (!commandParser.isValidCommand()) {
+            std::cout << "[Error] Invalid command or arguments." << std::endl;
+            continue;
+        }
+
+        std::string opCommand = commandParser.getCommandVector().at(0);
+
+        if (opCommand == CommandParser::CMD_EXIT) {
             break;
         }
-        else if (command == "help") {
+        else if (opCommand == CommandParser::CMD_HELP) {
             help();
         }
-        else if (command == "write") {
-            int lba;
-            std::string value;
-            ss >> lba >> value;
+        else if (opCommand == CommandParser::CMD_WRITE) {
+            int lba = std::stoi(commandParser.getCommandVector().at(1));
+            std::string value = commandParser.getCommandVector().at(2);
             std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
-            // Call write(lba, value);
+            write(lba, value);
         }
-        else if (command == "read") {
-            int lba;
-            ss >> lba;
+        else if (opCommand == CommandParser::CMD_READ) {
+            int lba = std::stoi(commandParser.getCommandVector().at(1));
             std::cout << "Executing read from LBA " << lba << std::endl;
-            // Call read(lba);
+            read(lba);
         }
-        else if (command == "fullwrite") {
-            std::string value;
-            ss >> value;
+        else if (opCommand == CommandParser::CMD_FULLWRITE) {
+            std::string value = commandParser.getCommandVector().at(1);
             std::cout << "Executing fullwrite with value " << value << std::endl;
-            // Call fullwrite(value);
+            fullWrite(value);
         }
-        else if (command == "fullread") {
+        else if (opCommand == CommandParser::CMD_FULLREAD) {
             std::cout << "Executing fullread" << std::endl;
-            // Call fullread();
+            fullRead();
         }
-        else if (command == "1_" || command == "1_FullWriteAndReadCompare") {
+        else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
             std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-            // Call TestScript1::Run();
+            // TestScript1::Run();
         }
-        else if (command == "2_" || command == "2_PartialLBAWrite") {
+        else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
             std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-            // Call TestScript2::Run();
+            // TestScript2::Run();
         }
-        else if (command == "3_" || command == "3_WriteReadAging") {
+        else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
             std::cout << "Running script 3: WriteReadAging" << std::endl;
-            // Call TestScript3::writeReadAging();
+            // TestScript3::writeReadAging();
         }
         else {
-            std::cout << "[Error] Unknown command: " << command << std::endl;
+            std::cout << "[Error] Unknown command: " << opCommand << std::endl;
         }
     }
-
-
 }
 
 void TestShell::read(int lba) {
