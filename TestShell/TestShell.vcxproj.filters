@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="test_file">
+    <Filter Include="테스트 파일">
       <UniqueIdentifier>{7ae6a564-c721-4825-a899-c62eb0eebb2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -32,6 +32,9 @@
     </ClCompile>
     <ClCompile Include="test_script2.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_script2_test.cpp">
+      <Filter>테스트 파일</Filter>
     </ClCompile>
     <ClCompile Include="shell_write_test.cpp">
       <Filter>테스트 파일</Filter>
@@ -59,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="test_script3_test.cpp">
       <Filter>test_file</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_help_test.cpp">
+      <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
