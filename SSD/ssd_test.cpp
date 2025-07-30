@@ -33,18 +33,6 @@ public:
 			.WillRepeatedly(Return(true));
 	}
 };
-#if 0
-TEST_F(SSDTestFixture, GetCommandTest) {
-	processMockParserFunctions();
-
-	EXPECT_CALL(mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "ssd", "R", "0" }));
-
-	app.run("ssd R 0");
-
-	EXPECT_EQ("R", app.parsedCommand.at(1));
-	EXPECT_EQ("0", app.parsedCommand.at(2));
-}
 
 TEST_F(SSDTestFixture, GetCommandTest) {
 	processMockParserFunctions();
@@ -91,7 +79,6 @@ TEST_F(SSDTestFixture, WriteText) {
 
 	EXPECT_EQ("0x11112222", app.getData(0));
 }
-#endif
 
 TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	string str[100];
