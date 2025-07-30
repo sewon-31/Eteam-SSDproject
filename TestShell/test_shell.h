@@ -2,7 +2,7 @@
 
 class TestShell {
 public:
-	TestShell () {}
+	TestShell() {}
 	TestShell(SSDInterface* ssd) :ssd(ssd) {}
 	void setSSD(SSDInterface* ssd) {
 		this->ssd = ssd;
@@ -11,4 +11,6 @@ public:
 	void write(int lba, std::string value);
 private:
 	SSDInterface* ssd;
+	const string SSD_NAND = "ssd_nand.txt";
+	const string SSD_READ_RESULT = "ssd_output.txt";
 };
