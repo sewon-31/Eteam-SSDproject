@@ -11,6 +11,7 @@ public:
 	void fullRead();
 	void write(int lba, std::string value);
 	void fullWrite(std::string value);
+	void help();
 private:
 	SSDInterface* ssd;
 	const string SSD_NAND = "ssd_nand.txt";
