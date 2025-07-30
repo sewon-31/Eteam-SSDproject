@@ -43,3 +43,14 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 	EXPECT_EQ("R", app.parsedCommand.at(1));
 	EXPECT_EQ("0", app.parsedCommand.at(2));
 }
+
+TEST_F(SSDTestFixture, ReadTest) {
+	processMockParserFunctions();
+
+	EXPECT_CALL(mockParser, getCommandVector())
+		.WillRepeatedly(Return(vector<string>{ "ssd", "R", "0" }));
+
+	app.run("ssd R 0");
+
+	EXPECT_EQ("0x00000000", app.runReadCommand(0));
+}

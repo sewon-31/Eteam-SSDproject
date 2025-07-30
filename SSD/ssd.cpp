@@ -1,5 +1,7 @@
 #include "ssd.h"
 
+#include <algorithm>
+
 void 
 SSD::setParser(SSDCommandParser* parser)
 {
@@ -17,4 +19,34 @@ SSD::run(const string& commandStr)
 	}
 
 	parsedCommand = parser->getCommandVector();
+
+	clearData();
+	/*
+	// read ssd_nand.txt
+	readSSDfile();
+
+	// run command
+	string operation = parsedCommand.at(1);
+	int lba = std::stoi(parsedCommand.at(2));
+
+	if (operation == "R") {
+		string result = runReadCommand(lba);
+	}
+	else if (operation == "W") {
+		runWriteCommand(lba, parsedCommand.at(3));
+		writeSSDfile();
+	}
+	*/
+}
+
+string
+SSD::runReadCommand(int lba)
+{
+	return data[lba];
+}
+
+void
+SSD::clearData()
+{
+	std::fill(std::begin(data), std::end(data), "0x00000000");
 }

@@ -1,4 +1,5 @@
 #include "ssd_command_parser.h"
+#include "file_interface.h"
 
 class SSD
 {
@@ -11,8 +12,9 @@ public:
 	3. read/write ผ๖วเ
 	*/
 
-	bool readSSDfile();
-	bool writeSSDfile();
+	void readSSDfile();
+	void clearData();
+	void writeSSDfile();
 
 	string runReadCommand(int lba);
 	void runWriteCommand(int lab, const string& value);
@@ -25,4 +27,7 @@ private:
 	// 1. R/W
 	// 2. lba
 	// 3. value
+
+	FileInterface* outputFile;
+	FileInterface* nandFile;
 };
