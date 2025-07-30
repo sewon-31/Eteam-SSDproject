@@ -78,6 +78,12 @@
     <ClCompile Include="command_parser.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="test_script.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_scripts_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_interface.h">
@@ -93,6 +99,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="command_parser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="test_script.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
