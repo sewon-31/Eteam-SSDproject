@@ -23,10 +23,8 @@ bool FileInterface::setReadPoint(unsigned point) {
 bool FileInterface::fileWriteOneline(const std::string str) {
 	if (!ssd_nand_file.is_open()) return false;
 
-	std::string write_str = str + "\n";
-
 	ssd_nand_file.seekg(0, std::ios::end);
-	ssd_nand_file.write(write_str.c_str(), write_str.length());
+	ssd_nand_file << str << '\n';
 	return ssd_nand_file.good();
 }
 void FileInterface::fileClose() {
