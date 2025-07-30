@@ -44,9 +44,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="ssd_command_parser.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -72,6 +69,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

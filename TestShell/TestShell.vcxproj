@@ -149,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_interface.h" />
-
     <ClInclude Include="test_script1.h" />
     <ClInclude Include="test_script2.h" />
     <ClInclude Include="test_script3.h" />
