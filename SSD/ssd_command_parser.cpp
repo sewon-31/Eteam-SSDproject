@@ -19,11 +19,13 @@ SSDCommandParser::setCommand(const string& command)
 	string strBuf;
 
 	while (getline(ss, strBuf, ' ')) {
-		commandVector.push_back(strBuf);
+		if (!strBuf.empty()) {
+			commandVector.push_back(strBuf);
+		}
 	}
 }
 
-vector<string> 
+vector<string>
 SSDCommandParser::getCommandVector() const
 {
 	return commandVector;
@@ -34,32 +36,31 @@ SSDCommandParser::isValidCommand() const
 {
 	try {
 		// check parameter count
-		if (commandVector.size() < 3 || commandVector.size() > 4) {
+		if (commandVector.size() < MAX_ARG_LENGTH - 1
+			|| commandVector.size() > MAX_ARG_LENGTH) {
 			return false;
 		}
 
-		// check app name
-		if (commandVector.at(0) != APP_NAME) {
-			return false;
-		}
+		string CMD_READ = "R";
+		string CMD_WRITE = "W";
 
 		// check operation command
-		string opCommand = commandVector.at(1);
+		string opCommand = commandVector.at(OP);
 		if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
 			return false;
 		}
 
 		// check parameter count for each operation case
-		if (opCommand == CMD_READ && commandVector.size() != 3) {
+		if (opCommand == CMD_READ && commandVector.size() != MAX_ARG_LENGTH - 1) {
 			return false;
 		}
 
-		if (opCommand == CMD_WRITE && commandVector.size() != 4) {
+		if (opCommand == CMD_WRITE && commandVector.size() != MAX_ARG_LENGTH) {
 			return false;
 		}
 
 		// check lba range
-		string lbaStr = commandVector.at(2);
+		string lbaStr = commandVector.at(LBA);
 		int lba = std::stoi(lbaStr);
 		if (lba < 0 || lba > 99) {
 			return false;
@@ -67,7 +68,7 @@ SSDCommandParser::isValidCommand() const
 
 		// check value
 		if (opCommand == CMD_WRITE) {
-			if (isValidValue(commandVector.at(3)) == false) {
+			if (isValidValue(commandVector.at(VAL)) == false) {
 				return false;
 			}
 		}

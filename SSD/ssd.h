@@ -22,7 +22,7 @@ public:
 private:
 	string data[100];
 
-	SSDCommandParser* parser;
+	SSDCommandParser* parser = nullptr;
 
 	FileInterface* outputFile;
 	FileInterface* nandFile;
