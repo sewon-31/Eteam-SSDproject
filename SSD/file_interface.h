@@ -5,7 +5,7 @@
 
 class FileInterface {
 public:
-	FileInterface(const std::string& file) { fileName = file; }
+	FileInterface(const std::string& file);
 	bool fileOpen();
 	bool fileReadOneline(std::string& str);
 	bool setReadPoint(unsigned point);
