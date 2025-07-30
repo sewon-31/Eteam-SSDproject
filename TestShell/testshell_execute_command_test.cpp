@@ -16,6 +16,7 @@ public:
 	MOCK_METHOD(void, write, (int lba, std::string value));
 	MOCK_METHOD(void, fullRead, ());
 	MOCK_METHOD(void, fullWrite, (std::string value));
+	MOCK_METHOD(void, help, ());
 private:
 };
 
@@ -57,6 +58,15 @@ TEST_F(TestShellCommandOperatorFixture, FullWrite) {
 	vector<string> commandVector = { "fullwrite", "0xAAAAAAAA"};
 
 	EXPECT_CALL(app, fullWrite(_))
+		.Times(1);
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, Help) {
+	MockTestShell app(&mockSSD);
+	vector<string> commandVector = { "help" };
+
+	EXPECT_CALL(app, help)
 		.Times(1);
 
 	app.ExecuteCommand(commandVector);

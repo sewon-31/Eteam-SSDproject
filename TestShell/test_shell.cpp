@@ -3,12 +3,12 @@
 #include <iostream>
 
 using std::cout;
-void TestShell::ExecuteCommand(vector<string> commandVector)
+bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
 
     if (opCommand == CommandParser::CMD_EXIT) {
-        return;
+        return false;
     }
     else if (opCommand == CommandParser::CMD_HELP) {
         help();
@@ -48,6 +48,8 @@ void TestShell::ExecuteCommand(vector<string> commandVector)
     else {
         std::cout << "[Error] Unknown command: " << opCommand << std::endl;
     }
+
+    return true;
 }
 
 void TestShell::runShell()
@@ -67,7 +69,7 @@ void TestShell::runShell()
             continue;
         }
 
-        ExecuteCommand(commandParser.getCommandVector());
+        if (false == ExecuteCommand(commandParser.getCommandVector())) return;
     }
 }
 
