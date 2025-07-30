@@ -133,10 +133,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="test_script.cpp" />
-    <ClCompile Include="test_script2.cpp" />
-    <ClCompile Include="test_script2_test.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">  %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
     <ClCompile Include="test_script3.cpp" />
     <ClCompile Include="test_script3_test.cpp" />
     <ClCompile Include="test_scripts_test.cpp">
@@ -154,7 +150,6 @@
     <ClInclude Include="command_parser.h" />
     <ClInclude Include="ssd_interface.h" />
     <ClInclude Include="test_script.h" />
-    <ClInclude Include="test_script2.h" />
     <ClInclude Include="test_script3.h" />
   </ItemGroup>
   <ItemGroup>
