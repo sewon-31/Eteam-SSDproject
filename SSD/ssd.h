@@ -4,6 +4,10 @@
 class SSD
 {
 public:
+	explicit SSD(const std::string& nandPath = "../ssd_nand.txt",
+		const std::string& outputPath = "../ssd_output.txt");
+
+
 	void run(const string& commandStr);
 	void setParser(SSDCommandParser* parser);
 
@@ -24,8 +28,9 @@ public:
 	string data[100];
 
 private:
-	FileInterface outputFile = { "../ssd_output.txt" };
-	FileInterface nandFile = { "../ssd_nand.txt" };
+	FileInterface outputFile;
+	FileInterface nandFile;
 	SSDCommandParser* parser = nullptr;
-
+	static const int nandFileSize = 1200;
+	static const int nandFileLba = 100;
 };
