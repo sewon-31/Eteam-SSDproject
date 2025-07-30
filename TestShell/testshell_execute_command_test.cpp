@@ -14,6 +14,8 @@ public:
 	}
 	MOCK_METHOD(void, read, (int lba));
 	MOCK_METHOD(void, write, (int lba, std::string value));
+	MOCK_METHOD(void, fullRead, ());
+	MOCK_METHOD(void, fullWrite, (std::string value));
 private:
 };
 
@@ -25,17 +27,37 @@ public:
 };
 TEST_F(TestShellCommandOperatorFixture, Read) {
 	MockTestShell app(&mockSSD);
+	vector<string> commandVector = { "read", "3" };
 
 	EXPECT_CALL(app, read(_))
 		.Times(1);
 
-	app.ExecuteCommand("read");
+	app.ExecuteCommand(commandVector);
 }
 TEST_F(TestShellCommandOperatorFixture, Write) {
 	MockTestShell app(&mockSSD);
+	vector<string> commandVector = { "write", "3", "0xAAAAAAAA"};
 
 	EXPECT_CALL(app, write(_, _))
 		.Times(1);
 
-	app.ExecuteCommand("write");
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, FullRead) {
+	MockTestShell app(&mockSSD);
+	vector<string> commandVector = { "fullread" };
+
+	EXPECT_CALL(app, fullRead)
+		.Times(1);
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, FullWrite) {
+	MockTestShell app(&mockSSD);
+	vector<string> commandVector = { "fullwrite", "0xAAAAAAAA"};
+
+	EXPECT_CALL(app, fullWrite(_))
+		.Times(1);
+
+	app.ExecuteCommand(commandVector);
 }
