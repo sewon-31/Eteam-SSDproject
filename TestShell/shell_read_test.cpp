@@ -16,7 +16,7 @@ public:
 		std::string filePath = "ssd_output.txt";
 		std::ofstream outfile(filePath);
 		outfile << EXPECT_AA << std::endl;
-		outfile.close();		
+		outfile.close();
 	}
 };
 
