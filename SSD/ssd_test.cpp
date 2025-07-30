@@ -26,7 +26,6 @@ public:
 	{
 		EXPECT_CALL(mockParser, setCommand)
 			.Times(1);
-
 		EXPECT_CALL(mockParser, isValidCommand)
 			.WillRepeatedly(Return(true));
 	}
@@ -53,4 +52,16 @@ TEST_F(SSDTestFixture, ReadTest) {
 	app.run("ssd R 0");
 
 	EXPECT_EQ("0x00000000", app.runReadCommand(0));
+}
+
+TEST_F(SSDTestFixture, GetInvalidCommandTest) {
+	processMockParserFunctions();
+
+	EXPECT_CALL(mockParser, isValidCommand)
+		.WillRepeatedly(Return(false));
+
+	EXPECT_CALL(mockParser, getCommandVector)
+		.Times(0);
+
+	app.run("ssdr R 0");
 }
