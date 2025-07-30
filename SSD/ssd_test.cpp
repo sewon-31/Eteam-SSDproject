@@ -69,21 +69,21 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 	processMockParserFunctions();
 
 	EXPECT_CALL(mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "ssd", "R", "0" }));
+		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
 
-	app.run("ssd R 0");
+	app.run("R 0");
 
-	EXPECT_EQ("R", app.parsedCommand.at(1));
-	EXPECT_EQ("0", app.parsedCommand.at(2));
+	EXPECT_EQ("R", app.parsedCommand.at(0));
+	EXPECT_EQ("0", app.parsedCommand.at(1));
 }
 
 TEST_F(SSDTestFixture, ReadTest) {
 	processMockParserFunctions();
 
 	EXPECT_CALL(mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "ssd", "R", "0" }));
+		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
 
-	app.run("ssd R 0");
+	app.run("R 0");
 
 	EXPECT_EQ("0x00000000", app.getData(0));
 }
@@ -97,16 +97,16 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	EXPECT_CALL(mockParser, getCommandVector)
 		.Times(0);
 
-	app.run("ssdr R 0");
+	app.run("R 0 0x00000000");
 }
 
 TEST_F(SSDTestFixture, WriteText) {
 	processMockParserFunctions();
 
 	EXPECT_CALL(mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "ssd", "W", "0", "0x11112222"}));
+		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
 
-	app.run("ssd W 0 0x11112222");
+	app.run("W 0 0x11112222");
 
 	EXPECT_EQ("0x11112222", app.getData(0));
 }

@@ -1,8 +1,9 @@
 #include "ssd.h"
 #include "file_interface.h"
 #include <algorithm>
+#include <iostream>
 
-void 
+void
 SSD::setParser(SSDCommandParser* parser)
 {
 	this->parser = parser;
@@ -11,28 +12,35 @@ SSD::setParser(SSDCommandParser* parser)
 void
 SSD::run(const string& commandStr)
 {
+	if (parser == nullptr) {
+		SSDCommandParser myParser;
+		parser = &myParser;
+	}
+
 	// parse command
 	parser->setCommand(commandStr);
 	if (!parser->isValidCommand()) {
-		// print ERROR to ssd_output.txt
+		//writeOutputFile("ERROR");
 		return;
 	}
 	parsedCommand = parser->getCommandVector();
 
 	clearData();
-	readNandFile();
+	//readNandFile();
 
 	// run command
-	string operation = parsedCommand.at(1);
-	int lba = std::stoi(parsedCommand.at(2));
+	string operation = parsedCommand.at(SSDCommandParser::Index::OP);
+	int lba = std::stoi(parsedCommand.at(SSDCommandParser::Index::LBA));
 
 	if (operation == "R") {
+		//std::cout << "Read" << lba << std::endl;
 		string result = runReadCommand(lba);
-		writeOutputFile(result);
+		//writeOutputFile(result);
 	}
 	else if (operation == "W") {
-		runWriteCommand(lba, parsedCommand.at(3));
-		writeNandFile();
+		//std::cout << "Write" << lba << std::endl;
+		runWriteCommand(lba, parsedCommand.at(SSDCommandParser::Index::VAL));
+		//writeNandFile();
 	}
 }
 
@@ -48,7 +56,7 @@ SSD::clearData()
 	std::fill(std::begin(data), std::end(data), "0x00000000");
 }
 
-void 
+void
 SSD::runWriteCommand(int lba, const string& value)
 {
 	data[lba] = value;

@@ -12,7 +12,8 @@ int main() {
 #else
 
 int main() {
-	
+	TestShell ts;
+	ts.runShell();
 	return 0;
 }
 

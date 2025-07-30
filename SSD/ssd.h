@@ -19,8 +19,9 @@ public:
 
 	vector<string> parsedCommand;
 	string data[100];
+
 private:
-	SSDCommandParser* parser;
+	SSDCommandParser* parser = nullptr;
 
 	FileInterface outputFile;
 	FileInterface nandFile = { "ssd_nand.txt" };
