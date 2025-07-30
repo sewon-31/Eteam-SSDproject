@@ -87,7 +87,7 @@ TEST_F(WriteTestFixture, TestRealSSDWrite) {
 	TestShell shell{ &realSSD };
 	shell.write(VALID_LBA, value);
 	EXPECT_EQ(WRITE_DONE, oss.str());
-	std::ifstream nand("ssd_nand.txt");
+	std::ifstream nand("../ssd_nand.txt");
 	ASSERT_TRUE(nand.is_open());
 	std::string line;
 	std::vector<string> outputData;
