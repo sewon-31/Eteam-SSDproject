@@ -3,6 +3,54 @@
 #include <iostream>
 
 using std::cout;
+bool TestShell::ExecuteCommand(vector<string> commandVector)
+{
+    std::string opCommand = commandVector.at(0);
+
+    if (opCommand == CommandParser::CMD_EXIT) {
+        return false;
+    }
+    else if (opCommand == CommandParser::CMD_HELP) {
+        help();
+    }
+    else if (opCommand == CommandParser::CMD_WRITE) {
+        int lba = std::stoi(commandVector.at(1));
+        std::string value = commandVector.at(2);
+        std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
+        write(lba, value);
+    }
+    else if (opCommand == CommandParser::CMD_READ) {
+        int lba = std::stoi(commandVector.at(1));
+        std::cout << "Executing read from LBA " << lba << std::endl;
+        read(lba);
+    }
+    else if (opCommand == CommandParser::CMD_FULLWRITE) {
+        std::string value = commandVector.at(1);
+        std::cout << "Executing fullwrite with value " << value << std::endl;
+        fullWrite(value);
+    }
+    else if (opCommand == CommandParser::CMD_FULLREAD) {
+        std::cout << "Executing fullread" << std::endl;
+        fullRead();
+    }
+    else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
+        std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
+        // TestScript1::Run();
+    }
+    else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
+        std::cout << "Running script 2: PartialLBAWrite" << std::endl;
+        // TestScript2::Run();
+    }
+    else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
+        std::cout << "Running script 3: WriteReadAging" << std::endl;
+        // TestScript3::writeReadAging();
+    }
+    else {
+        std::cout << "[Error] Unknown command: " << opCommand << std::endl;
+    }
+
+    return true;
+}
 
 void TestShell::runShell()
 {
@@ -21,49 +69,7 @@ void TestShell::runShell()
             continue;
         }
 
-        std::string opCommand = commandParser.getCommandVector().at(0);
-
-        if (opCommand == CommandParser::CMD_EXIT) {
-            break;
-        }
-        else if (opCommand == CommandParser::CMD_HELP) {
-            help();
-        }
-        else if (opCommand == CommandParser::CMD_WRITE) {
-            int lba = std::stoi(commandParser.getCommandVector().at(1));
-            std::string value = commandParser.getCommandVector().at(2);
-            std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
-            write(lba, value);
-        }
-        else if (opCommand == CommandParser::CMD_READ) {
-            int lba = std::stoi(commandParser.getCommandVector().at(1));
-            std::cout << "Executing read from LBA " << lba << std::endl;
-            read(lba);
-        }
-        else if (opCommand == CommandParser::CMD_FULLWRITE) {
-            std::string value = commandParser.getCommandVector().at(1);
-            std::cout << "Executing fullwrite with value " << value << std::endl;
-            fullWrite(value);
-        }
-        else if (opCommand == CommandParser::CMD_FULLREAD) {
-            std::cout << "Executing fullread" << std::endl;
-            fullRead();
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-            // TestScript1::Run();
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-            std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-            // TestScript2::Run();
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            std::cout << "Running script 3: WriteReadAging" << std::endl;
-            // TestScript3::writeReadAging();
-        }
-        else {
-            std::cout << "[Error] Unknown command: " << opCommand << std::endl;
-        }
+        if (false == ExecuteCommand(commandParser.getCommandVector())) return;
     }
 }
 
