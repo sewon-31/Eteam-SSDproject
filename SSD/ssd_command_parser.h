@@ -18,8 +18,5 @@ private:
 
 	string commandStr;
 	vector<string> commandVector;
-
-	const string CMD_READ = "R";
-	const string CMD_WRITE = "W";
-	const string APP_NAME = "ssd";
+public:
 };
