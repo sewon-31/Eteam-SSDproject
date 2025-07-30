@@ -1,5 +1,9 @@
 #include "file_interface.h"
 
+FileInterface::FileInterface(const std::string& file) { 
+	fileName = file; 
+}
+
 bool FileInterface::fileOpen() {
 	ssdNandFile.open(fileName, std::ios::in | std::ios::out | std::ios::app);
 	readPoint = 0;
