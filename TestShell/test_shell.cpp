@@ -3,6 +3,16 @@
 #include <iostream>
 
 using std::cout;
+void TestShell::ExecuteCommand(std::vector<string> commandVector)
+{
+	string command_type = commandVector[0];
+
+	if (command_type == "read")
+	{
+		int lba = stoi(commandVector[1]);
+		read(lba);
+	}
+}
 
 void TestShell::runShell()
 {
