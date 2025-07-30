@@ -145,6 +145,7 @@
     <ClCompile Include="test_shell.h" />
     <ClCompile Include="shell_read_test.cpp" />
     <ClCompile Include="shell_write_test.cpp" />
+    <ClCompile Include="shell_help_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_interface.h" />
