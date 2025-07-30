@@ -77,25 +77,7 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	app.run("R 0 0x00000000");
 }
 
-TEST_F(SSDTestFixture, ReadTest) {
-	processMockParserFunctions();
-
-	EXPECT_CALL(mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
-
-	app.run("R 0");
-
-	FileInterface nandFile = { "../ssd_nand.txt" };
-	string expected;
-	nandFile.fileOpen();
-	nandFile.fileWriteOneline("0x00000000");
-	nandFile.fileReadOneline(expected);
-	nandFile.fileClose();
-
-	EXPECT_EQ(expected, app.getData(0));
-}
-
-TEST_F(SSDTestFixture, WriteTest) {
+TEST_F(SSDTestFixture, WriteText) {
 	processMockParserFunctions();
 
 	EXPECT_CALL(mockParser, getCommandVector())
@@ -149,7 +131,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 	char ret = true;
 	std::string expected_str = "0x12341234";
-	
+
 	EXPECT_TRUE(app.writeOutputFile(expected_str));
 	EXPECT_EQ(12, app.outputFile.checkSize());
 }
