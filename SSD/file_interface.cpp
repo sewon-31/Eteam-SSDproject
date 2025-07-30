@@ -1,40 +1,81 @@
 #include "file_interface.h"
 
-bool FileInterface::fileOpen(const std::string& fileName) {
-	ssd_nand_file.open(fileName, std::ios::in | std::ios::out | std::ios::app);
-	read_point = 0;
-	return ssd_nand_file.is_open();
+FileInterface::FileInterface(const std::string& file) { 
+	fileName = file; 
 }
-bool FileInterface::fileReadOneline(std::string& str) {
-	if (!ssd_nand_file.is_open()) return false;
 
-	ssd_nand_file.clear();
-	ssd_nand_file.seekg(read_point, std::ios::beg);
-	getline(ssd_nand_file, str);
-	read_point = ssd_nand_file.tellg();
-	return ssd_nand_file.good();
+bool FileInterface::fileOpen() {
+	if (ssdNandFile.is_open())
+		ssdNandFile.close();
+
+	ssdNandFile.open(fileName, std::ios::in | std::ios::out);
+
+	if (!ssdNandFile.is_open()) {
+		std::cout << "[Debug] Creating new file: " << fileName << std::endl;
+
+		std::ofstream create(fileName);
+		create.close();
+
+		ssdNandFile.open(fileName, std::ios::in | std::ios::out);
+	}
+
+	readPoint = 0;
+	bool is_open = ssdNandFile.is_open();
+	std::cout << "[Debug] fileOpen: is_open=" << is_open << std::endl;
+	return is_open;
+}
+
+bool FileInterface::fileReadOneline(std::string& str) {
+	if (!ssdNandFile.is_open()) return false;
+
+	ssdNandFile.clear();
+	ssdNandFile.seekg(readPoint, std::ios::beg);
+	getline(ssdNandFile, str);
+	readPoint = ssdNandFile.tellg();
+	return ssdNandFile.good();
 }
 bool FileInterface::setReadPoint(unsigned point) {
-	if (!ssd_nand_file.is_open()) return false;
+	if (!ssdNandFile.is_open()) return false;
 
-	read_point = point;
-	return ssd_nand_file.good();
+	readPoint = point;
+	return ssdNandFile.good();
 }
+
 bool FileInterface::fileWriteOneline(const std::string str) {
-	if (!ssd_nand_file.is_open()) return false;
+	if (!ssdNandFile.is_open()) return false;
 
-	ssd_nand_file.seekg(0, std::ios::end);
-	ssd_nand_file << str << '\n';
-	return ssd_nand_file.good();
+	ssdNandFile.seekg(0, std::ios::end);
+	ssdNandFile << str << '\n';
+
+	if (!ssdNandFile.good()) {
+		std::cout << "[Error] write failed: fail=" << ssdNandFile.fail()
+			<< ", bad=" << ssdNandFile.bad() << std::endl;
+	}
+
+	return ssdNandFile.good();
 }
+
 void FileInterface::fileClose() {
-	ssd_nand_file.close();
+	ssdNandFile.close();
 }
-bool FileInterface::fileRemove(const std::string& fileName) {
+
+bool FileInterface::fileRemove() {
 	std::ofstream file(fileName, std::ios::trunc);
 	if (file.is_open()) {
 		file.close();
 		return true;
 	}
 	return false;
+};
+int FileInterface::checkSize() {
+	std::ofstream file(fileName, std::ios::app);
+	int position = 0;
+
+	if (file.is_open()) {
+		file.seekp(0, std::ios::end);
+		position = file.tellp();
+		file.close();
+		return position;
+	}
+	return 0;
 };

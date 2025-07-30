@@ -28,71 +28,81 @@ bool ScriptsCommand::readCompare(int address, std::string hexValue) const
 }
 
 void ScriptsFullWriteAndReadCompare::run(void) {
-	for (int startLba = 0; startLba < MAX_LBA; startLba += OPERATE_COUNT_PER_LOOP) {
-		string data = intToHexString(generateRandomIntValue());
-		// Write
-		for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
-			int lba = startLba + offset;
-			ssd->write(lba, data);
-		}
+	try {
+		for (int startLba = 0; startLba < MAX_LBA; startLba += OPERATE_COUNT_PER_LOOP) {
+			string data = intToHexString(generateRandomIntValue());
+			// Write
+			for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
+				int lba = startLba + offset;
+				ssd->write(lba, data);
+			}
 
-		// Read & Compare
-		for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
-			int lba = startLba + offset;
+			// Read & Compare
+			for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
+				int lba = startLba + offset;
 
-			if (!readCompare(lba, data)) {
-				std::cout << "FAIL";
-				return;
+				if (!readCompare(lba, data)) {
+					std::cout << "FAIL" << '\n';
+					return;
+				}
 			}
 		}
+		std::cout << "PASS" << '\n';
 	}
-	std::cout << "PASS";
+	catch (...) { std::cout << "FAIL" << '\n'; }
 }
 
 void ScriptsPartialLBAWrite::run()
 {
-	for (int i = 0; i < 30; i++) {
-		string data = intToHexString(generateRandomIntValue());
+	try {
+		for (int i = 0; i < 30; i++) {
+			string data = intToHexString(generateRandomIntValue());
 
-		ssd->write(4, data);
-		ssd->write(0, data);
-		ssd->write(3, data);
-		ssd->write(1, data);
-		ssd->write(2, data);
+			ssd->write(4, data);
+			ssd->write(0, data);
+			ssd->write(3, data);
+			ssd->write(1, data);
+			ssd->write(2, data);
 
-		for (int j = 0; j < 4; j++) {
-			if (!readCompare(j, data)) {
-				std::cout << "FAIL";
-				return;
+			for (int j = 0; j < 4; j++) {
+				if (!readCompare(j, data)) {
+					std::cout << "FAIL" << '\n';
+					return;
+				}
 			}
 		}
-	}
 
-	std::cout << "PASS";
+		std::cout << "PASS" << '\n';
+	}
+	catch (...) { std::cout << "FAIL" << '\n'; }
 }
 
 void ScriptsWriteReadAging::run() {
-	for (int i = 0; i < 200; ++i) {
+	try {
+		for (int i = 0; i < 200; ++i) {
 #if _DEBUG
-		std::string val0 = "0x00001111";
-		std::string val99 = "0x00009999";
+			std::string val0 = "0x00001111";
+			std::string val99 = "0x00009999";
 #else
-		std::string val0 = intToHexString(generateRandomIntValue());
-		std::string val99 = intToHexString(generateRandomIntValue());
+			std::string val0 = intToHexString(generateRandomIntValue());
+			std::string val99 = intToHexString(generateRandomIntValue());
 #endif
-		ssd->write(0, val0);
-		ssd->write(99, val99);
+			ssd->write(0, val0);
+			ssd->write(99, val99);
 
-		if (!readCompare(0, val0)) {
-			std::cout << "FAIL";
-			return;
+			if (!readCompare(0, val0)) {
+				std::cout << "FAIL" << '\n';
+				return;
+			}
+
+			if (!readCompare(99, val99)) {
+				std::cout << "FAIL" << '\n';
+				return;
+			}
 		}
 
-		if (!readCompare(99, val99)) {
-			std::cout << "FAIL";
-			return;
-		}
+		std::cout << "PASS" << '\n';
 	}
 
-	std::cout << "PASS";
+	catch (...) { std::cout << "FAIL" << '\n'; }
 }
