@@ -40,13 +40,13 @@ public:
 		return true;
 	}
 	void write(int lba, string value) override {
-		string ssdCmd = "SSD.exe " + std::to_string(lba) + " " + value;
+		string ssdCmd = "\"ssd W " + std::to_string(lba) + " " + value;
 		if (runExe(ssdCmd) == false) {
 			throw SSDExecutionException("Execution failed: " + ssdCmd);
 		}
 	}
 	string read(int lba) override {
-		string command = "\"SSD.exe >nul 2>&1\"";
+		string command = "\"ssd R " + std::to_string(lba) + " >nul 2>&1\"";
 		if (runExe(command) == false) { throw std::runtime_error("There is no SSD.exe\n"); }
 
 		string content;
