@@ -40,9 +40,9 @@ public:
 		return true;
 	}
 	void write(int lba, string value) override {
-		string ssdCmd = "\"ssd W " + std::to_string(lba) + " " + value;
-		if (runExe(ssdCmd) == false) {
-			throw SSDExecutionException("Execution failed: " + ssdCmd);
+		string command = "\"ssd W " + std::to_string(lba) + " " + value + " >nul 2>&1\"";
+		if (runExe(command) == false) {
+			throw SSDExecutionException("Execution failed: " + command);
 		}
 	}
 	string read(int lba) override {
