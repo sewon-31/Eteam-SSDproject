@@ -3,20 +3,29 @@
 using namespace testing;
 
 TEST(TestShellRead, ReadPass) {
+	string expect = "0xAAAAAAAA";
+
+	// unit test about file read
+	std::string filePath = "ssd_output.txt";
+	std::ofstream outfile(filePath);
+	outfile << expect << std::endl;
+	outfile.close();
+
+	MockSSD ssd;
+	EXPECT_CALL(ssd, read(0))
+		.Times(1);
+
+	TestShell shell;
+	shell.setSSD(&ssd);
+
+	// cout compare
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	MockSSD ssd;
-	EXPECT_CALL(ssd, read(0))
-		.WillRepeatedly(testing::Return("0x00000000"));
-
-	TestShell shell;
-	shell.setSSD(&ssd);
 	shell.read(0);
-
 	std::cout.rdbuf(oldCoutStreamBuf); //º¹¿ø
 
-	string expect = "0x00000000";
+
 	EXPECT_EQ(expect, oss.str());
 }
