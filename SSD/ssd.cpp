@@ -71,12 +71,14 @@ SSD::getData(int lba) const
 bool 
 SSD::readNandFile() {
 	bool ret;
+	
+	nandFile.fileOpen();
 
 	if (nandFile.checkSize() != 1200)  return false;
 
 	for (int i = 0; i < 100; i++)
 	{
-		ret = nandFile.fileReadOneline(data[i]);
+		ret = nandFile.fileReadOneline(data_temp[i]);
 
 		if (!ret)  break;
 	}
@@ -86,8 +88,20 @@ SSD::readNandFile() {
 
 bool 
 SSD::writeNandFile() {
+	bool ret;
 
-	return true;
+	nandFile.fileRemove();
+	nandFile.fileOpen();
+
+	for (int i = 0; i < 100; i++)
+	{
+		ret = nandFile.fileWriteOneline(data[i]);
+
+		if (!ret)
+			break;
+	}
+	nandFile.fileClose();
+	return ret;
 }
 
 void 

@@ -107,3 +107,26 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	EXPECT_EQ(1200, app.nandFile.checkSize());
 }
 
+TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
+	string str[100];
+	char buffer[12];
+	char ret = true;
+
+	for (int i = 0; i < 100; i++) {
+		std::snprintf(buffer, sizeof(buffer), "0x%08X", (std::rand() % INT_MAX + 1));
+		str[i] = std::string(buffer);
+		app.data[i] = str[i];
+	}
+
+	app.writeNandFile();
+	EXPECT_EQ(1200, app.nandFile.checkSize());
+	EXPECT_TRUE(app.readNandFile());
+
+	for (int i = 0; i < 100; i++) {
+		if (app.data_temp[i] != str[i]) {
+			ret = false;
+			break;
+		}
+	}
+	EXPECT_TRUE(ret);
+}

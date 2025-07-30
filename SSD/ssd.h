@@ -20,6 +20,7 @@ public:
 	vector<string> parsedCommand;
 
 	string data[100];
+	string data_temp[100];
 	FileInterface* outputFile;
 	FileInterface nandFile = { "ssd_nand.txt" };
 private:
