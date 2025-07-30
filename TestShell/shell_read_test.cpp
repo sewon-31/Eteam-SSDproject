@@ -78,15 +78,21 @@ TEST(SSDDriverRead, ReadPass) {
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	EXPECT_TRUE(mockSSD.read(0));
+	EXPECT_EQ("0xAAAAAAAA", mockSSD.read(0));
 }
 
-TEST(SSDDriverRead, ReadPass) {
+TEST(SSDDriverRead, ReadFail) {
 	MockSSDDriver mockSSD;
 
 	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(false));
 
-	EXPECT_THROW(mockSSD.read(0), std::runtime_error);
+	try {
+		mockSSD.read(0);
+		FAIL();
+	}
+	catch (std::runtime_error e) {
+		EXPECT_EQ(std::string(e.what()), "There is no SSD.exe");
+	}
 }

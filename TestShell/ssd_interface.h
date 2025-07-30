@@ -19,9 +19,18 @@ public:
 
 class SSDDriver : public SSDInterface {
 public:
+	virtual bool runExe(const string& command) {
+		int ret = system(command.c_str());
+
+		if (ret == 0) return true;
+		return false;
+	}
+	void write(int lba, string value) override {
+
+	}
 	string read(int lba) override {
-		//string command = ".\program.exe ssd R " + lba;
-		//system(command.c_str());
+		string command = ".\program.exe ssd R " + lba;
+		if (runExe(command) == false) { throw std::runtime_error("There is no SSD.exe"); }
 
 		string content;
 		std::ifstream file(SSD_READ_RESULT);
@@ -32,4 +41,9 @@ public:
 	}
 private:
 	const string SSD_READ_RESULT = "ssd_output.txt";
+};
+
+class MockSSDDriver : public SSDDriver {
+public:
+	MOCK_METHOD(bool, runExe, (const string& command), (override));
 };
