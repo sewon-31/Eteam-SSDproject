@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>shell_read_test.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "test_shell.h"
+
+using namespace testing;
+
+class TestShellRead : public Test {
+public:
+	TestShell shell;
+	MockSSD mockSSD;
+	MockSSDDriver SSDwithMockRunExe;
+
+	const string HEADER = "[Read] LBA ";
+	const string MIDFIX = " : ";
+	const string FOOTER = "\n";
+	const string EXPECT_AA = "0xAAAAAAAA";
+
+<span style = "background-color:#dfd">	void ssdReadFileSetUp() {
+		std::string filePath = "ssd_output.txt";
+		std::ofstream outfile(filePath);
+		outfile &lt;&lt; EXPECT_AA &lt;&lt; std::endl;
+		outfile.close();
+	}</span>
+};
+
+<span style = "background-color:#dfd">TEST_F(TestShellRead, ReadPassWithMockSSD) {
+	ssdReadFileSetUp();</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(mockSSD, read(0))</span>
+		.Times(1)
+		.WillRepeatedly(Return(EXPECT_AA));
+
+<span style = "background-color:#dfd">	shell.setSSD(&amp;mockSSD);</span>
+
+<span style = "background-color:#dfd">	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());</span>
+
+<span style = "background-color:#dfd">	shell.read(0);
+	std::cout.rdbuf(oldCoutStreamBuf);</span>
+
+<span style = "background-color:#dfd">	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
+	EXPECT_EQ(expect, oss.str());
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(TestShellRead, FullReadPassWithMockSSD) {
+	ssdReadFileSetUp();</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(mockSSD, read)</span>
+		.Times(100)
+		.WillRepeatedly(Return(EXPECT_AA));
+
+<span style = "background-color:#dfd">	shell.setSSD(&amp;mockSSD);</span>
+
+<span style = "background-color:#dfd">	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());</span>
+
+<span style = "background-color:#dfd">	shell.fullRead();
+	std::cout.rdbuf(oldCoutStreamBuf);</span>
+
+<span style = "background-color:#dfd">	string expect = "";
+	for (int i = 0; i &lt; 100; i++) {
+		std::ostringstream oss;
+		oss &lt;&lt; std::setw(2) &lt;&lt; std::setfill('0') &lt;&lt; i;</span>
+
+<span style = "background-color:#dfd">		expect += HEADER;
+		expect += oss.str();
+		expect += MIDFIX;
+		expect += EXPECT_AA;
+		expect += FOOTER;
+	}</span>
+
+<span style = "background-color:#dfd">	EXPECT_EQ(expect, oss.str());
+}</span>
+
+
+<span style = "background-color:#dfd">TEST(SSDDriverRead, ReadPassWithMockRunExe) {
+	MockSSDDriver SSDwithMockRunExe;</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(SSDwithMockRunExe, runExe)</span>
+		.Times(1)
+		.WillRepeatedly(Return(true));
+
+<span style = "background-color:#dfd">	string result = SSDwithMockRunExe.read(0);
+	EXPECT_EQ("0xAAAAAAAA", result);
+}</span>
+
+<span style = "background-color:#dfd">TEST(SSDDriverRead, ReadFailWithMockRunExe) {
+	MockSSDDriver SSDwithMockRunExe;</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(SSDwithMockRunExe, runExe)</span>
+		.Times(1)
+		.WillRepeatedly(Return(false));
+
+	try {
+<span style = "background-color:#dfd">		SSDwithMockRunExe.read(0);</span>
+<span style = "background-color:#fdd">		FAIL();</span>
+	}
+<span style = "background-color:#dfd">	catch (std::runtime_error e) {
+		EXPECT_EQ(std::string(e.what()), "There is no SSD.exe\n");
+	}
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(TestShellRead, ReadPassWithMockRunExe) {</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(SSDwithMockRunExe, runExe)</span>
+		.Times(1)
+		.WillRepeatedly(Return(true));
+
+<span style = "background-color:#dfd">	shell.setSSD(&amp;SSDwithMockRunExe);</span>
+
+<span style = "background-color:#dfd">	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());</span>
+
+<span style = "background-color:#dfd">	shell.read(0);
+	std::cout.rdbuf(oldCoutStreamBuf);</span>
+
+<span style = "background-color:#dfd">	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
+	EXPECT_EQ(expect, oss.str());
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
+	ssdReadFileSetUp();</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(SSDwithMockRunExe, runExe)</span>
+		.Times(100)
+		.WillRepeatedly(Return(true));
+
+<span style = "background-color:#dfd">	shell.setSSD(&amp;SSDwithMockRunExe);</span>
+
+<span style = "background-color:#dfd">	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());</span>
+
+<span style = "background-color:#dfd">	shell.fullRead();
+	std::cout.rdbuf(oldCoutStreamBuf);</span>
+
+<span style = "background-color:#dfd">	string expect = "";
+	for (int i = 0; i &lt; 100; i++) {
+		std::ostringstream oss;
+		oss &lt;&lt; std::setw(2) &lt;&lt; std::setfill('0') &lt;&lt; i;</span>
+
+<span style = "background-color:#dfd">		expect += HEADER;
+		expect += oss.str();
+		expect += MIDFIX;
+		expect += EXPECT_AA;
+		expect += FOOTER;
+	}</span>
+
+<span style = "background-color:#dfd">	EXPECT_EQ(expect, oss.str());
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(TestShellRead, ReadFailWithMockRunExe) {</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(SSDwithMockRunExe, runExe)</span>
+		.WillRepeatedly(Return(false));
+
+<span style = "background-color:#dfd">	shell.setSSD(&amp;SSDwithMockRunExe);</span>
+
+<span style = "background-color:#dfd">	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());</span>
+
+<span style = "background-color:#dfd">	shell.read(0);
+	std::cout.rdbuf(oldCoutStreamBuf);</span>
+
+<span style = "background-color:#dfd">	EXPECT_EQ("There is no SSD.exe\n", oss.str());
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
+	ssdReadFileSetUp();</span>
+
+<span style = "background-color:#dfd">	EXPECT_CALL(SSDwithMockRunExe, runExe)</span>
+		.WillRepeatedly(Return(false));
+
+<span style = "background-color:#dfd">	shell.setSSD(&amp;SSDwithMockRunExe);</span>
+
+<span style = "background-color:#dfd">	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());</span>
+
+<span style = "background-color:#dfd">	shell.fullRead();
+	std::cout.rdbuf(oldCoutStreamBuf);</span>
+
+<span style = "background-color:#dfd">	EXPECT_EQ("There is no SSD.exe\n", oss.str());
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>
