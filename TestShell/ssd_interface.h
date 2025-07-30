@@ -40,8 +40,8 @@ public:
 		return true;
 	}
 	void write(int lba, string value) override {
-		string ssdCmd = ssdCmd + std::to_string(lba) + " " + value;
-		if (system(ssdCmd.c_str()) != 0) {
+		string ssdCmd = "SSD.exe " + std::to_string(lba) + " " + value;
+		if (runExe(ssdCmd) == false) {
 			throw SSDExecutionException("Execution failed: " + ssdCmd);
 		}
 	}
@@ -58,7 +58,6 @@ public:
 	}
 private:
 	const string SSD_READ_RESULT = "ssd_output.txt";
-	const string ssdCmd = "\"SSD.exe >nul 2>&1\"";
 };
 
 class MockSSDDriver : public SSDDriver {
