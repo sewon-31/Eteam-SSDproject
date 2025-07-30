@@ -1,7 +1,7 @@
 #include "file_interface.h"
 
 bool FileInterface::fileOpen(const std::string& fileName) {
-	ssd_nand_file.open(fileName);
+	ssd_nand_file.open(fileName, std::ios::in | std::ios::out | std::ios::app);
 	read_point = 0;
 	return ssd_nand_file.is_open();
 }

@@ -20,6 +20,12 @@ TEST_F(FileInterfaceFixture, TC_FILE_OPEN) {
 	fileInterface.fileClose();
 }
 
+TEST_F(FileInterfaceFixture, TC_FILE_MAKEFILE) {
+	fileInterface.fileRemove("ssd_nand.txt");
+	EXPECT_TRUE(fileInterface.fileOpen("ssd_nand.txt"));
+	fileInterface.fileClose();
+}
+
 TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
 	fileInterface.fileRemove("ssd_nand.txt");
 	fileInterface.fileOpen("ssd_nand.txt");
@@ -48,7 +54,6 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_REMOVE) {
-
 	fileInterface.fileOpen("ssd_nand.txt");
 	fileInterface.fileWriteOneline(expected_str);
 	fileInterface.fileClose();
