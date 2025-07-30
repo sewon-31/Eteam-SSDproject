@@ -14,7 +14,8 @@ public:
 	void help();
 private:
 	SSDInterface* ssd;
-	const string SSD_NAND = "ssd_nand.txt";
-	const string SSD_READ_RESULT = "ssd_output.txt";
 	const int MAX_LBA = 100;
+	const string READ_HEADER = "[Read] LBA ";
+	const string READ_MIDFIX = " : ";
+	const string READ_FOOTER = "\n";
 };

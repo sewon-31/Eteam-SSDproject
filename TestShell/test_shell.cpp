@@ -3,15 +3,12 @@
 using std::cout;
 
 void TestShell::read(int lba) {
-	ssd->read(lba);
+	std::string content = ssd->read(lba);
 
-	std::ifstream file(SSD_READ_RESULT);
-	std::string content;
+	std::ostringstream oss;
+	oss << std::setw(2) << std::setfill('0') << lba;
 
-	std::getline(file, content);
-
-	cout << content;
-	file.close();
+	cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
 }
 
 void TestShell::fullRead()

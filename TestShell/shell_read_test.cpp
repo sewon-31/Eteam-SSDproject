@@ -6,7 +6,11 @@ class TestShellRead : public Test {
 public:
 	TestShell shell;
 	MockSSD ssd;
-	string EXPECT_AA = "0xAAAAAAAA";
+
+	const string HEADER = "[Read] LBA ";
+	const string MIDFIX = " : ";
+	const string FOOTER = "\n";
+	const string EXPECT_AA = "0xAAAAAAAA";
 
 	void ssdReadFileSetUp() {
 		std::string filePath = "ssd_output.txt";
@@ -20,7 +24,8 @@ TEST_F(TestShellRead, ReadPass) {
 	ssdReadFileSetUp();
 	
 	EXPECT_CALL(ssd, read(0))
-		.Times(1);
+		.Times(1)
+		.WillRepeatedly(Return(EXPECT_AA));
 
 	shell.setSSD(&ssd);
 
@@ -29,17 +34,18 @@ TEST_F(TestShellRead, ReadPass) {
 	std::cout.rdbuf(oss.rdbuf());
 
 	shell.read(0);
-	std::cout.rdbuf(oldCoutStreamBuf); //복원
+	std::cout.rdbuf(oldCoutStreamBuf);
 
-
-	EXPECT_EQ(EXPECT_AA, oss.str());
+	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
+	EXPECT_EQ(expect, oss.str());
 }
 
 TEST_F(TestShellRead, FullReadPass) {
 	ssdReadFileSetUp();
 
 	EXPECT_CALL(ssd, read)
-		.Times(100);
+		.Times(100)
+		.WillRepeatedly(Return(EXPECT_AA));
 
 	shell.setSSD(&ssd);
 
@@ -48,11 +54,18 @@ TEST_F(TestShellRead, FullReadPass) {
 	std::cout.rdbuf(oss.rdbuf());
 
 	shell.fullRead();
-	std::cout.rdbuf(oldCoutStreamBuf); //복원
+	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = "";
 	for (int i = 0; i < 100; i++) {
+		std::ostringstream oss;
+		oss << std::setw(2) << std::setfill('0') << i;
+
+		expect += HEADER;
+		expect += oss.str();
+		expect += MIDFIX;
 		expect += EXPECT_AA;
+		expect += FOOTER;
 	}
 
 	EXPECT_EQ(expect, oss.str());
