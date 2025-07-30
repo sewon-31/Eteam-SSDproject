@@ -95,7 +95,7 @@ TEST(SSDDriverRead, ReadFailWithMockRunExe) {
 		FAIL();
 	}
 	catch (std::runtime_error e) {
-		EXPECT_EQ(std::string(e.what()), "There is no SSD.exe");
+		EXPECT_EQ(std::string(e.what()), "There is no SSD.exe\n");
 	}
 }
 
