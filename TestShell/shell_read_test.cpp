@@ -34,7 +34,7 @@ TEST_F(TestShellRead, ReadPass) {
 	std::cout.rdbuf(oss.rdbuf());
 
 	shell.read(0);
-	std::cout.rdbuf(oldCoutStreamBuf); //복원
+	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
 	EXPECT_EQ(expect, oss.str());
@@ -54,7 +54,7 @@ TEST_F(TestShellRead, FullReadPass) {
 	std::cout.rdbuf(oss.rdbuf());
 
 	shell.fullRead();
-	std::cout.rdbuf(oldCoutStreamBuf); //복원
+	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = "";
 	for (int i = 0; i < 100; i++) {
