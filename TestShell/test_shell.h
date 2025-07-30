@@ -14,7 +14,7 @@ public:
 	void runShell();
 	void read(int lba);
 	void fullRead();
-	void sseReadAndPrint(int addr);
+	void ssdReadAndPrint(int addr);
 	void write(int lba, std::string value);
 	void fullWrite(std::string value);
 	void help();

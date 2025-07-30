@@ -70,7 +70,7 @@ void TestShell::runShell()
 void TestShell::read(int lba) {
     std::string content;
     try {
-        sseReadAndPrint(lba);
+        ssdReadAndPrint(lba);
     }
     catch(std::exception e){
         cout << string(e.what()) << std::endl;
@@ -81,7 +81,7 @@ void TestShell::fullRead()
 {
     try {
 	    for (int addr = 0; addr < MAX_LBA; addr++) {       
-            sseReadAndPrint(addr);
+            ssdReadAndPrint(addr);
 	    }
     }
     catch (std::exception e) {
@@ -89,7 +89,7 @@ void TestShell::fullRead()
     }
 }
 
-void TestShell::sseReadAndPrint(int addr)
+void TestShell::ssdReadAndPrint(int addr)
 {
     std::string content = ssd->read(addr);
     std::ostringstream oss;
