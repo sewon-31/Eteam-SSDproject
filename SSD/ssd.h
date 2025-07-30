@@ -18,11 +18,12 @@ public:
 	string getData(int lba) const;
 
 	vector<string> parsedCommand;
-	string data[100];
 
+	string data[100];
+	FileInterface* outputFile;
+	FileInterface nandFile = { "ssd_nand.txt" };
 private:
+
 	SSDCommandParser* parser = nullptr;
 
-	FileInterface outputFile;
-	FileInterface nandFile = { "ssd_nand.txt" };
 };

@@ -7,7 +7,6 @@
 
 using namespace testing;
 
-#if 1
 class MockParser : public SSDCommandParser {
 public:
 	MOCK_METHOD(void, setCommand, (const string& command), (override));
@@ -34,8 +33,7 @@ public:
 			.WillRepeatedly(Return(true));
 	}
 };
-#endif
-
+#if 0
 TEST_F(SSDTestFixture, GetCommandTest) {
 	processMockParserFunctions();
 
@@ -47,23 +45,6 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 	EXPECT_EQ("R", app.parsedCommand.at(1));
 	EXPECT_EQ("0", app.parsedCommand.at(2));
 }
-#if 0
-TEST(TC, TC_FULL_WRITE) {
-	SSD temp;
-	string str = "0x12341234";
-	//char buffer[12];
-
-#if 0
-	for (int i = 0; i < 100; i++) {
-		//std::snprintf(buffer, sizeof(buffer), "0x%08X", (std::rand() % INT_MAX + 1));
-		//str[i] = std::string(buffer);
-		temp.data[i] = str;
-	}
-#endif
-	temp.writeNandFile();
-}
-
-
 
 TEST_F(SSDTestFixture, GetCommandTest) {
 	processMockParserFunctions();
@@ -111,3 +92,18 @@ TEST_F(SSDTestFixture, WriteText) {
 	EXPECT_EQ("0x11112222", app.getData(0));
 }
 #endif
+
+TEST_F(SSDTestFixture, TC_FULL_WRITE) {
+	string str[100];
+	char buffer[12];
+
+
+	for (int i = 0; i < 100; i++) {
+		std::snprintf(buffer, sizeof(buffer), "0x%08X", (std::rand() % INT_MAX + 1));
+		str[i] = std::string(buffer);
+		app.data[i] = str[i];
+	}
+
+	app.writeNandFile();
+	EXPECT_EQ(1200, app.nandFile.checkSize());
+}

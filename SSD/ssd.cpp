@@ -70,7 +70,7 @@ SSD::getData(int lba) const
 
 bool 
 SSD::readNandFile() {
-	return 0;
+	return true;
 }
 
 bool 
