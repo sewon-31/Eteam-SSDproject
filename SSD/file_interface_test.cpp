@@ -6,7 +6,7 @@ using std::vector;
 
 class FileInterfaceFixture :public testing::Test {
 public:
-	FileInterface fileInterface = { "ssd_interface.txt" };
+	FileInterface fileInterface = { "../ssd_interface.txt" };
 
 	std::string expected_str = "0x12341234";
 	std::string expected_str1 = "0x22341234";

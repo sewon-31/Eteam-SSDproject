@@ -141,7 +141,7 @@ TEST_F(SSDTestFixture, TC_RUN_WRITE) {
 
 	app.run("W 0 0x11112222");
 
-	FileInterface nandFile = { "ssd_nand.txt" };
+	FileInterface nandFile = { "../ssd_nand.txt" };
 
 	string actual;
 	nandFile.fileOpen();
@@ -159,14 +159,14 @@ TEST_F(SSDTestFixture, TC_RUN_READ) {
 
 	app.run("R 0");
 
-	FileInterface nandFile = { "ssd_nand.txt" };
+	FileInterface nandFile = { "../ssd_nand.txt" };
 
 	string expected;
 	nandFile.fileOpen();
 	nandFile.fileReadOneline(expected);
 	nandFile.fileClose();
 
-	FileInterface outputFile = { "ssd_output.txt" };
+	FileInterface outputFile = { "../ssd_output.txt" };
 
 	string actual;
 	outputFile.fileOpen();
