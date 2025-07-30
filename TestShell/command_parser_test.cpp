@@ -75,3 +75,8 @@ TEST_F(CommandParserTest, ExtraSpaces_StillValid) {
     parser.setCommand("   write   3    0x1234ABCD   ");
     EXPECT_TRUE(parser.isValidCommand());
 }
+
+TEST_F(CommandParserTest, ExtraSpacesTab_StillValid) {
+    parser.setCommand("   write   3                     0x1234ABCD   ");
+    EXPECT_TRUE(parser.isValidCommand());
+}
