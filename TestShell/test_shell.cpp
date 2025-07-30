@@ -109,13 +109,24 @@ void TestShell::write(int lba, std::string value) {
 	if (ssd == nullptr) return;
 	if (lba >= 100 || lba < 0)
 		return;
-	ssd->write(lba, value);
-	std::cout << "[WRITE] Done" << std::endl;
+	try {
+		ssd->write(lba, value);
+		std::cout << "[WRITE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[WRITE] Fail" << std::endl;
+	}
 }
 
 void TestShell::fullWrite(std::string value) {
-	for (int i = 0; i < 100; i++)
-		ssd->write(i, value);
+	try {
+		for (int i = 0; i < 100; i++)
+			ssd->write(i, value);
+		std::cout << "[FULL_WRITE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[FULL_WRITE] Fail" << std::endl;
+	}
 }
 
 void TestShell::help() {
