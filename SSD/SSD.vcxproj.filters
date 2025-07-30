@@ -27,11 +27,20 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ssd.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ssd_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ssd.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="file_interface_test.cpp">
+      <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,10 +50,10 @@
     <ClInclude Include="ssd_command_parser.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="file_interface.h">
+    <ClInclude Include="ssd.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ssd.h">
+    <ClInclude Include="file_interface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,9 +62,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="file_interface.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="file_interface_test.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">

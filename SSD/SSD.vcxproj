@@ -150,6 +150,7 @@
     <ClInclude Include="file_interface.h" />
     <ClInclude Include="ssd.h" />
     <ClInclude Include="ssd_command_parser.h" />
+    <ClInclude Include="ssd.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

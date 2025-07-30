@@ -1,31 +1,29 @@
-#include <string>
-#include <vector>
+#include "ssd_command_parser.h"
 #include "file_interface.h"
-
-using std::string;
-using std::vector;
 
 class SSD
 {
 public:
-    void run(const string& commandStr);
-    /*
+	void run(const string& commandStr);
+	void setParser(SSDCommandParser* parser);
 
-parser 수행해서 뭘 해야 하는 지 파악
-nand_txt 파일을 쭉 읽어서 -> data 변수에 저장
-read/write 수행*/
+	void readNandFile();
+	void writeNandFile();
+	void writeOutputFile(const string& str);
 
-    void readSSDfile(FileInterface& fileInterface);
-    string runReadCommand(FileInterface& fileInterface);
-    void runWriteCommand(FileInterface& fileInterface);
+	string runReadCommand(int lba);
+	void runWriteCommand(int lba, const string& value);
+
+	void clearData();
+	string getData(int lba) const;
+
+	vector<string> parsedCommand;
 
 private:
-    string data[100];
-    vector<string> parsedCommand;
-    FileInterface* outputFile;
-    FileInterface* nandFile;
-    // 0. ssd
-    // 1. R/W
-    // 2. lba
-    // 3. value
+	string data[100];
+
+	SSDCommandParser* parser;
+
+	FileInterface* outputFile;
+	FileInterface* nandFile;
 };
