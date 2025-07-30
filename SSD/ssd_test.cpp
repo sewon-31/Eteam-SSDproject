@@ -47,7 +47,6 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 	EXPECT_EQ("0", app.parsedCommand.at(1));
 }
 
-<<<<<<< HEAD
 TEST_F(SSDTestFixture, ReadTest) {
 	processMockParserFunctions();
 
@@ -66,8 +65,6 @@ TEST_F(SSDTestFixture, ReadTest) {
 	EXPECT_EQ(expected, app.getData(0));
 }
 
-=======
->>>>>>> 22cbd59 ([Feature] test for clearData)
 TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	processMockParserFunctions();
 
@@ -88,7 +85,14 @@ TEST_F(SSDTestFixture, ReadTest) {
 
 	app.run("R 0");
 
-	EXPECT_EQ("0x00000000", app.getData(0));
+	FileInterface nandFile = { "../ssd_nand.txt" };
+	string expected;
+	nandFile.fileOpen();
+	nandFile.fileWriteOneline("0x00000000");
+	nandFile.fileReadOneline(expected);
+	nandFile.fileClose();
+
+	EXPECT_EQ(expected, app.getData(0));
 }
 
 TEST_F(SSDTestFixture, WriteTest) {
