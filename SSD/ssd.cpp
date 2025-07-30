@@ -68,6 +68,16 @@ SSD::getData(int lba) const
 	return data[lba];
 }
 
+FileInterface& 
+SSD::getNandFile() {
+	return nandFile;
+}
+
+FileInterface&
+SSD::getOutputFile() {
+	return outputFile;
+}
+
 bool 
 SSD::readNandFile() {
 	bool ret;

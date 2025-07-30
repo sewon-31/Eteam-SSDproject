@@ -7,6 +7,8 @@ public:
 	void run(const string& commandStr);
 	void setParser(SSDCommandParser* parser);
 
+	FileInterface& getNandFile();
+	FileInterface& getOutputFile();
 	bool readNandFile();
 	bool writeNandFile();
 	bool writeOutputFile(const string& str);
@@ -20,10 +22,10 @@ public:
 	vector<string> parsedCommand;
 
 	string data[100];
+
+private:
 	FileInterface outputFile = { "../ssd_output.txt" };
 	FileInterface nandFile = { "../ssd_nand.txt" };
-private:
-
 	SSDCommandParser* parser = nullptr;
 
 };
