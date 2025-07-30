@@ -27,20 +27,8 @@
     <ClCompile Include="test_shell.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="test_script1.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script2.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script2_test.cpp">
-      <Filter>테스트 파일</Filter>
-    </ClCompile>
     <ClCompile Include="shell_write_test.cpp">
       <Filter>테스트 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script3.cpp">
-      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
       <Filter>소스 파일</Filter>
@@ -53,18 +41,6 @@
     </ClCompile>
     <ClCompile Include="shell_write_test.cpp">
       <Filter>테스트 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script1_test.cpp">
-      <Filter>테스트 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script2_test.cpp">
-      <Filter>테스트 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script3_test.cpp">
-      <Filter>테스트 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
-      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
       <Filter>소스 파일</Filter>
@@ -79,6 +55,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="testshell_execute_command_test.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_script.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_scripts_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,16 +68,10 @@
     <ClInclude Include="ssd_interface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="test_script1.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="test_script2.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="test_script3.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="command_parser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="test_script.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
