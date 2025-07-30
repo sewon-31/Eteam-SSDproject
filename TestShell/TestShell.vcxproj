@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="command_parser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_script2.cpp" />
     <ClCompile Include="test_script2_test.cpp">
@@ -136,6 +137,7 @@
     <ClCompile Include="shell_write_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_parser.h" />
     <ClInclude Include="ssd_interface.h" />
     <ClInclude Include="test_script2.h" />
     <ClInclude Include="test_script3.h" />
