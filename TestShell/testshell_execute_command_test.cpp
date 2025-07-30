@@ -9,9 +9,6 @@ using namespace std;
 
 class MockTestShell : public TestShell {
 public:
-	MockTestShell(SSDInterface* ssd) :
-		TestShell{ ssd } {
-	}
 	MOCK_METHOD(void, read, (int lba));
 	MOCK_METHOD(void, write, (int lba, std::string value));
 	MOCK_METHOD(void, fullRead, ());
@@ -24,10 +21,9 @@ class TestShellCommandOperatorFixture : public Test {
 public:
 	void SetUp() override {
 	}
-	NiceMock<MockSSD> mockSSD;
+	MockTestShell app;
 };
 TEST_F(TestShellCommandOperatorFixture, Read) {
-	MockTestShell app(&mockSSD);
 	vector<string> commandVector = { "read", "3" };
 
 	EXPECT_CALL(app, read(_))
@@ -36,7 +32,6 @@ TEST_F(TestShellCommandOperatorFixture, Read) {
 	app.ExecuteCommand(commandVector);
 }
 TEST_F(TestShellCommandOperatorFixture, Write) {
-	MockTestShell app(&mockSSD);
 	vector<string> commandVector = { "write", "3", "0xAAAAAAAA"};
 
 	EXPECT_CALL(app, write(_, _))
@@ -45,7 +40,6 @@ TEST_F(TestShellCommandOperatorFixture, Write) {
 	app.ExecuteCommand(commandVector);
 }
 TEST_F(TestShellCommandOperatorFixture, FullRead) {
-	MockTestShell app(&mockSSD);
 	vector<string> commandVector = { "fullread" };
 
 	EXPECT_CALL(app, fullRead)
@@ -54,7 +48,6 @@ TEST_F(TestShellCommandOperatorFixture, FullRead) {
 	app.ExecuteCommand(commandVector);
 }
 TEST_F(TestShellCommandOperatorFixture, FullWrite) {
-	MockTestShell app(&mockSSD);
 	vector<string> commandVector = { "fullwrite", "0xAAAAAAAA"};
 
 	EXPECT_CALL(app, fullWrite(_))
@@ -63,7 +56,6 @@ TEST_F(TestShellCommandOperatorFixture, FullWrite) {
 	app.ExecuteCommand(commandVector);
 }
 TEST_F(TestShellCommandOperatorFixture, Help) {
-	MockTestShell app(&mockSSD);
 	vector<string> commandVector = { "help" };
 
 	EXPECT_CALL(app, help)
