@@ -8,10 +8,10 @@ class FileInterfaceFixture :public testing::Test {
 public:
 	FileInterface fileInterface;
 
-	std::string expected_str = "12341234";
-	std::string expected_str1 = "22341234";
-	std::string expected_str2 = "32341234";
-	std::string expected_str3 = "42341234";
+	std::string expected_str = "0x12341234";
+	std::string expected_str1 = "0x22341234";
+	std::string expected_str2 = "0x32341234";
+	std::string expected_str3 = "0x42341234";
 	std::string read_str;
 };
 
@@ -62,4 +62,22 @@ TEST_F(FileInterfaceFixture, TC_FILE_REMOVE) {
 	fileInterface.fileOpen("ssd_nand.txt");
 	fileInterface.fileReadOneline(read_str);
 	EXPECT_EQ(read_str, "");
+}
+
+TEST_F(FileInterfaceFixture, TC_FILE_CHECK_EMPTY_FILE) {
+	fileInterface.fileRemove("ssd_nand.txt");
+	EXPECT_EQ(0, fileInterface.checkSize("ssd_nand.txt"));
+}
+
+TEST_F(FileInterfaceFixture, TC_FILE_CHECK_FILESIZE) {
+	fileInterface.fileRemove("ssd_nand.txt");
+	fileInterface.fileOpen("ssd_nand.txt");
+	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
+	fileInterface.fileClose();
+	EXPECT_EQ(12, fileInterface.checkSize("ssd_nand.txt"));
+	fileInterface.fileOpen("ssd_nand.txt");
+	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
+	fileInterface.fileClose();
+	EXPECT_EQ(24, fileInterface.checkSize("ssd_nand.txt"));
+	fileInterface.fileRemove("ssd_nand.txt");
 }

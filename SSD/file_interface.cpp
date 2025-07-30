@@ -38,3 +38,15 @@ bool FileInterface::fileRemove(const std::string& fileName) {
 	}
 	return false;
 };
+int FileInterface::checkSize(const std::string& fileName) {
+	std::ofstream file(fileName, std::ios::app);
+	int position = 0;
+
+	if (file.is_open()) {
+		file.seekp(0, std::ios::end);
+		position = file.tellp();
+		file.close();
+		return position;
+	}
+	return 0;
+};
