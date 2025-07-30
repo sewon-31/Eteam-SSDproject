@@ -32,3 +32,10 @@ TEST_F(WriteTestFixture, TestInvalidSSD) {
 	shell.write(VALID_LBA, value);
 	EXPECT_CALL(ssd, write).Times(0);
 }
+
+TEST_F(WriteTestFixture, TestFullWrite) {
+	TestShell shell{ &ssd };
+	for (int i = 0; i < 100; i++)
+		EXPECT_CALL(ssd, write(i, value)).Times(1);
+	shell.fullWrite(value);
+}

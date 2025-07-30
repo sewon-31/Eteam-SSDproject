@@ -10,6 +10,7 @@ public:
 	void read(int lba);
 	void fullRead();
 	void write(int lba, std::string value);
+	void fullWrite(std::string value);
 private:
 	SSDInterface* ssd;
 	const string SSD_READ_RESULT = "ssd_output.txt";

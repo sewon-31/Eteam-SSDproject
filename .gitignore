@@ -417,4 +417,5 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+*ssd_nand.txt
 *ssd_output.txt
