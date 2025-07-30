@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include "file_interface.h"
 
 using std::string;
 using std::vector;
@@ -21,6 +22,10 @@ read/write ผ๖วเ*/
 private:
     string data[100];
     vector<string> parsedCommand;
+
+    FileInterface nandFile;
+    FileInterface outputFile;
+
     // 0. ssd
     // 1. R/W
     // 2. lba

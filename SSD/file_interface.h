@@ -13,6 +13,6 @@ public:
 	bool fileRemove(const std::string& fileName);
 	int checkSize(const std::string& fileName);
 private:
-	std::fstream ssd_nand_file;
-	unsigned int read_point;
+	std::fstream ssdNandFile;
+	unsigned int readPoint;
 };
