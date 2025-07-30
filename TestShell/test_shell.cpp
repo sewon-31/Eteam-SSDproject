@@ -1,12 +1,6 @@
 ﻿#include "test_shell.h"
-<<<<<<< HEAD
 #include "command_parser.h"
 #include <iostream>
-=======
->>>>>>> b3e8193 ([feature] Add Assertion with exe)
-#include <sstream>
-#include <vector>
-#include <string>
 
 using std::cout;
 
@@ -18,7 +12,6 @@ void TestShell::runShell()
         std::cout << "shell > ";
         std::getline(std::cin, inputLine);
 
-<<<<<<< HEAD
         if (inputLine.empty()) continue;
 
         commandParser.setCommand(inputLine);
@@ -70,60 +63,6 @@ void TestShell::runShell()
         }
         else {
             std::cout << "[Error] Unknown command: " << opCommand << std::endl;
-=======
-        // Skip empty input
-
-        if (inputLine.empty()) continue;
-
-        // Tokenize command
-        std::istringstream ss(inputLine);
-        std::string command;
-        ss >> command;
-
-        if (command == "exit") {
-            break;
-        }
-        else if (command == "help") {
-            help();
-        }
-        else if (command == "write") {
-            int lba;
-            std::string value;
-            ss >> lba >> value;
-            std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
-            // Call write(lba, value);
-        }
-        else if (command == "read") {
-            int lba;
-            ss >> lba;
-            std::cout << "Executing read from LBA " << lba << std::endl;
-            read(lba);
-        }
-        else if (command == "fullwrite") {
-            std::string value;
-            ss >> value;
-            std::cout << "Executing fullwrite with value " << value << std::endl;
-            // Call fullwrite(value);
-        }
-        else if (command == "fullread") {
-            std::cout << "Executing fullread" << std::endl;
-            fullRead();
-        }
-        else if (command == "1_" || command == "1_FullWriteAndReadCompare") {
-            std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-            // Call TestScript1::Run();
-        }
-        else if (command == "2_" || command == "2_PartialLBAWrite") {
-            std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-            // Call TestScript2::Run();
-        }
-        else if (command == "3_" || command == "3_WriteReadAging") {
-            std::cout << "Running script 3: WriteReadAging" << std::endl;
-            // Call TestScript3::writeReadAging();
-        }
-        else {
-            std::cout << "[Error] Unknown command: " << command << std::endl;
->>>>>>> b3e8193 ([feature] Add Assertion with exe)
         }
     }
 }
