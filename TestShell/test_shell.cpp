@@ -70,11 +70,7 @@ void TestShell::runShell()
 void TestShell::read(int lba) {
     std::string content;
     try {
-        content = ssd->read(lba);
-        std::ostringstream oss;
-        oss << std::setw(2) << std::setfill('0') << lba;
-
-        cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
+        sseReadAndPrint(lba);
     }
     catch(std::exception e){
         cout << string(e.what()) << std::endl;
@@ -83,20 +79,25 @@ void TestShell::read(int lba) {
 
 void TestShell::fullRead()
 {
-    std::string content;
     try {
 	    for (int addr = 0; addr < MAX_LBA; addr++) {       
-            content = ssd->read(addr);
-            std::ostringstream oss;
-            oss << std::setw(2) << std::setfill('0') << addr;
-
-            cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;       
+            sseReadAndPrint(addr);
 	    }
     }
     catch (std::exception e) {
         cout << string(e.what()) << std::endl;
     }
 }
+
+void TestShell::sseReadAndPrint(int addr)
+{
+    std::string content = ssd->read(addr);
+    std::ostringstream oss;
+    oss << std::setw(2) << std::setfill('0') << addr;
+
+    cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
+}
+
 
 void TestShell::write(int lba, std::string value) {
 	if (ssd == nullptr) return;
