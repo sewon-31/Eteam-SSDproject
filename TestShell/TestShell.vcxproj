@@ -123,6 +123,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="command_parser.cpp" />
+    <ClCompile Include="command_parser_test.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_script1.cpp" />
     <ClCompile Include="test_script1_test.cpp">
@@ -148,8 +150,8 @@
     <ClCompile Include="shell_help_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_parser.h" />
     <ClInclude Include="ssd_interface.h" />
-
     <ClInclude Include="test_script1.h" />
     <ClInclude Include="test_script2.h" />
     <ClInclude Include="test_script3.h" />
