@@ -1,3 +1,6 @@
+#include <sstream>
+#include <vector>
+#include <string>
 #include "ssd_interface.h"
 #include "command_parser.h"
 
@@ -11,6 +14,7 @@ public:
 	void runShell();
 	void read(int lba);
 	void fullRead();
+	void ssdReadAndPrint(int addr);
 	void write(int lba, std::string value);
 	void fullWrite(std::string value);
 	void help();

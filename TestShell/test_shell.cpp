@@ -1,9 +1,6 @@
 ﻿#include "test_shell.h"
 #include "command_parser.h"
 #include <iostream>
-#include <sstream>
-#include <vector>
-#include <string>
 
 using std::cout;
 
@@ -71,20 +68,36 @@ void TestShell::runShell()
 }
 
 void TestShell::read(int lba) {
-	std::string content = ssd->read(lba);
-
-	std::ostringstream oss;
-	oss << std::setw(2) << std::setfill('0') << lba;
-
-	cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
+    std::string content;
+    try {
+        ssdReadAndPrint(lba);
+    }
+    catch(std::exception e){
+        cout << string(e.what()) << std::endl;
+    }
 }
 
 void TestShell::fullRead()
 {
-	for (int addr = 0; addr < MAX_LBA; addr++) {
-		read(addr);
-	}
+    try {
+	    for (int addr = 0; addr < MAX_LBA; addr++) {       
+            ssdReadAndPrint(addr);
+	    }
+    }
+    catch (std::exception e) {
+        cout << string(e.what()) << std::endl;
+    }
 }
+
+void TestShell::ssdReadAndPrint(int addr)
+{
+    std::string content = ssd->read(addr);
+    std::ostringstream oss;
+    oss << std::setw(2) << std::setfill('0') << addr;
+
+    cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
+}
+
 
 void TestShell::write(int lba, std::string value) {
 	if (ssd == nullptr) return;

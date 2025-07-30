@@ -12,8 +12,14 @@ int main() {
 #else
 
 int main() {
+
 	TestShell ts;
+
+	SSDDriver ssd;
+	ts.setSSD(&ssd);
+
 	ts.runShell();
+
 	return 0;
 }
 
