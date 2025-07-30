@@ -42,9 +42,6 @@
     <ClCompile Include="shell_write_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
-       <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
       <Filter>소스 파일</Filter>
     </ClCompile>

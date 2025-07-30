@@ -48,3 +48,51 @@ void ScriptsFullWriteAndReadCompare::run(void) {
 	}
 	std::cout << "PASS";
 }
+
+void ScriptsPartialLBAWrite::run()
+{
+	for (int i = 0; i < 30; i++) {
+		string data = intToHexString(generateRandomIntValue());
+
+		ssd->write(4, data);
+		ssd->write(0, data);
+		ssd->write(3, data);
+		ssd->write(1, data);
+		ssd->write(2, data);
+
+		for (int j = 0; j < 4; j++) {
+			if (!readCompare(j, data)) {
+				std::cout << "FAIL";
+				return;
+			}
+		}
+	}
+
+	std::cout << "PASS";
+}
+
+void ScriptsWriteReadAging::run() {
+	for (int i = 0; i < 200; ++i) {
+#if _DEBUG
+		std::string val0 = "0x00001111";
+		std::string val99 = "0x00009999";
+#else
+		std::string val0 = intToHexString(generateRandomIntValue());
+		std::string val99 = intToHexString(generateRandomIntValue());
+#endif
+		ssd->write(0, val0);
+		ssd->write(99, val99);
+
+		if (!readCompare(0, val0)) {
+			std::cout << "FAIL";
+			return;
+		}
+
+		if (!readCompare(99, val99)) {
+			std::cout << "FAIL";
+			return;
+		}
+	}
+
+	std::cout << "PASS";
+}
