@@ -7,10 +7,12 @@ void TestShell::read(int lba) {
 
 	std::ifstream file(SSD_READ_RESULT);
 	std::string content;
-
 	std::getline(file, content);
 
-	cout << content;
+	std::ostringstream oss;
+	oss << std::setw(2) << std::setfill('0') << lba;
+
+	cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
 	file.close();
 }
 
