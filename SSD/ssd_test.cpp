@@ -47,6 +47,7 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 	EXPECT_EQ("0", app.parsedCommand.at(1));
 }
 
+<<<<<<< HEAD
 TEST_F(SSDTestFixture, ReadTest) {
 	processMockParserFunctions();
 
@@ -65,6 +66,8 @@ TEST_F(SSDTestFixture, ReadTest) {
 	EXPECT_EQ(expected, app.getData(0));
 }
 
+=======
+>>>>>>> 22cbd59 ([Feature] test for clearData)
 TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	processMockParserFunctions();
 
@@ -77,15 +80,28 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	app.run("R 0 0x00000000");
 }
 
-TEST_F(SSDTestFixture, WriteText) {
+TEST_F(SSDTestFixture, ReadTest) {
+	processMockParserFunctions();
+
+	EXPECT_CALL(mockParser, getCommandVector())
+		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
+
+	app.run("R 0");
+
+	EXPECT_EQ("0x00000000", app.getData(0));
+}
+
+TEST_F(SSDTestFixture, WriteTest) {
 	processMockParserFunctions();
 
 	EXPECT_CALL(mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
 
 	app.run("W 0 0x11112222");
-
 	EXPECT_EQ("0x11112222", app.getData(0));
+
+	app.clearData();
+	EXPECT_EQ("0x00000000", app.getData(0));
 }
 
 TEST_F(SSDTestFixture, TC_FULL_WRITE) {
