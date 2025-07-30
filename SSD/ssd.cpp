@@ -78,7 +78,7 @@ SSD::readNandFile() {
 
 	for (int i = 0; i < 100; i++)
 	{
-		ret = nandFile.fileReadOneline(data_temp[i]);
+		ret = nandFile.fileReadOneline(data[i]);
 
 		if (!ret)  break;
 	}
