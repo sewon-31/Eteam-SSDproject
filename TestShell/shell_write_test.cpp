@@ -7,6 +7,7 @@ public:
 	const int UNDER_LBA = -1;
 	MockSSD mockSSD;
 	SSDDriver realSSD;
+	MockSSDDriver mockSSDDriver;
 	std::string value = "0x12345678";
 	std::ostringstream oss;
 	std::streambuf* oldCoutStreamBuf;
@@ -69,4 +70,30 @@ TEST_F(WriteTestFixture, TestRealSSDWriteFail) {
 	TestShell shell{ &realSSD };
 	shell.write(VALID_LBA, value);
 	EXPECT_EQ(WRITE_FAIL, oss.str());
+}
+
+TEST_F(WriteTestFixture, TestMockSSDDriverWrite) {
+	EXPECT_CALL(mockSSDDriver, runExe)
+		.WillRepeatedly(testing::Return(true));
+	TestShell shell{ &mockSSDDriver };
+	shell.write(VALID_LBA, value);
+	EXPECT_EQ(WRITE_DONE, oss.str());
+}
+
+TEST_F(WriteTestFixture, TestRealSSDWrite) {
+	if (!isFileExists(SSD_EXE_FILE)) {
+		GTEST_SKIP() << SSD_EXE_FILE << " not found, skipping test.";
+	}
+	TestShell shell{ &realSSD };
+	shell.write(VALID_LBA, value);
+	EXPECT_EQ(WRITE_DONE, oss.str());
+	std::ifstream nand("ssd_nand.txt");
+	ASSERT_TRUE(nand.is_open());
+	std::string line;
+	std::vector<string> outputData;
+	while (std::getline(nand, line)) {
+		outputData.push_back(line);
+	}
+	ASSERT_EQ(outputData.size(), 100);
+	EXPECT_EQ(outputData.at(VALID_LBA), value);
 }
