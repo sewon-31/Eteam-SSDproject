@@ -29,7 +29,7 @@ public:
 
 	}
 	string read(int lba) override {
-		string command = ".\program.exe ssd R " + lba;
+		string command = ".\SSD.exe ssd R " + lba;
 		if (runExe(command) == false) { throw std::runtime_error("There is no SSD.exe"); }
 
 		string content;
