@@ -16,9 +16,9 @@ public:
 	void ExecuteCommand(std::vector<string> commandVector);
 	virtual void read(int lba);
 	void fullRead();
-	void ssdReadAndPrint(int addr);
 	void write(int lba, std::string value);
-	void fullWrite(std::string value);
+	void ssdReadAndPrint(int addr);
+	virtual void write(int lba, std::string value);	void fullWrite(std::string value);
 	void help();
 private:
 	SSDInterface* ssd;

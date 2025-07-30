@@ -13,6 +13,7 @@ public:
 		TestShell{ ssd } {
 	}
 	MOCK_METHOD(void, read, (int lba));
+	MOCK_METHOD(void, write, (int lba, std::string value));
 private:
 };
 
@@ -24,10 +25,17 @@ public:
 };
 TEST_F(TestShellCommandOperatorFixture, Read) {
 	MockTestShell app(&mockSSD);
-	vector<string> commandVector = { "read", "3" };
 
-	EXPECT_CALL(app, read(3))
+	EXPECT_CALL(app, read(_))
 		.Times(1);
 
-	app.ExecuteCommand(commandVector);
+	app.ExecuteCommand("read");
+}
+TEST_F(TestShellCommandOperatorFixture, Write) {
+	MockTestShell app(&mockSSD);
+
+	EXPECT_CALL(app, write(_, _))
+		.Times(1);
+
+	app.ExecuteCommand("write");
 }

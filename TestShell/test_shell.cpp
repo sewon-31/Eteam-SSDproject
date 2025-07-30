@@ -3,14 +3,14 @@
 #include <iostream>
 
 using std::cout;
-void TestShell::ExecuteCommand(std::vector<string> commandVector)
+void TestShell::ExecuteCommand(string command_type)
 {
-	string command_type = commandVector[0];
-
-	if (command_type == "read")
-	{
-		int lba = stoi(commandVector[1]);
+	if (command_type == "read")	{
+		int lba = 0;
 		read(lba);
+	}
+	else if (command_type == "write") {
+		write(0, "0xAAAAAAAA");
 	}
 }
 
