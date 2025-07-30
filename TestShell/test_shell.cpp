@@ -16,8 +16,8 @@ void TestShell::read(int lba) {
 
 void TestShell::fullRead()
 {
-	for (int i = 0; i < 100; i++) {
-		read(i);
+	for (int addr = 0; addr < MAX_LBA; addr++) {
+		read(addr);
 	}
 }
 

@@ -2,23 +2,28 @@
 
 using namespace testing;
 
-TEST(TestShellRead, ReadPass) {
-	string expect = "0xAAAAAAAA";
-
-	// unit test about file read
-	std::string filePath = "ssd_output.txt";
-	std::ofstream outfile(filePath);
-	outfile << expect << std::endl;
-	outfile.close();
-
+class TestShellRead : public Test {
+public:
+	TestShell shell;
 	MockSSD ssd;
+	string EXPECT_AA = "0xAAAAAAAA";
+
+	void ssdReadFileSetUp() {
+		std::string filePath = "ssd_output.txt";
+		std::ofstream outfile(filePath);
+		outfile << EXPECT_AA << std::endl;
+		outfile.close();
+	}
+};
+
+TEST_F(TestShellRead, ReadPass) {
+	ssdReadFileSetUp();
+	
 	EXPECT_CALL(ssd, read(0))
 		.Times(1);
 
-	TestShell shell;
 	shell.setSSD(&ssd);
 
-	// cout compare
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
@@ -27,26 +32,17 @@ TEST(TestShellRead, ReadPass) {
 	std::cout.rdbuf(oldCoutStreamBuf); //º¹¿ø
 
 
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(EXPECT_AA, oss.str());
 }
 
-TEST(TestShellRead, FullReadPass) {
-	string writeData = "0xAAAAAAAA";
+TEST_F(TestShellRead, FullReadPass) {
+	ssdReadFileSetUp();
 
-	// unit test about file read
-	std::string filePath = "ssd_output.txt";
-	std::ofstream outfile(filePath);
-	outfile << writeData << std::endl;
-	outfile.close();
-
-	MockSSD ssd;
 	EXPECT_CALL(ssd, read)
 		.Times(100);
 
-	TestShell shell;
 	shell.setSSD(&ssd);
 
-	// cout compare
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
@@ -56,7 +52,7 @@ TEST(TestShellRead, FullReadPass) {
 
 	string expect = "";
 	for (int i = 0; i < 100; i++) {
-		expect += writeData;
+		expect += EXPECT_AA;
 	}
 
 	EXPECT_EQ(expect, oss.str());
