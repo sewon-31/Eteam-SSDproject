@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
-#include "test_shell.h"
+#include "mock_ssd.h"
+
 class WriteTestFixture : public testing::Test {
 public:
 	const int VALID_LBA = 10;

@@ -418,5 +418,5 @@ FodyWeavers.xsd
 *.msp
 
 *ssd_*.txt
-*ssd_output.txt
+coverage*
 

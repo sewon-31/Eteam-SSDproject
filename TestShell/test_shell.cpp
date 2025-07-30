@@ -82,12 +82,12 @@ void TestShell::runShell()
 }
 
 void TestShell::read(int lba) {
-    std::string content;
+
     try {
         ssdReadAndPrint(lba);
     }
     catch(std::exception e){
-        cout << string(e.what()) << std::endl;
+        cout << string(e.what());
     }
 }
 
@@ -99,7 +99,7 @@ void TestShell::fullRead()
 	    }
     }
     catch (std::exception e) {
-        cout << string(e.what()) << std::endl;
+        cout << string(e.what());
     }
 }
 

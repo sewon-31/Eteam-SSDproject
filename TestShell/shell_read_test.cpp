@@ -1,4 +1,4 @@
-#include "test_shell.h"
+#include "mock_ssd.h"
 
 using namespace testing;
 
@@ -147,4 +147,39 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	}
 
 	EXPECT_EQ(expect, oss.str());
+}
+
+TEST_F(TestShellRead, ReadFailWithMockRunExe) {
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
+		.WillRepeatedly(Return(false));
+
+	shell.setSSD(&SSDwithMockRunExe);
+
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	shell.read(0);
+	std::cout.rdbuf(oldCoutStreamBuf);
+
+	EXPECT_EQ("There is no SSD.exe\n", oss.str());
+}
+
+TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
+	ssdReadFileSetUp();
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
+		.WillRepeatedly(Return(false));
+
+	shell.setSSD(&SSDwithMockRunExe);
+
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	shell.fullRead();
+	std::cout.rdbuf(oldCoutStreamBuf);
+
+	EXPECT_EQ("There is no SSD.exe\n", oss.str());
 }
