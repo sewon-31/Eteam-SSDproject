@@ -5,7 +5,8 @@ using namespace testing;
 class TestShellRead : public Test {
 public:
 	TestShell shell;
-	MockSSD ssd;
+	MockSSD mockSSD;
+	MockSSDDriver SSDwithMockRunExe;
 
 	const string HEADER = "[Read] LBA ";
 	const string MIDFIX = " : ";
@@ -20,14 +21,14 @@ public:
 	}
 };
 
-TEST_F(TestShellRead, ReadPass) {
+TEST_F(TestShellRead, ReadPassWithMockSSD) {
 	ssdReadFileSetUp();
 
-	EXPECT_CALL(ssd, read(0))
+	EXPECT_CALL(mockSSD, read(0))
 		.Times(1)
 		.WillRepeatedly(Return(EXPECT_AA));
 
-	shell.setSSD(&ssd);
+	shell.setSSD(&mockSSD);
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -40,14 +41,14 @@ TEST_F(TestShellRead, ReadPass) {
 	EXPECT_EQ(expect, oss.str());
 }
 
-TEST_F(TestShellRead, FullReadPass) {
+TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 	ssdReadFileSetUp();
 
-	EXPECT_CALL(ssd, read)
+	EXPECT_CALL(mockSSD, read)
 		.Times(100)
 		.WillRepeatedly(Return(EXPECT_AA));
 
-	shell.setSSD(&ssd);
+	shell.setSSD(&mockSSD);
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -71,28 +72,79 @@ TEST_F(TestShellRead, FullReadPass) {
 	EXPECT_EQ(expect, oss.str());
 }
 
-TEST(SSDDriverRead, ReadPass) {
-	MockSSDDriver mockSSD;
 
-	EXPECT_CALL(mockSSD, runExe)
+TEST(SSDDriverRead, ReadPassWithMockRunExe) {
+	MockSSDDriver SSDwithMockRunExe;
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	EXPECT_EQ("0xAAAAAAAA", mockSSD.read(0));
+	EXPECT_EQ("0xAAAAAAAA", SSDwithMockRunExe.read(0));
 }
 
-TEST(SSDDriverRead, ReadFail) {
-	MockSSDDriver mockSSD;
+TEST(SSDDriverRead, ReadFailWithMockRunExe) {
+	MockSSDDriver SSDwithMockRunExe;
 
-	EXPECT_CALL(mockSSD, runExe)
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(false));
 
 	try {
-		mockSSD.read(0);
+		SSDwithMockRunExe.read(0);
 		FAIL();
 	}
 	catch (std::runtime_error e) {
 		EXPECT_EQ(std::string(e.what()), "There is no SSD.exe");
 	}
+}
+
+TEST_F(TestShellRead, ReadPassWithMockRunExe) {
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
+		.Times(1)
+		.WillRepeatedly(Return(true));
+
+	shell.setSSD(&SSDwithMockRunExe);
+
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	shell.read(0);
+	std::cout.rdbuf(oldCoutStreamBuf);
+
+	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
+	EXPECT_EQ(expect, oss.str());
+}
+
+TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
+	ssdReadFileSetUp();
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
+		.Times(100)
+		.WillRepeatedly(Return(true));
+
+	shell.setSSD(&SSDwithMockRunExe);
+
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	shell.fullRead();
+	std::cout.rdbuf(oldCoutStreamBuf);
+
+	string expect = "";
+	for (int i = 0; i < 100; i++) {
+		std::ostringstream oss;
+		oss << std::setw(2) << std::setfill('0') << i;
+
+		expect += HEADER;
+		expect += oss.str();
+		expect += MIDFIX;
+		expect += EXPECT_AA;
+		expect += FOOTER;
+	}
+
+	EXPECT_EQ(expect, oss.str());
 }
