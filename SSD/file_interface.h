@@ -5,14 +5,16 @@
 
 class FileInterface {
 public:
-	bool fileOpen(const std::string& fileName);
+	FileInterface(const std::string& path) { fileName = path; }
+	bool fileOpen();
 	bool fileReadOneline(std::string& str);
 	bool setReadPoint(unsigned point);
 	bool fileWriteOneline(const std::string str);
 	void fileClose();
-	bool fileRemove(const std::string& fileName);
-	int checkSize(const std::string& fileName);
+	bool fileRemove();
+	int checkSize();
 private:
 	std::fstream ssdNandFile;
 	unsigned int readPoint;
+	std::string fileName;
 };

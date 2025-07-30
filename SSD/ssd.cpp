@@ -1,7 +1,8 @@
 #include "ssd.h"
 
 void SSD::readSSDfile(FileInterface &fileInterface) {
-    //fileInterface.checkSize()
+    //if (fileInterface.checkSize() == 0)
+
 }
 string SSD::runReadCommand(FileInterface& fileInterface, int lba) {
     return "";

@@ -1,6 +1,6 @@
 #include "file_interface.h"
 
-bool FileInterface::fileOpen(const std::string& fileName) {
+bool FileInterface::fileOpen() {
 	ssdNandFile.open(fileName, std::ios::in | std::ios::out | std::ios::app);
 	readPoint = 0;
 	return ssdNandFile.is_open();
@@ -30,7 +30,7 @@ bool FileInterface::fileWriteOneline(const std::string str) {
 void FileInterface::fileClose() {
 	ssdNandFile.close();
 }
-bool FileInterface::fileRemove(const std::string& fileName) {
+bool FileInterface::fileRemove() {
 	std::ofstream file(fileName, std::ios::trunc);
 	if (file.is_open()) {
 		file.close();
@@ -38,7 +38,7 @@ bool FileInterface::fileRemove(const std::string& fileName) {
 	}
 	return false;
 };
-int FileInterface::checkSize(const std::string& fileName) {
+int FileInterface::checkSize() {
 	std::ofstream file(fileName, std::ios::app);
 	int position = 0;
 
