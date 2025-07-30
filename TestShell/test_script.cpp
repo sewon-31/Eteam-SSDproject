@@ -40,7 +40,7 @@ void ScriptsFullWriteAndReadCompare::run(void) {
 		for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
 			int lba = startLba + offset;
 
-			if (readCompare(lba, data)) {
+			if (!readCompare(lba, data)) {
 				std::cout << "FAIL";
 				return;
 			}

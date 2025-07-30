@@ -144,11 +144,15 @@
     </ClCompile>
     <ClCompile Include="test_script3.cpp" />
     <ClCompile Include="test_script3_test.cpp" />
-    <ClCompile Include="test_scripts_test.cpp" />
+    <ClCompile Include="test_scripts_test.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">  %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="test_shell.cpp" />
     <ClCompile Include="test_shell.h" />
     <ClCompile Include="shell_read_test.cpp" />
-    <ClCompile Include="shell_write_test.cpp" />
+    <ClCompile Include="shell_write_test.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">  %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="shell_help_test.cpp" />
   </ItemGroup>
   <ItemGroup>
