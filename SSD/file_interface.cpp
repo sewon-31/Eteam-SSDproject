@@ -32,7 +32,7 @@ bool FileInterface::fileReadOneline(std::string& str) {
 	ssdNandFile.clear();
 	ssdNandFile.seekg(readPoint, std::ios::beg);
 	getline(ssdNandFile, str);
-	readPoint = ssdNandFile.tellg();
+	readPoint = static_cast<unsigned>(ssdNandFile.tellg());
 	return ssdNandFile.good();
 }
 bool FileInterface::setReadPoint(unsigned point) {
