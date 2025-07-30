@@ -20,10 +20,10 @@ public:
 class SSDDriver : public SSDInterface {
 public:
 	virtual bool runExe(const string& command) {
-		int ret = system(command.c_str());
+		int isFail = system(command.c_str());
 
-		if (ret == 0) return true;
-		return false;
+		if (isFail) return false;
+		return true;
 	}
 	void write(int lba, string value) override {
 
