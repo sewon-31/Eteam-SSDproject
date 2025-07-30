@@ -1,3 +1,6 @@
+#include <sstream>
+#include <vector>
+#include <string>
 #include "ssd_interface.h"
 #include "command_parser.h"
 
