@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "test_script.h"
 #include <string>
+#include "mock_ssd.h"
 
 using namespace testing;
 using namespace std;

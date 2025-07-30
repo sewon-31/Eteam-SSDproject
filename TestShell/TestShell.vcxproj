@@ -126,6 +126,7 @@
     <ClCompile Include="command_parser.cpp" />
     <ClCompile Include="command_parser_test.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ssd_interface.cpp" />
     <ClCompile Include="testshell_execute_command_test.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> %(AdditionalOptions)</AdditionalOptions>
@@ -146,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="command_parser.h" />
+    <ClInclude Include="mock_ssd.h" />
     <ClInclude Include="ssd_interface.h" />
     <ClInclude Include="test_script.h" />
   </ItemGroup>
