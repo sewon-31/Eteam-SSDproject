@@ -119,6 +119,7 @@ void TestShell::write(int lba, std::string value) {
 }
 
 void TestShell::fullWrite(std::string value) {
+    if (ssd == nullptr) return;
 	try {
 		for (int i = 0; i < 100; i++)
 			ssd->write(i, value);
