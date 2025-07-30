@@ -44,6 +44,7 @@ bool FileInterface::setReadPoint(unsigned point) {
 bool FileInterface::fileWriteOneline(const std::string str) {
 	if (!ssdNandFile.is_open()) return false;
 
+	ssdNandFile.seekg(0, std::ios::end);
 	ssdNandFile << str << '\n';
 
 	if (!ssdNandFile.good()) {

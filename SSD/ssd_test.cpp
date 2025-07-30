@@ -58,6 +58,7 @@ TEST_F(SSDTestFixture, ReadTest) {
 	FileInterface nandFile = { "../ssd_nand.txt" };
 	string expected;
 	nandFile.fileOpen();
+	nandFile.fileWriteOneline("0x00000000");
 	nandFile.fileReadOneline(expected);
 	nandFile.fileClose();
 
