@@ -29,8 +29,8 @@ SSD::run(const string& commandStr)
 	//readNandFile();
 
 	// run command
-	string operation = parsedCommand.at(0);
-	int lba = std::stoi(parsedCommand.at(1));
+	string operation = parsedCommand.at(SSDCommandParser::Index::OP);
+	int lba = std::stoi(parsedCommand.at(SSDCommandParser::Index::LBA));
 
 	if (operation == "R") {
 		//std::cout << "Read" << lba << std::endl;
@@ -39,7 +39,7 @@ SSD::run(const string& commandStr)
 	}
 	else if (operation == "W") {
 		//std::cout << "Write" << lba << std::endl;
-		runWriteCommand(lba, parsedCommand.at(2));
+		runWriteCommand(lba, parsedCommand.at(SSDCommandParser::Index::VAL));
 		//writeNandFile();
 	}
 }

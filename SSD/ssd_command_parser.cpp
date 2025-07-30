@@ -36,7 +36,8 @@ SSDCommandParser::isValidCommand() const
 {
 	try {
 		// check parameter count
-		if (commandVector.size() < 2 || commandVector.size() > 3) {
+		if (commandVector.size() < MAX_ARG_LENGTH - 1
+			|| commandVector.size() > MAX_ARG_LENGTH) {
 			return false;
 		}
 
@@ -44,22 +45,22 @@ SSDCommandParser::isValidCommand() const
 		string CMD_WRITE = "W";
 
 		// check operation command
-		string opCommand = commandVector.at(0);
+		string opCommand = commandVector.at(OP);
 		if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
 			return false;
 		}
 
 		// check parameter count for each operation case
-		if (opCommand == CMD_READ && commandVector.size() != 2) {
+		if (opCommand == CMD_READ && commandVector.size() != MAX_ARG_LENGTH - 1) {
 			return false;
 		}
 
-		if (opCommand == CMD_WRITE && commandVector.size() != 3) {
+		if (opCommand == CMD_WRITE && commandVector.size() != MAX_ARG_LENGTH) {
 			return false;
 		}
 
 		// check lba range
-		string lbaStr = commandVector.at(1);
+		string lbaStr = commandVector.at(LBA);
 		int lba = std::stoi(lbaStr);
 		if (lba < 0 || lba > 99) {
 			return false;
@@ -67,7 +68,7 @@ SSDCommandParser::isValidCommand() const
 
 		// check value
 		if (opCommand == CMD_WRITE) {
-			if (isValidValue(commandVector.at(2)) == false) {
+			if (isValidValue(commandVector.at(VAL)) == false) {
 				return false;
 			}
 		}

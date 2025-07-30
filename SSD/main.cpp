@@ -14,7 +14,6 @@ int main(int argc, char* argv[])
 	return RUN_ALL_TESTS();
 #else
     std::ostringstream oss;
-
     for (int i = 1; i < argc; ++i) {
         oss << argv[i];
         if (i != argc - 1) oss << " ";

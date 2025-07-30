@@ -9,6 +9,13 @@ using std::vector;
 class SSDCommandParser
 {
 public:
+	enum Index {
+		OP = 0,
+		LBA,
+		VAL,
+		MAX_ARG_LENGTH	// 3
+	};
+
 	virtual void setCommand(const string& command);
 	virtual bool isValidCommand() const;
 	virtual vector<string> getCommandVector() const;
