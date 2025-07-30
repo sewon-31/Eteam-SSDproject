@@ -16,7 +16,7 @@ public:
 		std::string filePath = "ssd_output.txt";
 		std::ofstream outfile(filePath);
 		outfile << EXPECT_AA << std::endl;
-		outfile.close();
+		outfile.close();		
 	}
 };
 
@@ -24,7 +24,8 @@ TEST_F(TestShellRead, ReadPass) {
 	ssdReadFileSetUp();
 	
 	EXPECT_CALL(ssd, read(0))
-		.Times(1);
+		.Times(1)
+		.WillRepeatedly(Return(EXPECT_AA));
 
 	shell.setSSD(&ssd);
 
@@ -43,7 +44,8 @@ TEST_F(TestShellRead, FullReadPass) {
 	ssdReadFileSetUp();
 
 	EXPECT_CALL(ssd, read)
-		.Times(100);
+		.Times(100)
+		.WillRepeatedly(Return(EXPECT_AA));
 
 	shell.setSSD(&ssd);
 

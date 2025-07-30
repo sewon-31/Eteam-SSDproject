@@ -13,7 +13,6 @@ public:
 	void fullWrite(std::string value);
 private:
 	SSDInterface* ssd;
-	const string SSD_READ_RESULT = "ssd_output.txt";
 	const int MAX_LBA = 100;
 	const string READ_HEADER = "[Read] LBA ";
 	const string READ_MIDFIX = " : ";
