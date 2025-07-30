@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include "gmock/gmock.h"
 
 using std::string;
