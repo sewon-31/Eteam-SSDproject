@@ -11,6 +11,20 @@ public:
 	virtual string read(int lba) = 0;
 };
 
+class SSDExecutionException : public std::exception {
+public:
+	explicit SSDExecutionException(const std::string& msg)
+		: message_(msg) {
+	}
+
+	const char* what() const noexcept override {
+		return message_.c_str();
+	}
+
+private:
+	std::string message_;
+};
+
 class MockSSD : public SSDInterface {
 public:
 	MOCK_METHOD(void, write, (int lba, string value), (override));
@@ -26,10 +40,13 @@ public:
 		return true;
 	}
 	void write(int lba, string value) override {
-
+		string ssdCmd = ssdCmd + std::to_string(lba) + " " + value;
+		if (system(ssdCmd.c_str()) != 0) {
+			throw SSDExecutionException("Execution failed: " + ssdCmd);
+		}
 	}
 	string read(int lba) override {
-		string command = "\"ssd R " + std::to_string(lba) + " >nul 2>&1\"";
+		string command = "\"SSD.exe >nul 2>&1\"";
 		if (runExe(command) == false) { throw std::runtime_error("There is no SSD.exe\n"); }
 
 		string content;
@@ -41,6 +58,7 @@ public:
 	}
 private:
 	const string SSD_READ_RESULT = "ssd_output.txt";
+	const string ssdCmd = "\"SSD.exe >nul 2>&1\"";
 };
 
 class MockSSDDriver : public SSDDriver {
