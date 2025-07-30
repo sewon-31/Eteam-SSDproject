@@ -33,20 +33,10 @@ class ScriptsPartialLBAWrite : public ScriptsCommand {
 public:
 	ScriptsPartialLBAWrite(SSDInterface* device) : ScriptsCommand(device) {}
 	void run() override;
-
-private:
-	const static int MAX_LBA = 100;
-	const static int OPERATE_COUNT_PER_LOOP = 5;
-	const static int LOOP_COUNT = MAX_LBA / OPERATE_COUNT_PER_LOOP;
 };
 
 class ScriptsWriteReadAging : public ScriptsCommand {
 public:
 	ScriptsWriteReadAging(SSDInterface* device) : ScriptsCommand(device) {}
 	void run() override;
-
-private:
-	const static int MAX_LBA = 100;
-	const static int OPERATE_COUNT_PER_LOOP = 5;
-	const static int LOOP_COUNT = MAX_LBA / OPERATE_COUNT_PER_LOOP;
 };

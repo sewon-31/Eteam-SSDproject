@@ -75,3 +75,32 @@ TEST_F(TestScriptsFixture, TestScript2) {
 	std::cout.rdbuf(oldCoutStreamBuf);
 	EXPECT_EQ("PASS", oss.str());
 }
+
+TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
+	makeTests("WriteReadAging");
+
+	// For check "PASS" output
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	std::string val0 = "0x00001111";
+	std::string val99 = "0x00009999";
+
+	EXPECT_CALL(mockSSD, write(0, val0))
+		.Times(200);
+	EXPECT_CALL(mockSSD, write(99, val99))
+		.Times(200);
+	EXPECT_CALL(mockSSD, read(0))
+		.Times(200)
+		.WillRepeatedly(Return(val0));
+	EXPECT_CALL(mockSSD, read(99))
+		.Times(200)
+		.WillRepeatedly(Return(val99));
+
+	// Act
+	script->run();
+
+	std::cout.rdbuf(oldCoutStreamBuf);
+	EXPECT_EQ("PASS", oss.str());
+}

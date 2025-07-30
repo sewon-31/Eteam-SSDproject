@@ -1,8 +1,8 @@
 #include "test_shell.h"
-#include "test_script2.h"
-using namespace testing;
+
 
 #if _DEBUG
+using namespace testing;
 
 int main() {
 	InitGoogleMock();
