@@ -2,6 +2,12 @@
 
 using std::cout;
 
+void TestShell::runShell()
+{
+	std::string prompt = "Shell > ";
+
+}
+
 void TestShell::read(int lba) {
 	cout << ssd->read(lba);
 }

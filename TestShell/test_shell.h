@@ -7,6 +7,7 @@ public:
 	void setSSD(SSDInterface* ssd) {
 		this->ssd = ssd;
 	}
+	void runShell();
 	void read(int lba);
 	void write(int lba, std::string value);
 private:
