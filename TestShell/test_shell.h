@@ -1,4 +1,5 @@
 #include "ssd_interface.h"
+#include "command_parser.h"
 
 class TestShell {
 public:
@@ -7,6 +8,7 @@ public:
 	void setSSD(SSDInterface* ssd) {
 		this->ssd = ssd;
 	}
+	void runShell();
 	void read(int lba);
 	void fullRead();
 	void write(int lba, std::string value);
@@ -14,6 +16,7 @@ public:
 	void help();
 private:
 	SSDInterface* ssd;
+	CommandParser commandParser;
 	const int MAX_LBA = 100;
 	const string READ_HEADER = "[Read] LBA ";
 	const string READ_MIDFIX = " : ";
