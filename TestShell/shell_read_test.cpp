@@ -29,3 +29,35 @@ TEST(TestShellRead, ReadPass) {
 
 	EXPECT_EQ(expect, oss.str());
 }
+
+TEST(TestShellRead, FullReadPass) {
+	string writeData = "0xAAAAAAAA";
+
+	// unit test about file read
+	std::string filePath = "ssd_output.txt";
+	std::ofstream outfile(filePath);
+	outfile << writeData << std::endl;
+	outfile.close();
+
+	MockSSD ssd;
+	EXPECT_CALL(ssd, read)
+		.Times(100);
+
+	TestShell shell;
+	shell.setSSD(&ssd);
+
+	// cout compare
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	shell.fullRead();
+	std::cout.rdbuf(oldCoutStreamBuf); //º¹¿ø
+
+	string expect = "";
+	for (int i = 0; i < 100; i++) {
+		expect += writeData;
+	}
+
+	EXPECT_EQ(expect, oss.str());
+}
