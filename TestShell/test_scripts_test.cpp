@@ -8,9 +8,9 @@ using namespace std;
 class TestScriptsFixture : public Test {
 public:
 	void SetUp() override {
-		script = new ScriptsFullWriteAndReadCompare(mockSSD);
+		script = new ScriptsFullWriteAndReadCompare(&mockSSD);
 	}
-	NiceMock<MockSSD> *mockSSD;
+	NiceMock<MockSSD> mockSSD;
 	string invalidData = "0xFFFFFFFF";
 	string testData = "0x00012345";
 
@@ -22,11 +22,11 @@ TEST_F(TestScriptsFixture, Success) {
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	EXPECT_CALL((*mockSSD), write(_, _))
+	EXPECT_CALL(mockSSD, write(_, _))
 		.Times(100);
-	EXPECT_CALL((*mockSSD), read(_))
+	EXPECT_CALL(mockSSD, read(_))
 		.Times(100)
-		.WillOnce(Return(testData));
+		.WillRepeatedly(Return(testData));
 	
 	script->run();
 
@@ -38,10 +38,10 @@ TEST_F(TestScriptsFixture, FailWithInvalidData) {
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	EXPECT_CALL((*mockSSD), read(_))
-		.WillOnce(Return(invalidData));
-	EXPECT_CALL((*mockSSD), read(_))
-		.WillOnce(Return(invalidData));
+	EXPECT_CALL(mockSSD, write(_, _))
+		.Times(5);
+	EXPECT_CALL(mockSSD, read(_))
+		.WillRepeatedly(Return(invalidData));
 
 	script->run();
 
