@@ -130,3 +130,11 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	}
 	EXPECT_TRUE(ret);
 }
+
+TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
+	char ret = true;
+	std::string expected_str = "0x12341234";
+	
+	EXPECT_TRUE(app.writeOutputFile(expected_str));
+	EXPECT_EQ(12, app.outputFile.checkSize());
+}

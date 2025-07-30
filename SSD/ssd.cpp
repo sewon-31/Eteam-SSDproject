@@ -20,13 +20,13 @@ SSD::run(const string& commandStr)
 	// parse command
 	parser->setCommand(commandStr);
 	if (!parser->isValidCommand()) {
-		//writeOutputFile("ERROR");
+		writeOutputFile("ERROR");
 		return;
 	}
 	parsedCommand = parser->getCommandVector();
 
 	clearData();
-	//readNandFile();
+	readNandFile();
 
 	// run command
 	string operation = parsedCommand.at(SSDCommandParser::Index::OP);
@@ -35,12 +35,12 @@ SSD::run(const string& commandStr)
 	if (operation == "R") {
 		//std::cout << "Read" << lba << std::endl;
 		string result = runReadCommand(lba);
-		//writeOutputFile(result);
+		writeOutputFile(result);
 	}
 	else if (operation == "W") {
 		//std::cout << "Write" << lba << std::endl;
 		runWriteCommand(lba, parsedCommand.at(SSDCommandParser::Index::VAL));
-		//writeNandFile();
+		writeNandFile();
 	}
 }
 
@@ -104,7 +104,13 @@ SSD::writeNandFile() {
 	return ret;
 }
 
-void 
+bool 
 SSD::writeOutputFile(const string& str) {
+	bool ret;
 
+	outputFile.fileRemove();
+	outputFile.fileOpen();
+	ret = outputFile.fileWriteOneline(str);
+	outputFile.fileClose();
+	return ret;
 }

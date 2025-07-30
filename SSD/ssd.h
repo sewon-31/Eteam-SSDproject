@@ -9,7 +9,7 @@ public:
 
 	bool readNandFile();
 	bool writeNandFile();
-	void writeOutputFile(const string& str);
+	bool writeOutputFile(const string& str);
 
 	string runReadCommand(int lba);
 	void runWriteCommand(int lba, const string& value);
@@ -20,7 +20,7 @@ public:
 	vector<string> parsedCommand;
 
 	string data[100];
-	FileInterface* outputFile;
+	FileInterface outputFile = { "ssd_output.txt" };
 	FileInterface nandFile = { "ssd_nand.txt" };
 private:
 
