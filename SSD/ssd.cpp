@@ -1,5 +1,5 @@
 #include "ssd.h"
-
+#include "file_interface.h"
 #include <algorithm>
 
 void 
@@ -58,4 +58,32 @@ string
 SSD::getData(int lba) const
 {
 	return data[lba];
+}
+
+bool 
+SSD::readNandFile() {
+	return 0;
+}
+
+bool 
+SSD::writeNandFile() {
+	bool ret;
+
+	nandFile.fileRemove();
+	nandFile.fileOpen();
+
+	for (int i = 0; i < 100; i++)
+	{
+		ret = nandFile.fileWriteOneline(data[i]);
+
+		if (!ret)
+			break;
+	}
+	nandFile.fileClose();
+	return ret;
+}
+
+void 
+SSD::writeOutputFile(const string& str) {
+
 }
