@@ -23,6 +23,12 @@ SSDCommandParser::setCommand(const string& command)
 	}
 }
 
+vector<string> 
+SSDCommandParser::getCommandVector() const
+{
+	return commandVector;
+}
+
 bool
 SSDCommandParser::isValidCommand() const
 {
