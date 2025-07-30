@@ -44,16 +44,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="ssd_command_parser.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ssd.h">
+    <ClInclude Include="file_interface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="file_interface.h">
+    <ClInclude Include="ssd.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -72,6 +69,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

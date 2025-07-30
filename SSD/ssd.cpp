@@ -1,5 +1,5 @@
 #include "ssd.h"
-
+#include "file_interface.h"
 #include <algorithm>
 #include <iostream>
 
@@ -20,13 +20,13 @@ SSD::run(const string& commandStr)
 	// parse command
 	parser->setCommand(commandStr);
 	if (!parser->isValidCommand()) {
-		//writeOutputFile("ERROR");
+		writeOutputFile("ERROR");
 		return;
 	}
 	parsedCommand = parser->getCommandVector();
 
 	clearData();
-	//readNandFile();
+	readNandFile();
 
 	// run command
 	string operation = parsedCommand.at(SSDCommandParser::Index::OP);
@@ -35,12 +35,12 @@ SSD::run(const string& commandStr)
 	if (operation == "R") {
 		//std::cout << "Read" << lba << std::endl;
 		string result = runReadCommand(lba);
-		//writeOutputFile(result);
+		writeOutputFile(result);
 	}
 	else if (operation == "W") {
 		//std::cout << "Write" << lba << std::endl;
 		runWriteCommand(lba, parsedCommand.at(SSDCommandParser::Index::VAL));
-		//writeNandFile();
+		writeNandFile();
 	}
 }
 
@@ -66,4 +66,51 @@ string
 SSD::getData(int lba) const
 {
 	return data[lba];
+}
+
+bool 
+SSD::readNandFile() {
+	bool ret;
+	
+	nandFile.fileOpen();
+
+	if (nandFile.checkSize() != 1200)  return false;
+
+	for (int i = 0; i < 100; i++)
+	{
+		ret = nandFile.fileReadOneline(data[i]);
+
+		if (!ret)  break;
+	}
+	nandFile.fileClose();
+	return ret;
+}
+
+bool 
+SSD::writeNandFile() {
+	bool ret;
+
+	nandFile.fileRemove();
+	nandFile.fileOpen();
+
+	for (int i = 0; i < 100; i++)
+	{
+		ret = nandFile.fileWriteOneline(data[i]);
+
+		if (!ret)
+			break;
+	}
+	nandFile.fileClose();
+	return ret;
+}
+
+bool 
+SSD::writeOutputFile(const string& str) {
+	bool ret;
+
+	outputFile.fileRemove();
+	outputFile.fileOpen();
+	ret = outputFile.fileWriteOneline(str);
+	outputFile.fileClose();
+	return ret;
 }
