@@ -10,12 +10,12 @@ public:
 		this->ssd = ssd;
 	}
 	void runShell();
-	void ExecuteCommand(vector<string> commandVector);
+	bool ExecuteCommand(vector<string> commandVector);
 	virtual void read(int lba);
 	virtual void fullRead();
 	virtual void write(int lba, std::string value);
 	virtual void fullWrite(std::string value);
-	void help();
+	virtual void help();
 private:
 	SSDInterface* ssd;
 	CommandParser commandParser;
