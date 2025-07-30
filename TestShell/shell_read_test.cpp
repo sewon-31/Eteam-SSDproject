@@ -22,7 +22,7 @@ public:
 
 TEST_F(TestShellRead, ReadPass) {
 	ssdReadFileSetUp();
-	
+
 	EXPECT_CALL(ssd, read(0))
 		.Times(1)
 		.WillRepeatedly(Return(EXPECT_AA));
@@ -69,4 +69,24 @@ TEST_F(TestShellRead, FullReadPass) {
 	}
 
 	EXPECT_EQ(expect, oss.str());
+}
+
+TEST(SSDDriverRead, ReadPass) {
+	MockSSDDriver mockSSD;
+
+	EXPECT_CALL(mockSSD, runExe)
+		.Times(1)
+		.WillRepeatedly(Return(true));
+
+	EXPECT_TRUE(mockSSD.read(0));
+}
+
+TEST(SSDDriverRead, ReadPass) {
+	MockSSDDriver mockSSD;
+
+	EXPECT_CALL(mockSSD, runExe)
+		.Times(1)
+		.WillRepeatedly(Return(false));
+
+	EXPECT_THROW(mockSSD.read(0), std::runtime_error);
 }
