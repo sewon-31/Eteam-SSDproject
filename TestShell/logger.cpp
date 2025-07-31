@@ -1,6 +1,9 @@
 #include "logger.h"
 #include <stdarg.h>
 #include <iostream>
+#include <sstream>
+#include "file_util.h"
+#include <iomanip> 
 
 Logger& Logger::getInstance() {
     static Logger instance;
@@ -15,17 +18,28 @@ void Logger::log(const char* funcName, const char* fmt, ...) {
 
     // TODO: file IO
     std::cout << log_line << std::endl;
+    writeToFile(log_line);
 }
 
 std::string Logger::getLogMessage(const char* funcName, const char* fmt, va_list args) {
-    std::string funcStr(funcName);
-    if (funcStr.length() < 30) {
-        funcStr.append(30 - funcStr.length(), ' ');
-    }
     char msgBuf[1024];
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
 
-    return getCurrentTimestamp() + " " + funcStr + " : " + msgBuf;
+    std::ostringstream oss{};
+    oss << getCurrentTimestamp() << " "
+        << std::left << std::setw(30) << funcName 
+        << " : " << msgBuf;
+
+    return oss.str();
+}
+
+void Logger::writeToFile(const std::string& log_msg) {
+    if (!FileUtil::directoryExists(logDir)) {
+        bool ret = FileUtil::createDirectory(logDir);
+        if (ret == false)
+            return;
+    }
+    FileUtil::writeLine(logFile, log_msg, true);
 }
 
 std::string Logger::getCurrentTimestamp() {
