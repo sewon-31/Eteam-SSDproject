@@ -16,6 +16,6 @@ int main(int argc, char* argv[])
     SSD app;
 
     vector<string> commandVector(argv + 1, argv + argc);
-    app.run(commandVector); // run을 vector<string> 받도록 바꿔야 함
+    app.run(commandVector);
 #endif
 }
