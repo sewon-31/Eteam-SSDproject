@@ -46,22 +46,6 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         Command* command = new FlushCommand(ssd);
         if (!command->execute(commandVector)) return false;
     }
-    //else if (opCommand == CommandParser::CMD_ERASE) {
-    //    int lba = std::stoi(commandVector.at(1));
-    //    int size = std::stoi(commandVector.at(2));
-    //    std::cout << "Executing erase" << std::endl;
-    //    erase(lba, size);
-    //}
-    //else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
-    //    int startLba = std::stoi(commandVector.at(1));
-    //    int endLba = std::stoi(commandVector.at(2));
-    //    std::cout << "Executing erase_range" << std::endl;
-    //    eraseRange(startLba, endLba);
-    //}
-    //else if (opCommand == CommandParser::CMD_FLUSH) {
-    //    std::cout << "Executing flush" << std::endl;
-    //    flush();
-    //}
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
         Command* command = new ScriptsFullWriteAndReadCompare(ssd);
         if (!command->execute(commandVector)) return false;
@@ -137,6 +121,7 @@ void TestShell::runScript(std::string filename)
 
     }
 
+<<<<<<< HEAD
 }
 void TestShell::erase(int lba, int size) {
     try {
@@ -185,4 +170,7 @@ void TestShell::flush() {
     catch (SSDExecutionException& e) {
         std::cout << "[FLUSH] Fail" << std::endl;
     }
+=======
+    scriptListFile.close();
+>>>>>>> 4f39a53 ([refactoring] clean unused testshell functions)
 }
