@@ -22,9 +22,7 @@ NandData::erase(int startLBA, int endLBA)
 	if (isInvalidLBA(startLBA)) return;
 	if (isInvalidLBA(endLBA)) return;
 
-	for (int lba = startLBA; lba <= endLBA; ++lba) {
-		data[lba] = "0x00000000";
-	}
+	std::fill(data + startLBA, data + endLBA + 1, "0x00000000");
 }
 
 void

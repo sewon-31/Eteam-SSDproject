@@ -104,7 +104,6 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
 		app.writeData(i, str[i]);
-		//app.data[i] = str[i];
 	}
 
 	EXPECT_TRUE(app.writeNandFile());
@@ -119,7 +118,6 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		//app.data[i] = str[i];
 		app.writeData(i, str[i]);
 	}
 
@@ -128,7 +126,6 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	EXPECT_TRUE(app.readNandFile());
 
 	for (int i = 0; i < 100; i++) {
-		//if (app.data[i] != str[i]) {
 		if (app.getData(i) != str[i]) {
 			ret = false;
 			break;
