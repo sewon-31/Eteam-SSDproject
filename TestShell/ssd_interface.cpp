@@ -9,7 +9,9 @@ void SSDDriver::write(int lba, string value) {
 
 string SSDDriver::read(int lba) {
 	string command = "\"ssd R " + std::to_string(lba) + " >nul 2>&1\"";
-	if (runExe(command) == false) { throw std::runtime_error("There is no SSD.exe\n"); }
+	if (runExe(command) == false) {
+		throw std::runtime_error("There is no SSD.exe\n");
+	}
 
 	string content;
 	std::ifstream file(SSD_READ_RESULT);
@@ -19,9 +21,15 @@ string SSDDriver::read(int lba) {
 	return content;
 }
 
-void SSDDriver::erase(int lba, int size)
-{
+void SSDDriver::erase(int lba, int size) {
 	string command = "\"ssd E " + std::to_string(lba) + " " + std::to_string(size) + " >nul 2>&1\"";
+	if (runExe(command) == false) {
+		throw SSDExecutionException("Execution failed: " + command);
+	}
+}
+
+void SSDDriver::flush() {
+	string command = "\"ssd F >nul 2>&1\"";
 	if (runExe(command) == false) {
 		throw SSDExecutionException("Execution failed: " + command);
 	}

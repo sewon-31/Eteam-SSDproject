@@ -42,6 +42,10 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         std::cout << "Executing erase" << std::endl;
         erase(lba, size);
     }
+    else if (opCommand == CommandParser::CMD_FLUSH) {
+        std::cout << "Executing flush" << std::endl;
+        flush();
+    }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
         ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
 
@@ -189,5 +193,17 @@ void TestShell::erase(int lba, int size) {
     }
     catch (SSDExecutionException& e) {
         std::cout << "[ERASE] Fail" << std::endl;
+    }
+}
+
+void TestShell::flush() {
+    if (ssd == nullptr) return;
+    try {
+        ssd->flush();
+        std::cout << "[FLUSH] Done" << std::endl;
+
+    }
+    catch (SSDExecutionException& e) {
+        std::cout << "[FLUSH] Fail" << std::endl;
     }
 }

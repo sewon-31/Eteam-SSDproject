@@ -22,6 +22,7 @@ public:
 //	virtual void write(int lba, std::string value);
 	virtual void fullWrite(std::string value);
 	virtual void erase(int lba, int size);
+	virtual void flush();
 
 private:
 	SSDInterface* ssd;
