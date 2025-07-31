@@ -10,7 +10,11 @@ public:
 	virtual void write(int lba, string value) = 0;
 	virtual string read(int lba) = 0;
 	virtual void erase(int lba, int size) = 0;
+<<<<<<< HEAD
 	virtual void flush() = 0;
+=======
+	virtual void eraseRange(int startLba, int endLba) = 0;
+>>>>>>> 2d2ef5e ([feature] TestShell : erase_range implementation in SSD Interface)
 };
 
 class SSDDriver : public SSDInterface {
@@ -24,7 +28,11 @@ public:
 	void write(int lba, string value) override;
 	string read(int lba) override;
 	void erase(int lba, int size) override;
+<<<<<<< HEAD
 	void flush() override;
+=======
+	void eraseRange(int startLba, int endLba) override;
+>>>>>>> 2d2ef5e ([feature] TestShell : erase_range implementation in SSD Interface)
 
 private:
 	const string SSD_READ_RESULT = "../ssd_output.txt";
