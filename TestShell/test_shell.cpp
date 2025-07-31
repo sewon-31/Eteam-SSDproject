@@ -1,8 +1,8 @@
 ﻿#include "test_shell.h"
 #include "command_parser.h"
 #include "test_script.h"
-#include "command.h"
-
+//#include "command.h"
+#include "command_factory.h"
 #include <iostream>
 
 using std::cout;

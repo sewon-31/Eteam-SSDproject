@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="command.cpp" />
     <ClCompile Include="command.h" />
+    <ClCompile Include="command_factory.cpp" />
     <ClCompile Include="command_parser.cpp" />
     <ClCompile Include="command_parser_test.cpp" />
     <ClCompile Include="file_util.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="shell_help_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_factory.h" />
     <ClInclude Include="command_parser.h" />
     <ClInclude Include="file_util.h" />
     <ClInclude Include="common_test_fixture.h" />

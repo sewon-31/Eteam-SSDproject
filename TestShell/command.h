@@ -98,10 +98,5 @@ private:
     SSDInterface* ssd;
 
     void flush();
-};
 
-// command Factory
-class CommandFactory {
-public:
-    static std::unique_ptr<Command> createCommand(const std::vector<std::string>& commandVector, SSDInterface* ssd);
 };
