@@ -11,7 +11,7 @@ public:
 	bool setReadPoint(unsigned point);
 	bool fileWriteOneline(const std::string str);
 	void fileClose();
-	bool fileRemove();
+	bool fileClear();
 	int checkSize();
 private:
 	std::fstream ssdNandFile;

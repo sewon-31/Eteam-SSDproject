@@ -21,13 +21,13 @@ TEST_F(FileInterfaceFixture, TC_FILE_OPEN) {
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_MAKEFILE) {
-	fileInterface.fileRemove();
+	fileInterface.fileClear();
 	EXPECT_TRUE(fileInterface.fileOpen());
 	fileInterface.fileClose();
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
-	fileInterface.fileRemove();
+	fileInterface.fileClear();
 	fileInterface.fileOpen();
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
 	EXPECT_TRUE(fileInterface.fileReadOneline(read_str));
@@ -36,7 +36,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
-	fileInterface.fileRemove();
+	fileInterface.fileClear();
 	fileInterface.fileOpen();
 	fileInterface.fileWriteOneline(expected_str);
 	fileInterface.fileWriteOneline(expected_str1);
@@ -53,24 +53,24 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
 	fileInterface.fileClose();
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_REMOVE) {
+TEST_F(FileInterfaceFixture, TC_FILE_CLEAR) {
 	fileInterface.fileOpen();
 	fileInterface.fileWriteOneline(expected_str);
 	fileInterface.fileClose();
 
-	EXPECT_TRUE(fileInterface.fileRemove());
+	EXPECT_TRUE(fileInterface.fileClear());
 	fileInterface.fileOpen();
 	fileInterface.fileReadOneline(read_str);
 	EXPECT_EQ(read_str, "");
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_CHECK_EMPTY_FILE) {
-	fileInterface.fileRemove();
+	fileInterface.fileClear();
 	EXPECT_EQ(0, fileInterface.checkSize());
 }
 
 TEST_F(FileInterfaceFixture, TC_FILE_CHECK_FILESIZE) {
-	fileInterface.fileRemove();
+	fileInterface.fileClear();
 	fileInterface.fileOpen();
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
 	fileInterface.fileClose();
@@ -79,5 +79,5 @@ TEST_F(FileInterfaceFixture, TC_FILE_CHECK_FILESIZE) {
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
 	fileInterface.fileClose();
 	EXPECT_EQ(24, fileInterface.checkSize());
-	fileInterface.fileRemove();
+	fileInterface.fileClear();
 }

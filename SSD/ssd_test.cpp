@@ -25,6 +25,8 @@ protected:
 public:
 	MockParser mockParser;
 	SSD app;
+	FileInterface& nandFile = app.getNandFile();
+	FileInterface& outputFile = app.getOutputFile();
 
 	void processMockParserFunctions()
 	{
@@ -57,9 +59,12 @@ TEST_F(SSDTestFixture, ReadTest) {
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 	string expected;
+
 	nandFile.fileOpen();
-	nandFile.fileWriteOneline("0x00000000");
-	nandFile.fileReadOneline(expected);
+	if (nandFile.checkSize() >= 12)
+		nandFile.fileReadOneline(expected);
+	else
+		expected = "0x00000000";
 	nandFile.fileClose();
 
 	EXPECT_EQ(expected, app.getData(0));
@@ -101,7 +106,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	}
 
 	EXPECT_TRUE(app.writeNandFile());
-	EXPECT_EQ(1200, app.nandFile.checkSize());
+	EXPECT_EQ(1200, nandFile.checkSize());
 }
 
 TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
@@ -116,7 +121,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	}
 
 	app.writeNandFile();
-	EXPECT_EQ(1200, app.nandFile.checkSize());
+	EXPECT_EQ(1200, nandFile.checkSize());
 	EXPECT_TRUE(app.readNandFile());
 
 	for (int i = 0; i < 100; i++) {
@@ -133,7 +138,7 @@ TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 	std::string expected_str = "0x12341234";
 
 	EXPECT_TRUE(app.writeOutputFile(expected_str));
-	EXPECT_EQ(12, app.outputFile.checkSize());
+	EXPECT_EQ(12, outputFile.checkSize());
 }
 
 TEST_F(SSDTestFixture, TC_RUN_WRITE) {

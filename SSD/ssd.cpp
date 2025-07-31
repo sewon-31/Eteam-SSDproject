@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <iostream>
 
+SSD::SSD(const std::string& nandPath, const std::string& outputPath)
+	: nandFile(nandPath), outputFile(outputPath) {
+}
+
 void
 SSD::setParser(SSDCommandParser* parser)
 {
@@ -68,15 +72,25 @@ SSD::getData(int lba) const
 	return data[lba];
 }
 
+FileInterface& 
+SSD::getNandFile() {
+	return nandFile;
+}
+
+FileInterface&
+SSD::getOutputFile() {
+	return outputFile;
+}
+
 bool 
 SSD::readNandFile() {
 	bool ret;
 	
 	nandFile.fileOpen();
 
-	if (nandFile.checkSize() != 1200)  return false;
+	if (nandFile.checkSize() != nandFileSize)  return false;
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < maxLbaNum; i++)
 	{
 		ret = nandFile.fileReadOneline(data[i]);
 
@@ -90,10 +104,10 @@ bool
 SSD::writeNandFile() {
 	bool ret;
 
-	nandFile.fileRemove();
+	nandFile.fileClear();
 	nandFile.fileOpen();
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < maxLbaNum; i++)
 	{
 		ret = nandFile.fileWriteOneline(data[i]);
 
@@ -108,7 +122,7 @@ bool
 SSD::writeOutputFile(const string& str) {
 	bool ret;
 
-	outputFile.fileRemove();
+	outputFile.fileClear();
 	outputFile.fileOpen();
 	ret = outputFile.fileWriteOneline(str);
 	outputFile.fileClose();
