@@ -6,9 +6,9 @@ using namespace testing;
 
 class TestShellRead : public Test, public HandleConsoleOutputFixture {
 public:
-	TestShell shell;
 	MockSSD mockSSD;
 	MockSSDDriver SSDwithMockRunExe;
+	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
 	const string MIDFIX = " : ";

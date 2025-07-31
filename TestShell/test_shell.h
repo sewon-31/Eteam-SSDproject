@@ -23,4 +23,8 @@ public:
 private:
 	SSDInterface* ssd;
 	CommandParser commandParser;
+
+	FileUtil fileUtil;
+	const string PASS = "PASS\n";
+	const string FAIL = "FAIL";
 };

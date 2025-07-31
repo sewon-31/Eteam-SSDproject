@@ -9,8 +9,7 @@ using std::cout;
 bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
-
-    string result = "FAIL";
+    string result = FAIL + "\n";
 
     if (opCommand == CommandParser::CMD_EXIT) {
         Command* command = new ExitCommand();
@@ -99,41 +98,42 @@ void TestShell::runShell()
 }
 
 void TestShell::runScript(std::string filename)
-{ 
-    std::fstream scriptListFile(filename, std::ios::in);
-
-    if (scriptListFile.is_open() == false) {
+{
+    if (fileUtil.fileExists(filename) == false) {
         std::cout << "[Error] Invalid File Name." << std::endl;
         return;
     }
 
-    std::string opCommand;
-    ScriptsCommand* scriptCommand;
+    vector<std::string> commandList;
+    fileUtil.readAllLines(filename, commandList);
 
-    while (std::getline(scriptListFile, opCommand)) {
-        cout << opCommand <<"   ___   Run ... ";
+    for (auto opCommand : commandList) {
+        ScriptsCommand* scriptCommand;
+        string log = opCommand + "   ___   Run ... ";
+        cout << log;
 
         if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            scriptCommand  = new ScriptsFullWriteAndReadCompare(ssd);  
+            scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
             scriptCommand = new ScriptsPartialLBAWrite(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            scriptCommand = new ScriptsWriteReadAging(ssd);         
+            scriptCommand = new ScriptsWriteReadAging(ssd);
         }
         else {
-            cout << "FAIL!\n";
+            cout << FAIL << "!\n";
             break;
         }
 
         if (scriptCommand->run() == false) {
-            cout << "FAIL!\n";
+            cout << FAIL << "!\n";
             break;
         }
 
-        cout << "PASS\n";
+        cout << PASS;
     }
+
 }
 void TestShell::erase(int lba, int size) {
     try {
