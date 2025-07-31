@@ -89,7 +89,7 @@ void FullWriteCommand::fullWrite(std::string value) {
 
 bool ExitCommand::execute(const std::vector<std::string>& args)
 {
-    return true;
+    return false;
 }
 
 bool HelpCommand::execute(const std::vector<std::string>& args)
