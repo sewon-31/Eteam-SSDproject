@@ -14,7 +14,7 @@ void
 SSD::run(vector<string> commandVector)
 {
 	if (!parser) {
-		parser = std::make_shared<SSDCommandParser>();
+		parser = std::make_shared<SSDCommandBuilder>();
 	}
 
 	// parse command
@@ -69,7 +69,7 @@ SSD::clearData()
 }
 
 void
-SSD::setParser(std::shared_ptr<SSDCommandParser> parser)
+SSD::setParser(std::shared_ptr<SSDCommandBuilder> parser)
 {
 	this->parser = parser;
 }

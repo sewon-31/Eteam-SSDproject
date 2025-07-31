@@ -1,4 +1,4 @@
-#include "ssd_command_parser.h"
+#include "ssd_command_builder.h"
 #include "file_interface.h"
 #include "nand_data.h"
 #include "command.h"
@@ -19,14 +19,14 @@ public:
 	string getData(int lba) const;
 	void writeData(int lba, const string& value);
 	void clearData();
-	void setParser(std::shared_ptr<SSDCommandParser> parser);
+	void setParser(std::shared_ptr<SSDCommandBuilder> parser);
 	FileInterface& getOutputFile();
 	NandData& getStorage();
 
 private:
 	NandData storage;
 	FileInterface outputFile;
-	std::shared_ptr<SSDCommandParser> parser;
+	std::shared_ptr<SSDCommandBuilder> parser;
 
 	static const int nandFileSize = 1200;
 };

@@ -131,7 +131,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">   %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">   %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="command_parser_test.cpp">
+    <ClCompile Include="command_builder_test.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">  %(AdditionalOptions)</AdditionalOptions>
@@ -145,7 +145,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="ssd.cpp" />
-    <ClCompile Include="ssd_command_parser.cpp" />
+    <ClCompile Include="ssd_command_builder.cpp" />
     <ClCompile Include="ssd_test.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">  %(AdditionalOptions)</AdditionalOptions>
@@ -158,7 +158,7 @@
     <ClInclude Include="file_interface.h" />
     <ClInclude Include="nand_data.h" />
     <ClInclude Include="ssd.h" />
-    <ClInclude Include="ssd_command_parser.h" />
+    <ClInclude Include="ssd_command_builder.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

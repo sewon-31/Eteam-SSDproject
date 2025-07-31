@@ -6,7 +6,7 @@
 
 using std::istringstream;
 
-void CommandParser::setCommandVector(const string& command)
+void CommandParser::setCommand(const string& command)
 {
 	this->commandStr = command;
 	commandVector.clear();

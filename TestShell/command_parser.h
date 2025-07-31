@@ -9,7 +9,7 @@ using std::vector;
 class CommandParser
 {
 public:
-	void setCommandVector(const string& command);
+	void setCommand(const string& command);
 	const std::vector<std::string>& getCommandVector() const;
 	bool isValidCommand() const;
 

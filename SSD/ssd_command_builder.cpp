@@ -1,4 +1,4 @@
-#include "ssd_command_parser.h"
+#include "ssd_command_builder.h"
 
 #include <sstream>
 #include <iostream>
@@ -7,19 +7,19 @@
 using std::istringstream;
 
 void
-SSDCommandParser::setCommandVector(vector<string> inputCommandVector)
+SSDCommandBuilder::setCommandVector(vector<string> inputCommandVector)
 {
 	commandVector = inputCommandVector;
 }
 
 vector<string>
-SSDCommandParser::getCommandVector() const
+SSDCommandBuilder::getCommandVector() const
 {
 	return commandVector;
 }
 
 bool
-SSDCommandParser::isValidCommand() const
+SSDCommandBuilder::isValidCommand() const
 {
 	try {
 		// check parameter count
@@ -89,7 +89,7 @@ SSDCommandParser::isValidCommand() const
 }
 
 std::shared_ptr<ICommand>
-SSDCommandParser::createCommand(vector<string> inputCommandVector, NandData& storage)
+SSDCommandBuilder::createCommand(vector<string> inputCommandVector, NandData& storage)
 {
 	setCommandVector(inputCommandVector);
 
@@ -118,14 +118,14 @@ SSDCommandParser::createCommand(vector<string> inputCommandVector, NandData& sto
 }
 
 bool
-SSDCommandParser::isValidValue(const string& valueStr) const
+SSDCommandBuilder::isValidValue(const string& valueStr) const
 {
 	std::regex re("^0x[0-9A-F]{8}$");
 	return std::regex_match(valueStr, re);
 }
 
 bool
-SSDCommandParser::isValidLBA(int lba, int size) const
+SSDCommandBuilder::isValidLBA(int lba) const
 {
 	if (size == 0) {
 		return lba >= NandData::LBA::MIN && lba <= NandData::LBA::MAX;

@@ -9,7 +9,7 @@
 using std::string;
 using std::vector;
 
-class SSDCommandParser
+class SSDCommandBuilder
 {
 public:
 	enum Index {

@@ -1,11 +1,11 @@
 #include "gmock/gmock.h"
-#include "ssd_command_parser.h"
+#include "ssd_command_builder.h"
 
 using namespace testing;
 
 class SSDCommandParserTestFixture : public Test {
 public:
-	SSDCommandParser parser;
+	SSDCommandBuilder parser;
 
 	const string APP_NAME = "ssd";
 	const string INVALID_APP_NAME = "ssdr";

@@ -98,7 +98,5 @@ private:
     SSDInterface* ssd;
 
     void flush();
+
 };
-
-// command Factory
-
