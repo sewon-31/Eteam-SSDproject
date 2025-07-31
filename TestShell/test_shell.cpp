@@ -117,6 +117,18 @@ void TestShell::runScript(std::string filename)
             break;
         }
 
+<<<<<<< HEAD
         if (command->execute(commandVector) == false) break;
     }
+=======
+        if (scriptCommand->run() == false) {
+            cout << "FAIL!\n";
+            break;
+        }
+
+        cout << "PASS\n";
+    }
+
+    scriptListFile.close();
+>>>>>>> 4f39a5353aa4b2700771fe740b17a29cf63bba06
 }
