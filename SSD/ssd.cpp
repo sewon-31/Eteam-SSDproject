@@ -130,7 +130,7 @@ SSD::writeOutputFile(const string& str) {
 }
 
 int
-SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
+SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
 	bool ret = true;
 
 	int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
@@ -191,17 +191,18 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 	int newCMDCount = 0;
 
 	// step - 3-1
+	TEST_CMD step3_1;
 	for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
 		// Check E
 		if (virtual_op[idx_iba] == OP_E) {
 			if (continue_E_CMD == 0) {
-				out.op[newCMDCount] = "E";
-				out.lba[newCMDCount] = idx_iba;
-				out.size[newCMDCount] = 1;
+				step3_1.op[newCMDCount] = "E";
+				step3_1.lba[newCMDCount] = idx_iba;
+				step3_1.size[newCMDCount] = 1;
 				continue_E_CMD = 1;
 			}
 			else {
-				out.size[newCMDCount]++;
+				step3_1.size[newCMDCount]++;
 				continue_E_CMD++;
 				if (continue_E_CMD == 10) {
 					continue_E_CMD = 0;
@@ -217,16 +218,78 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 
 		//Check W
 		if (virtual_op[idx_iba] <= OP_W_MAX) {
-			out.op[newCMDCount] = "W";
-			out.lba[newCMDCount] = idx_iba;
-			out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-			out.size[newCMDCount] = 1;
+			step3_1.op[newCMDCount] = "W";
+			step3_1.lba[newCMDCount] = idx_iba;
+			step3_1.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+			step3_1.size[newCMDCount] = 1;
 			newCMDCount++;
 		}
 	}
+	// display
+	for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+		std::cout << step3_1.op[idx_cb] << " " << step3_1.lba[idx_cb] << " " << step3_1.data[idx_cb] << " " << step3_1.size[idx_cb] << "\n";
+	}
 
 	// step - 3-2 Merge
-	
+	int upOrderGain = 0;
+	int downOrderCMDGain = 0;
+	if (newCMDCount > 2) {
+		for (int idx_cb = 0; idx_cb < newCMDCount - 2; idx_cb++) {
+			if (step3_1.op[idx_cb] == "E" && step3_1.op[idx_cb + 1] == "W" && step3_1.op[idx_cb + 2] == "E") {
+				if (step3_1.size[idx_cb] + step3_1.size[idx_cb + 2] < 9) {
+					upOrderGain++;
+					std::cout << "upOrderGain\n";
+				}
+			}
+			if (step3_1.op[newCMDCount - idx_cb - 2] == "E" && step3_1.op[newCMDCount - idx_cb - 1] == "W" && step3_1.op[newCMDCount - idx_cb] == "E") {
+				if (step3_1.size[newCMDCount - idx_cb - 2] + step3_1.size[newCMDCount - idx_cb] < 9) {
+					downOrderCMDGain++;
+					std::cout << "downOrderGain\n";
+				}
+			}
+		}
+	}
+	int idx_merge = 0;
+	if (upOrderGain >= downOrderCMDGain) {
+		for (int idx_cb = 0; idx_cb < newCMDCount - 2; idx_cb++) {
+			out.op[idx_merge] = step3_1.op[idx_cb];
+			out.lba[idx_merge] = step3_1.lba[idx_cb];
+			out.size[idx_merge] = step3_1.size[idx_cb];
+			out.data[idx_merge] = step3_1.data[idx_cb];
+			if (newCMDCount > 2) {
+				if (step3_1.op[idx_merge] == "E" && step3_1.op[idx_cb + 1] == "W" && step3_1.op[idx_cb + 2] == "E") {
+					if (step3_1.size[idx_merge] + step3_1.size[idx_cb + 2] < 9) {
+						out.op[idx_merge] = step3_1.op[idx_cb];
+						out.lba[idx_merge] = step3_1.lba[idx_cb];
+						out.size[idx_merge] = step3_1.size[idx_cb] + out.size[idx_cb + 2] + 1;
+						out.data[idx_merge] = step3_1.data[idx_cb];
+						out.op[idx_merge + 1] = step3_1.op[idx_cb + 1];
+						out.lba[idx_merge + 1] = step3_1.lba[idx_cb + 1];
+						out.size[idx_merge + 1] = step3_1.size[idx_cb + 1];
+						out.data[idx_merge + 1] = step3_1.data[idx_cb + 1];
+						idx_merge++;
+						idx_cb += 2;
+					}
+				}
+			}
+			idx_merge++;
+		}
+		out.op[idx_merge] = step3_1.op[newCMDCount - 2];
+		out.lba[idx_merge] = step3_1.lba[newCMDCount - 2];
+		out.size[idx_merge] = step3_1.size[newCMDCount - 2];
+		out.data[idx_merge] = step3_1.data[newCMDCount - 2];
+		idx_merge++;
+		out.op[idx_merge] = step3_1.op[newCMDCount - 1];
+		out.lba[idx_merge] = step3_1.lba[newCMDCount - 1];
+		out.size[idx_merge] = step3_1.size[newCMDCount - 1];
+		out.data[idx_merge] = step3_1.data[newCMDCount - 1];
+		idx_merge++;
+		newCMDCount = idx_merge;
+	}
+	else {
+		
+	}
+
 	// display
 	for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
 		std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
