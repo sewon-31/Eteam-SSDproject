@@ -52,3 +52,33 @@ TEST_F(FileUtilTest, ReadLineFailsOnEmptyFile) {
     bool result = FileUtil::readLine(testFile, line);
     EXPECT_FALSE(result);
 }
+
+TEST_F(FileUtilTest, WriteAndReadAllLines) {
+    std::vector<std::string> inputLines = {
+        "Line 1", "Line 2", "Line 3"
+    };
+
+    ASSERT_TRUE(FileUtil::writeAllLines(testFile, inputLines));
+
+    std::vector<std::string> outputLines;
+    ASSERT_TRUE(FileUtil::readAllLines(testFile, outputLines));
+
+    ASSERT_EQ(inputLines.size(), outputLines.size());
+    for (size_t i = 0; i < inputLines.size(); ++i) {
+        EXPECT_EQ(inputLines[i], outputLines[i]);
+    }
+}
+
+TEST_F(FileUtilTest, AppendLines) {
+    std::vector<std::string> firstLines = { "A", "B" };
+    std::vector<std::string> secondLines = { "C", "D" };
+
+    ASSERT_TRUE(FileUtil::writeAllLines(testFile, firstLines, /*append=*/true));
+    ASSERT_TRUE(FileUtil::writeAllLines(testFile, secondLines, /*append=*/true));
+
+    std::vector<std::string> resultLines;
+    ASSERT_TRUE(FileUtil::readAllLines(testFile, resultLines));
+
+    std::vector<std::string> expected = { "A", "B", "C", "D" };
+    ASSERT_EQ(resultLines, expected);
+}
