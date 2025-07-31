@@ -125,3 +125,37 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
     return true;
 }
+
+bool EraseCommand::execute(const std::vector<std::string>& args)
+{
+	int lba = std::stoi(args.at(1));
+	int size = std::stoi(args.at(2));
+	std::cout << "Executing erase" << std::endl;
+	erase(lba, size);
+	return false;
+}
+
+void EraseCommand::erase(int lba, int size) {
+	try {
+		// lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX
+		if (size < 0) {
+			if (size + lba < 0) {
+				size = lba + 1;
+				lba = 0;
+			}
+			else {
+				lba = size + lba + 1;
+				size = std::abs(size);
+			}
+		}
+		else if (size + lba > 100) {
+			size = 100 - lba;
+		}
+
+		ssd->erase(lba, size);
+		std::cout << "[ERASE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[ERASE] Fail" << std::endl;
+	}
+}
