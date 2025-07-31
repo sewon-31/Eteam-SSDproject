@@ -31,7 +31,7 @@ public:
 
 	void clearData();
 	string getData(int lba) const;
-	bool reduceCMDBuffer(TEST_CMD in, TEST_CMD out);
+	int reduceCMDBuffer(TEST_CMD in, TEST_CMD out);
 	vector<string> parsedCommand;
 
 	string data[100];

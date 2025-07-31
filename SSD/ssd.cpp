@@ -129,7 +129,7 @@ SSD::writeOutputFile(const string& str) {
 	return ret;
 }
 
-bool
+int
 SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 	bool ret = true;
 
@@ -225,5 +225,5 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 		std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
 	}
 
-	return ret;
+	return newCMDCount;
 }
