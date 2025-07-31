@@ -10,9 +10,13 @@ public:
 
 	void testRun(string argv) {
 		shell.setSSD(new SSDDriver());
+
+		auto oldCoutStreamBuf = std::cout.rdbuf();
 		std::cout.rdbuf(oss.rdbuf());
 
 		shell.runScript(argv);
+
+		std::cout.rdbuf(oldCoutStreamBuf);
 	}
 };
 
@@ -21,8 +25,6 @@ TEST_F(ShellRunScript, NoFile) {
 
 	testRun(argv);
 	
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oldCoutStreamBuf);
 	EXPECT_EQ("[Error] Invalid File Name.\n", getLastLine(oss.str()));
 }
 
@@ -35,8 +37,6 @@ TEST_F(ShellRunScript, ExistFileButWrongCommand) {
 
 	testRun(argv);
 
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oldCoutStreamBuf);
 	EXPECT_EQ("read 1   ___   Run ... FAIL\n", getLastLine(oss.str()));
 }
 
@@ -52,7 +52,5 @@ TEST_F(ShellRunScript, ExistFileAndGoodCommand) {
 
 	testRun(argv);
 
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oldCoutStreamBuf);
 	EXPECT_EQ("2_PartialLBAWrite   ___   Run ... PASS\n", getLastLine(oss.str()));
 }

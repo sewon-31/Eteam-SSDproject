@@ -21,19 +21,6 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         return true;
     }
 
-    if (opCommand == CommandParser::CMD_ERASE) {
-        Command* command = new EraseCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
-        Command* command = new EraseRangeCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_FLUSH) {
-        Command* command = new FlushCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-
     return true;
 }
 

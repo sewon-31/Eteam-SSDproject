@@ -59,11 +59,27 @@ TEST_F(TestShellCommandOperatorFixture, FullWrite) {
 
 	app.ExecuteCommand(commandVector);
 }
-//TEST_F(TestShellCommandOperatorFixture, Help) {
-//	vector<string> commandVector = { "help" };
-//
-//	EXPECT_CALL(app, help)
-//		.Times(1);
-//
-//	app.ExecuteCommand(commandVector);
-//}
+TEST_F(TestShellCommandOperatorFixture, Erase) {
+	vector<string> commandVector = { "erase", "5", "2"};
+
+	EXPECT_CALL(mockSSD, erase(5, 2))
+		.Times(1);
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, EraseRange) {
+	vector<string> commandVector = { "erase_range", "1", "4" };
+
+	EXPECT_CALL(mockSSD, erase(1, 4))
+		.Times(1);
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, Flush) {
+	vector<string> commandVector = { "flush" };
+
+	EXPECT_CALL(mockSSD, flush())
+		.Times(1);
+
+	app.ExecuteCommand(commandVector);
+}

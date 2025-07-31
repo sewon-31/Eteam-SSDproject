@@ -70,7 +70,7 @@ void FullReadCommand::fullRead()
 
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
 {
-	std::string value = args.at(1);
+	std::string value = args.at(0);
 	std::cout << "Executing fullwrite with value " << value << std::endl;
 	fullWrite(value);
     return true;
@@ -129,8 +129,8 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 
 bool EraseCommand::execute(const std::vector<std::string>& args)
 {
-	int lba = std::stoi(args.at(1));
-	int size = std::stoi(args.at(2));
+	int lba = std::stoi(args.at(0));
+	int size = std::stoi(args.at(1));
 	std::cout << "Executing erase" << std::endl;
 	erase(lba, size);
 	return true;
@@ -163,8 +163,8 @@ void EraseCommand::erase(int lba, int size) {
 
 bool EraseRangeCommand::execute(const std::vector<std::string>& args)
 {
-	int startLba = std::stoi(args.at(1));
-	int endLba = std::stoi(args.at(2));
+	int startLba = std::stoi(args.at(0));
+	int endLba = std::stoi(args.at(1));
 	std::cout << "Executing erase_range" << std::endl;
 	eraseRange(startLba, endLba);
 	return true;

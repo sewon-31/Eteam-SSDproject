@@ -28,13 +28,13 @@ std::unique_ptr<Command> CommandFactory::createCommand(const std::vector<std::st
 		return std::make_unique<FullReadCommand>(ssd);
 	}
 	else if (opCommand == CommandParser::CMD_ERASE) {
-		//
+		return std::make_unique<EraseCommand>(ssd);
 	}
 	else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
-		//
+		return std::make_unique<EraseRangeCommand>(ssd);
 	}
 	else if (opCommand == CommandParser::CMD_FLUSH) {
-		//
+		return std::make_unique<FlushCommand>(ssd);
 	}
 	else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
 		return std::make_unique<ScriptsFullWriteAndReadCompare>(ssd);
