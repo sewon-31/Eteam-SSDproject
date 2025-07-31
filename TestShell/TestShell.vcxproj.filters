@@ -66,6 +66,12 @@
     <ClCompile Include="ssd_interface.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="file_util.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="file_util_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_interface.h">
@@ -78,6 +84,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="mock_ssd.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="file_util.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
