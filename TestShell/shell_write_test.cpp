@@ -12,7 +12,8 @@ public:
 	MockSSD mockSSD;
 	SSDDriver realSSD;
 	MockSSDDriver mockSSDDriver;
-	WriteCommand cmd{ &mockSSD };
+	WriteCommand writeCmd{ &mockSSD };
+	FullWriteCommand fullWriteCmd{ &mockSSD };
 	std::string value = "0x12345678";
 	std::ostringstream oss;
 	std::streambuf* oldCoutStreamBuf;
@@ -27,7 +28,11 @@ public:
 	}
 	void executeWrite(int lba, string value) {
 		vector<string> args = { std::to_string(lba), value };
-		cmd.execute(args);
+		writeCmd.execute(args);
+	}
+	void executeFullWrite(string value) {
+		vector<string> args = { value };
+		fullWriteCmd.execute(args);
 	}
 protected:
 	void SetUp() override {
@@ -66,15 +71,17 @@ TEST_F(WriteTestFixture, TestInvalidSSD) {
 	shell.write(VALID_LBA, value);
 	EXPECT_CALL(mockSSD, write).Times(0);
 }
+#endif
 
 TEST_F(WriteTestFixture, TestFullWrite) {
-	TestShell shell{ &mockSSD };
 	for (int i = 0; i < 100; i++)
 		EXPECT_CALL(mockSSD, write(i, value)).Times(1);
-	shell.fullWrite(value);
-	EXPECT_EQ(FULL_WRITE_DONE, oss.str());
+	
+	executeFullWrite(value);
+	EXPECT_EQ(FULL_WRITE_DONE, getLastLine(oss.str()));
 }
 
+#if 0
 TEST_F(WriteTestFixture, TestRealSSDWriteFail) {
 	if (isFileExists(SSD_EXE_FILE)) {
 		GTEST_SKIP() << SSD_EXE_FILE << " not found, skipping test.";

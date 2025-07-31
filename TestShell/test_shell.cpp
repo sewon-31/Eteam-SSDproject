@@ -28,9 +28,8 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLWRITE) {
-        std::string value = commandVector.at(1);
-        std::cout << "Executing fullwrite with value " << value << std::endl;
-        fullWrite(value);
+        Command* command = new FullWriteCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLREAD) {
         std::cout << "Executing fullread" << std::endl;
@@ -158,19 +157,6 @@ void TestShell::ssdReadAndPrint(int addr)
 
     cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
 }
-
-void TestShell::fullWrite(std::string value) {
-    if (ssd == nullptr) return;
-	try {
-		for (int i = 0; i < 100; i++)
-			ssd->write(i, value);
-		std::cout << "[FULL_WRITE] Done" << std::endl;
-	}
-	catch (SSDExecutionException& e) {
-		std::cout << "[FULL_WRITE] Fail" << std::endl;
-	}
-}
-
 void TestShell::erase(int lba, int size) {
     try {
         // lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX

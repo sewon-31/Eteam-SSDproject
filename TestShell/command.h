@@ -40,7 +40,12 @@ public:
 };
 class FullWriteCommand : public Command {
 public:
+    FullWriteCommand(SSDInterface* ssd) : ssd(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
+private:
+    SSDInterface* ssd;
+
+    void fullWrite(std::string value);
 };
 class ExitCommand : public Command {
 public:

@@ -56,7 +56,21 @@ bool FullReadCommand::execute(const std::vector<std::string>& args)
 
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
 {
+	std::string value = args.at(0);
+	std::cout << "Executing fullwrite with value " << value << std::endl;
+	fullWrite(value);
     return false;
+}
+void FullWriteCommand::fullWrite(std::string value) {
+	if (ssd == nullptr) return;
+	try {
+		for (int i = 0; i < 100; i++)
+			ssd->write(i, value);
+		std::cout << "[FULL_WRITE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[FULL_WRITE] Fail" << std::endl;
+	}
 }
 
 bool ExitCommand::execute(const std::vector<std::string>& args)
