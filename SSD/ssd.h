@@ -1,6 +1,7 @@
 #include "ssd_command_parser.h"
 #include "file_interface.h"
 #include "nand_data.h"
+#include "command.h"
 
 #include <memory>
 

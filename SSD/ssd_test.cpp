@@ -10,7 +10,7 @@ using namespace testing;
 
 class MockParser : public SSDCommandParser {
 public:
-	MOCK_METHOD(void, setCommand, (vector<string> commandVector), (override));
+	MOCK_METHOD(void, setCommandVector, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
 	MOCK_METHOD(vector<string>, getCommandVector, (), (const, override));
 };
@@ -31,7 +31,7 @@ public:
 
 	void processMockParserFunctions()
 	{
-		EXPECT_CALL(*mockParser, setCommand)
+		EXPECT_CALL(*mockParser, setCommandVector)
 			.Times(1);
 		EXPECT_CALL(*mockParser, isValidCommand)
 			.WillRepeatedly(Return(true));

@@ -16,7 +16,7 @@ public:
 		MAX_ARG_LENGTH	// 3
 	};
 
-	virtual void setCommand(vector<string> commandVector);
+	virtual void setCommandVector(vector<string> commandVector);
 	virtual bool isValidCommand() const;
 	virtual vector<string> getCommandVector() const;
 

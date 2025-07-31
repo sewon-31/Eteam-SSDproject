@@ -77,7 +77,7 @@ void TestShell::runShell()
 
         if (inputLine.empty()) continue;
 
-        commandParser.setCommand(inputLine);
+        commandParser.setCommandVector(inputLine);
 
         if (!commandParser.isValidCommand()) {
             std::cout << "[Error] Invalid command or arguments." << std::endl;

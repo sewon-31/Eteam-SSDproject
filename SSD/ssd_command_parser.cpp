@@ -7,7 +7,7 @@
 using std::istringstream;
 
 void
-SSDCommandParser::setCommand(vector<string> commandVector)
+SSDCommandParser::setCommandVector(vector<string> commandVector)
 {
 	/*
 	// set commandStr

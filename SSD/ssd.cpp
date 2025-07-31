@@ -22,7 +22,7 @@ SSD::run(vector<string> commandVector)
 	}
 
 	// parse command
-	parser->setCommand(commandVector);
+	parser->setCommandVector(commandVector);
 	if (!parser->isValidCommand()) {
 		writeOutputFile("ERROR");
 		return;
@@ -36,16 +36,15 @@ SSD::run(vector<string> commandVector)
 	string operation = parsedCommand.at(SSDCommandParser::Index::OP);
 	int lba = std::stoi(parsedCommand.at(SSDCommandParser::Index::LBA));
 
+	ICommand* cmd = nullptr;
 	if (operation == "R") {
-		//std::cout << "Read" << lba << std::endl;
-		string result = runReadCommand(lba);
-		writeOutputFile(result);
+		cmd = new ReadCommand(storage, lba);
 	}
 	else if (operation == "W") {
-		//std::cout << "Write" << lba << std::endl;
-		runWriteCommand(lba, parsedCommand.at(SSDCommandParser::Index::VAL));
-		writeNandFile();
+		cmd = new WriteCommand(storage, lba, parsedCommand.at(SSDCommandParser::Index::VAL));
 	}
+
+	cmd->execute();
 }
 
 string

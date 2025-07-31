@@ -9,7 +9,8 @@ class NandData
 public:
     enum LBA {
         MIN = 0,
-        MAX = 99
+        MAX = 99,
+        SIZE = 100
     };
 
     string read(int lba) const;
@@ -23,5 +24,5 @@ public:
 
 private:
     bool isInvalidLBA(int lba) const;
-    string data[100];
+    string data[LBA::SIZE];
 };
