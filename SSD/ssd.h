@@ -32,5 +32,5 @@ private:
 	FileInterface nandFile;
 	SSDCommandParser* parser = nullptr;
 	static const int nandFileSize = 1200;
-	static const int nandFileLba = 100;
+	static const int maxLbaNum = 100;
 };
