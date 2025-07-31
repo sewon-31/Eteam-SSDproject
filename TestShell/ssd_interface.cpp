@@ -28,15 +28,9 @@ void SSDDriver::erase(int lba, int size) {
 	}
 }
 
-<<<<<<< HEAD
 void SSDDriver::flush() {
 	string command = "\"ssd F >nul 2>&1\"";
 	if (runExe(command) == false) {
 		throw SSDExecutionException("Execution failed: " + command);
 	}
-=======
-void SSDDriver::eraseRange(int startLba, int endLba)
-{
-	erase(startLba, endLba - startLba + 1);
->>>>>>> 2d2ef5e ([feature] TestShell : erase_range implementation in SSD Interface)
 }
