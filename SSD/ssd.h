@@ -18,10 +18,8 @@ public:
 	bool writeNandFile();
 	bool writeOutputFile(const string& str);
 
-	string runReadCommand(int lba);
-	void runWriteCommand(int lba, const string& value);
-
 	string getData(int lba) const;
+	void writeData(int lba, const string& value);
 	void clearData();
 
 	vector<string> parsedCommand;
@@ -30,6 +28,9 @@ public:
 	NandData storage;
 
 private:
+	string runReadCommand(int lba);
+	void runWriteCommand(int lba, const string& value);
+
 	FileInterface outputFile;
 	FileInterface nandFile;
 	SSDCommandParser* parser = nullptr;
