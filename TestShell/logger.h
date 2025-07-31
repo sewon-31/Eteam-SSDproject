@@ -10,9 +10,9 @@ private:
     const std::string LOG_DIR = "../log";
     const std::string LOG_FILE = LOG_DIR + "/latest.log";
 #if _DEBUG
-    const int MAX_LOG_SIZE = 200;//for test: 200B, real: 100KB
+    const int MAX_LOG_SIZE = 200;//for test: 200B, real: 10KB
 #else
-    const int MAX_LOG_SIZE = 100 * 1024;
+    const int MAX_LOG_SIZE = 10 * 1024;//for test: 200B, real: 10KB
 #endif
     Logger() = default;
     std::string getCurrentTimestamp();
