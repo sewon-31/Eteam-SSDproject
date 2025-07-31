@@ -118,59 +118,5 @@ void TestShell::runScript(std::string filename)
         }
 
         if (command->execute(commandVector) == false) break;
-
     }
-
-<<<<<<< HEAD
-}
-void TestShell::erase(int lba, int size) {
-    try {
-        // lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX
-        if (size < 0) {
-            if (size + lba < 0) {
-                size = lba + 1;
-                lba = 0;
-            }
-            else {
-                lba = size + lba + 1;
-                size = std::abs(size);
-            }
-        }
-        else if (size + lba > 100) {
-            size = 100 - lba;
-        }
-
-        ssd->erase(lba, size);
-        std::cout << "[ERASE] Done" << std::endl;
-    }
-    catch (SSDExecutionException& e) {
-        std::cout << "[ERASE] Fail" << std::endl;
-    }
-}
-
-void TestShell::eraseRange(int startLba, int endLba) {
-    if (startLba > endLba)
-        std::swap(startLba, endLba);
-    try {
-        erase(startLba, endLba - startLba + 1);
-        std::cout << "[ERASE RANGE] Done" << std::endl;
-    }
-    catch (SSDExecutionException& e) {
-        std::cout << "[ERASE RANGE] Fail" << std::endl;
-    }
-}
-
-void TestShell::flush() {
-    if (ssd == nullptr) return;
-    try {
-        ssd->flush();
-        std::cout << "[FLUSH] Done" << std::endl;
-
-    }
-    catch (SSDExecutionException& e) {
-        std::cout << "[FLUSH] Fail" << std::endl;
-    }
-=======
-    scriptListFile.close();
->>>>>>> 4f39a53 ([refactoring] clean unused testshell functions)
 }
