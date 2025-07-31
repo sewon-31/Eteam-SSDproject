@@ -190,8 +190,8 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 	int continue_E_CMD = 0;
 	int newCMDCount = 0;
 
+	// step - 3-1
 	for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-
 		// Check E
 		if (virtual_op[idx_iba] == OP_E) {
 			if (continue_E_CMD == 0) {
@@ -203,6 +203,10 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 			else {
 				out.size[newCMDCount]++;
 				continue_E_CMD++;
+				if (continue_E_CMD == 10) {
+					continue_E_CMD = 0;
+					newCMDCount++;
+				}
 			}
 			continue;
 		}
@@ -220,6 +224,9 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD out) {
 			newCMDCount++;
 		}
 	}
+
+	// step - 3-2 Merge
+	
 	// display
 	for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
 		std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
