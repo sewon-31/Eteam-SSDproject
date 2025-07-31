@@ -21,7 +21,6 @@ public:
 	virtual void fullRead();
 	virtual void write(int lba, std::string value);
 	virtual void fullWrite(std::string value);
-	virtual void help();
 private:
 	SSDInterface* ssd;
 	CommandParser commandParser;
