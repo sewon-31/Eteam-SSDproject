@@ -20,7 +20,7 @@ void Logger::log(const char* funcName, const char* fmt, ...) {
 #if _DEBUG
     std::cout << log_line << std::endl;
 #endif
-    rotateIfNeeded(log_line.size());
+    rotateLogIfFull(log_line.size());
     writeToFile(log_line);
 }
 
@@ -45,22 +45,23 @@ void Logger::writeToFile(const std::string& log_msg) {
     FileUtil::writeLine(LOG_FILE, log_msg, true);
 }
 
-void Logger::zipLogFile() {
+void Logger::zipOldLogFile() {
     auto files = getLogFileList();
     if (files.empty()) return;
     auto oldFileName = LOG_DIR + "/" + files.at(0);
-
     const std::string oldExt = ".log";
     const std::string newExt = ".zip";
     std::string newFileName = oldFileName.substr(0, oldFileName.size() - oldExt.size()) + newExt;
-    std::rename(oldFileName.c_str(), newFileName.c_str());
+    if (std::rename(oldFileName.c_str(), newFileName.c_str()) != 0) {
+        std::cerr << "Failed to compress log file: " << oldFileName << "\n";
+    }
 }
 
-void Logger::rotateIfNeeded(int size) {
+void Logger::rotateLogIfFull(int size) {
     if (!FileUtil::directoryExists(LOG_DIR)) return;
     if (!FileUtil::fileExists(LOG_FILE)) return;
     if (FileUtil::getFileSize(LOG_FILE) + size < MAX_LOG_SIZE) return;
-    zipLogFile();
+    zipOldLogFile();
     auto backupFile = getBackupLogFileName();
     if (std::rename(LOG_FILE.c_str(), backupFile.c_str()) != 0) {
         std::cerr << "Failed to rename log file for rotation\n";
