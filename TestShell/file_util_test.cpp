@@ -45,3 +45,10 @@ TEST_F(FileUtilTest, FileClear) {
     std::getline(ifs, content);
     EXPECT_TRUE(content.empty());
 }
+
+TEST_F(FileUtilTest, ReadLineFailsOnEmptyFile) {
+    FileUtil::clearFile(testFile);
+    std::string line;
+    bool result = FileUtil::readLine(testFile, line);
+    EXPECT_FALSE(result);
+}

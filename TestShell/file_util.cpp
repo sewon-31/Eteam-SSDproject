@@ -36,7 +36,9 @@ bool FileUtil::writeLine(const std::string& filePath, const std::string& line, b
 bool FileUtil::readLine(const std::string& filePath, std::string& lineOut) {
     std::ifstream ifs(filePath.c_str());
     if (!ifs.is_open()) return false;
-    std::getline(ifs, lineOut);
+    if (!std::getline(ifs, lineOut)) {
+        return false;
+    }
     return ifs.good();
 }
 
