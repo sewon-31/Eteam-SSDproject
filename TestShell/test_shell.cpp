@@ -99,18 +99,16 @@ void TestShell::runShell()
 }
 
 void TestShell::runScript(std::string filename)
-{
-    std::fstream scriptListFile(filename, std::ios::in);
-
-    if (scriptListFile.is_open() == false) {
+{ 
+    if (fileUtil.fileExists(filename) == false) {
         std::cout << "[Error] Invalid File Name." << std::endl;
         return;
     }
-    
+
     std::string opCommand;
     ScriptsCommand* scriptCommand;
-
-    while (std::getline(scriptListFile, opCommand)) {
+    /* Should be edited after adding full read in file_util
+    while (fileUtil.readLine(filename, opCommand)) {
         cout << opCommand <<"   ___   Run ... ";
 
         if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
@@ -134,8 +132,7 @@ void TestShell::runScript(std::string filename)
 
         cout << "PASS\n";
     }
-
-    scriptListFile.close();
+*/
 }
 void TestShell::erase(int lba, int size) {
     try {
