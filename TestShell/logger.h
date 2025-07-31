@@ -8,4 +8,5 @@ public:
 private:
     Logger() = default;
     std::string getCurrentTimestamp();
+    std::string getLogMessage(const char* funcName, const char* fmt, va_list args);
 };
