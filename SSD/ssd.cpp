@@ -4,17 +4,13 @@
 #include <iostream>
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
-	: nandFile(nandPath), outputFile(outputPath) {
-}
-
-void
-SSD::setParser(std::shared_ptr<SSDCommandParser> parser)
+	: outputFile(outputPath)
 {
-	this->parser = parser;
+	// create storage
+	storage = NandData( nandPath );
 }
 
 void
-//SSD::run(const string& commandStr)
 SSD::run(vector<string> commandVector)
 {
 	if (!parser) {
@@ -24,48 +20,34 @@ SSD::run(vector<string> commandVector)
 	// parse command
 	auto cmd = parser->createCommand(commandVector, storage);
 	if (cmd == nullptr) {
-		writeOutputFile("ERROR");
+		updateOutputFile("ERROR");
 		return;
 	}
 
-	cmd->execute();
+	string result("");
 
-	/*
-	parser->setCommandVector(commandVector);
-	if (!parser->isValidCommand()) {
+	//if (cmd->getCmdType() == CmdType::READ) {
+	cmd->run(result);
+	//}
+	//else {
+		// add to buffer
+	//}
+
+	if (!result.empty()) {
+		updateOutputFile(result);
 	}
-	parsedCommand = parser->getCommandVector();
-
-	storage.clear();
-	readNandFile();
-
-	// run command
-	string operation = parsedCommand.at(SSDCommandParser::Index::OP);
-	int lba = std::stoi(parsedCommand.at(SSDCommandParser::Index::LBA));
-
-	ICommand* cmd = nullptr;
-	if (operation == "R") {
-		cmd = new ReadCommand(storage, lba);
-	}
-	else if (operation == "W") {
-		cmd = new WriteCommand(storage, lba, parsedCommand.at(SSDCommandParser::Index::VAL));
-	}
-
-	cmd->execute();
-
-	*/
 }
 
-string
-SSD::runReadCommand(int lba)
+bool 
+SSD::updateOutputFile(const string& result)
 {
-	return storage.read(lba);
-}
+	outputFile.fileClear();
+	outputFile.fileOpen();
 
-void
-SSD::runWriteCommand(int lba, const string& value)
-{
-	storage.write(lba, value);
+	bool ret = outputFile.fileWriteOneline(result);
+
+	outputFile.fileClose();
+	return ret;
 }
 
 string
@@ -86,61 +68,20 @@ SSD::clearData()
 	storage.clear();
 }
 
-FileInterface& 
-SSD::getNandFile() {
-	return nandFile;
+void
+SSD::setParser(std::shared_ptr<SSDCommandParser> parser)
+{
+	this->parser = parser;
+}
+
+NandData& 
+SSD::getStorage()
+{
+	return storage;
 }
 
 FileInterface&
-SSD::getOutputFile() {
+SSD::getOutputFile() 
+{
 	return outputFile;
-}
-
-bool 
-SSD::readNandFile() {
-	bool ret;
-	
-	nandFile.fileOpen();
-
-	if (nandFile.checkSize() != nandFileSize)  return false;
-
-	for (int i = 0; i <= NandData::LBA::MAX; i++)
-	{
-		string data;
-		ret = nandFile.fileReadOneline(data);
-		storage.write(i, data);
-
-		if (!ret)  break;
-	}
-	nandFile.fileClose();
-	return ret;
-}
-
-bool 
-SSD::writeNandFile() {
-	bool ret;
-
-	nandFile.fileClear();
-	nandFile.fileOpen();
-
-	for (int i = 0; i <= NandData::LBA::MAX; i++)
-	{
-		ret = nandFile.fileWriteOneline(storage.read(i));
-
-		if (!ret)
-			break;
-	}
-	nandFile.fileClose();
-	return ret;
-}
-
-bool 
-SSD::writeOutputFile(const string& str) {
-	bool ret;
-
-	outputFile.fileClear();
-	outputFile.fileOpen();
-	ret = outputFile.fileWriteOneline(str);
-	outputFile.fileClose();
-	return ret;
 }

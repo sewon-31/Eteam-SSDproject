@@ -1,5 +1,10 @@
 #include "nand_data.h"
 
+NandData::NandData(const string& filePath)
+	: file(filePath)
+{
+}
+
 string
 NandData::read(int lba) const
 {
@@ -29,6 +34,56 @@ void
 NandData::clear()
 {
 	std::fill(std::begin(data), std::end(data), "0x00000000");
+}
+
+bool
+NandData::updateFromFile()
+{
+	file.fileOpen();
+
+	if (file.checkSize() != 1200) {
+		return false;
+	}
+
+	bool ret;
+	for (int i = 0; i <= NandData::LBA::MAX; i++)
+	{
+		string data;
+		ret = file.fileReadOneline(data);
+		write(i, data);
+
+		if (!ret) {
+			break;
+		}
+	}
+
+	file.fileClose();
+	return ret;
+}
+
+bool
+NandData::updateToFile()
+{
+	file.fileClear();
+	file.fileOpen();
+
+	bool ret;
+	for (int i = NandData::LBA::MIN; i <= NandData::LBA::MAX; i++) {
+		ret = file.fileWriteOneline(read(i));
+
+		if (!ret) {
+			break;
+		}
+	}
+
+	file.fileClose();
+	return ret;
+}
+
+FileInterface&
+NandData::getNandFile() 
+{
+	return file;
 }
 
 bool

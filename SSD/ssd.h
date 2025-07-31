@@ -8,37 +8,24 @@
 class SSD
 {
 public:
-	explicit SSD(const std::string& nandPath = "../ssd_nand.txt",
-		const std::string& outputPath = "../ssd_output.txt");
-
+	explicit SSD(
+		const string& nandPath = "../ssd_nand.txt",
+		const string& outputPath = "../ssd_output.txt");
 
 	void run(vector<string> commandVector);
-
-	FileInterface& getNandFile();
-	FileInterface& getOutputFile();
-	bool readNandFile();
-	bool writeNandFile();
-	bool writeOutputFile(const string& str);
+	bool updateOutputFile(const string& result);
 
 	// for unit test
 	string getData(int lba) const;
 	void writeData(int lba, const string& value);
 	void clearData();
-
 	void setParser(std::shared_ptr<SSDCommandParser> parser);
-
-	vector<string> parsedCommand;
-
-	//string data[100];
-	NandData storage;
+	FileInterface& getOutputFile();
+	NandData& getStorage();
 
 private:
-	string runReadCommand(int lba);
-	void runWriteCommand(int lba, const string& value);
-
+	NandData storage;
 	FileInterface outputFile;
-	FileInterface nandFile;
-
 	std::shared_ptr<SSDCommandParser> parser;
 
 	static const int nandFileSize = 1200;

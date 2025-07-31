@@ -1,4 +1,5 @@
 #pragma once
+#include "file_interface.h"
 
 #include <string>
 
@@ -13,16 +14,23 @@ public:
         SIZE = 100
     };
 
+    NandData(const string& filePath = "");
+
     string read(int lba) const;
     void write(int lba, const string& value);
     void erase(int startLBA, int endLBA);
     void clear();
 
-    // updateFromNandFile()
-    // updateFromBuffer()
-    // updateNandFile()
+    bool updateFromFile();
+    //bool updateFromBuffer()
+    bool updateToFile();
+
+    // for unit test
+    FileInterface& getNandFile();
 
 private:
     bool isInvalidLBA(int lba) const;
+
     string data[LBA::SIZE];
+    FileInterface file;
 };

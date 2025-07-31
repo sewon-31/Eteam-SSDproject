@@ -10,7 +10,9 @@ using namespace testing;
 
 class MockCommand : public ICommand {
 public:
-	MOCK_METHOD(void, execute, (), (override));
+	MOCK_METHOD(void, run, (string& result), (override));
+	MOCK_METHOD(void, execute, (string& result), (override));
+	MOCK_METHOD(CmdType, getCmdType, (), (const, override));
 };
 
 class MockParser : public SSDCommandParser {
@@ -34,7 +36,7 @@ public:
 	std::shared_ptr<MockParser> mockParser;
 
 	SSD app;
-	FileInterface& nandFile = app.getNandFile();
+	FileInterface& nandFile = app.getStorage().getNandFile();
 	FileInterface& outputFile = app.getOutputFile();
 
 	void processMockParserFunctions()
@@ -53,7 +55,7 @@ TEST_F(SSDTestFixture, RunExecutesCommand) {
 	EXPECT_CALL(*mockParser, createCommand(input, testing::_))
 		.WillOnce(Return(mockCmd));
 
-	EXPECT_CALL(*mockCmd, execute())
+	EXPECT_CALL(*mockCmd, run)
 		.Times(1);
 
 	app.run(input);
@@ -68,7 +70,7 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	EXPECT_CALL(*mockParser, createCommand)
 		.Times(1);
 
-	EXPECT_CALL(*mockCmd, execute())
+	EXPECT_CALL(*mockCmd, execute)
 		.Times(0);
 
 	app.run(vector<string>{"R", "0", "0x00000000"});
@@ -82,8 +84,8 @@ TEST_F(SSDTestFixture, DISABLED_GetCommandTest) {
 
 	app.run(input);
 
-	EXPECT_EQ("R", app.parsedCommand.at(0));
-	EXPECT_EQ("0", app.parsedCommand.at(1));
+	//EXPECT_EQ("R", app.parsedCommand.at(0));
+	//EXPECT_EQ("0", app.parsedCommand.at(1));
 }
 
 // cannot run ReadTest anymore
@@ -128,10 +130,9 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		app.writeData(i, str[i]);
+		app.run({ "W", std::to_string(i), str[i] });
 	}
 
-	EXPECT_TRUE(app.writeNandFile());
 	EXPECT_EQ(1200, nandFile.checkSize());
 }
 
@@ -143,12 +144,13 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		app.writeData(i, str[i]);
+		app.run({ "W", std::to_string(i), str[i] });
 	}
 
-	app.writeNandFile();
 	EXPECT_EQ(1200, nandFile.checkSize());
-	EXPECT_TRUE(app.readNandFile());
+
+	// to update storage from nand file
+	app.run({ "R", "0" });
 
 	for (int i = 0; i < 100; i++) {
 		if (app.getData(i) != str[i]) {
@@ -163,7 +165,7 @@ TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 	char ret = true;
 	std::string expected_str = "0x12341234";
 
-	EXPECT_TRUE(app.writeOutputFile(expected_str));
+	EXPECT_TRUE(app.updateOutputFile(expected_str));
 	EXPECT_EQ(12, outputFile.checkSize());
 }
 

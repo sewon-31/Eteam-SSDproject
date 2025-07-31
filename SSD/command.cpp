@@ -2,93 +2,85 @@
 
 // BaseCommand
 BaseCommand::BaseCommand(NandData& storage, int lba)
-    : storage(storage), lba(lba) 
+	: storage(storage), lba(lba)
 {
 }
 
 // ReadCommand
 void
-ReadCommand::execute()
+ReadCommand::run(string& result)
 {
-    storage.clear();
+	storage.clear();
 
-    // readNandFile()
-    FileInterface nandFile = { "../ssd_nand.txt" };
-    nandFile.fileOpen();
+	// updateNandDataFromBuffer();
+	storage.updateFromFile();
 
-    bool ret;
-    if (nandFile.checkSize() == 1200) {
-        for (int i = 0; i <= NandData::LBA::MAX; i++)
-        {
-            string data;
-            ret = nandFile.fileReadOneline(data);
-            storage.write(i, data);
+	execute(result);
+	std::cout << result << std::endl;
+}
 
-            if (!ret)  break;
-        }
-    }
-    nandFile.fileClose();
-    
-    string result = storage.read(lba);
-    
-    // writeOutputFile(result);
-    FileInterface outputFile = { "../ssd_output.txt" };
+void
+ReadCommand::execute(string& result)
+{
+	result = storage.read(lba);
+}
 
-    outputFile.fileClear();
-    outputFile.fileOpen();
-    ret = outputFile.fileWriteOneline(result);
-    outputFile.fileClose();
+CmdType
+ReadCommand::getCmdType() const
+{
+	return CmdType::READ;
 }
 
 // WriteCommand
 WriteCommand::WriteCommand(NandData& storage, int lba, const std::string& value)
-    : BaseCommand(storage, lba), value(value) 
+	: BaseCommand(storage, lba), value(value)
 {
 }
 
 void
-WriteCommand::execute()
+WriteCommand::run(string& result)
 {
-    storage.clear();
+	storage.clear();
 
-    // readNandFile()
-    FileInterface nandFile = { "../ssd_nand.txt" };
-    nandFile.fileOpen();
+	storage.updateFromFile();
 
-    bool ret;
-    if (nandFile.checkSize() == 1200) {
-        for (int i = NandData::LBA::MIN; i <= NandData::LBA::MAX; i++)
-        {
-            string data;
-            ret = nandFile.fileReadOneline(data);
-            storage.write(i, data);
+	execute(result);
 
-            if (!ret)  break;
-        }
-    }
-    nandFile.fileClose();
+	storage.updateToFile();
+}
 
-    storage.write(lba, value);
+void
+WriteCommand::execute(string& result)
+{
+	storage.write(lba, value);
+}
 
-    // writeNandFile();
-    nandFile.fileClear();
-    nandFile.fileOpen();
-    for (int i = NandData::LBA::MIN; i <= NandData::LBA::MAX; i++) {
-        if (!nandFile.fileWriteOneline(storage.read(i))) {
-            break;
-        }
-    }
-    nandFile.fileClose();
+CmdType
+WriteCommand::getCmdType() const
+{
+	return CmdType::WRITE;
 }
 
 // EraseCommand
 EraseCommand::EraseCommand(NandData& storage, int lba, int size)
-    : BaseCommand(storage, lba), size(size) 
+	: BaseCommand(storage, lba), size(size)
 {
 }
 
 void
-EraseCommand::execute()
+EraseCommand::run(string& result)
 {
-    // storage.erase();
+	// storage.erase();
+}
+
+void
+EraseCommand::execute(string& result)
+{
+	// storage.erase();
+}
+
+CmdType
+EraseCommand::getCmdType() const
+{
+	return CmdType::ERASE;
 }
