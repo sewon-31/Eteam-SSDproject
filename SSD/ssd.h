@@ -1,6 +1,15 @@
 #include "ssd_command_parser.h"
 #include "file_interface.h"
 
+class TEST_CMD {
+public:
+	string op[6];
+	int lba[6];
+	int size[6];
+	string data[6];
+
+};
+
 class SSD
 {
 public:
@@ -22,7 +31,7 @@ public:
 
 	void clearData();
 	string getData(int lba) const;
-
+	bool reduceCMDBuffer(TEST_CMD in, TEST_CMD out);
 	vector<string> parsedCommand;
 
 	string data[100];
