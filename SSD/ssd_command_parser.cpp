@@ -7,8 +7,9 @@
 using std::istringstream;
 
 void
-SSDCommandParser::setCommand(const string& command)
+SSDCommandParser::setCommand(vector<string> commandVector)
 {
+	/*
 	// set commandStr
 	this->commandStr = command;
 
@@ -23,6 +24,9 @@ SSDCommandParser::setCommand(const string& command)
 			commandVector.push_back(strBuf);
 		}
 	}
+	*/
+
+	this->commandVector = commandVector;
 }
 
 vector<string>

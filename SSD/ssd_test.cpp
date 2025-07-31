@@ -10,7 +10,7 @@ using namespace testing;
 
 class MockParser : public SSDCommandParser {
 public:
-	MOCK_METHOD(void, setCommand, (const string& command), (override));
+	MOCK_METHOD(void, setCommand, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
 	MOCK_METHOD(vector<string>, getCommandVector, (), (const, override));
 };
@@ -41,10 +41,11 @@ public:
 TEST_F(SSDTestFixture, GetCommandTest) {
 	processMockParserFunctions();
 
+	vector<string> input = { "R", "0" };
 	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
+		.WillRepeatedly(Return(input));
 
-	app.run("R 0");
+	app.run(input);
 
 	EXPECT_EQ("R", app.parsedCommand.at(0));
 	EXPECT_EQ("0", app.parsedCommand.at(1));
@@ -53,10 +54,11 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 TEST_F(SSDTestFixture, ReadTest) {
 	processMockParserFunctions();
 
+	vector<string> input = { "R", "0" };
 	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
+		.WillRepeatedly(Return(input));
 
-	app.run("R 0");
+	app.run(input);
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 	string expected;
@@ -80,16 +82,17 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	EXPECT_CALL(*mockParser, getCommandVector)
 		.Times(0);
 
-	app.run("R 0 0x00000000");
+	app.run(vector<string>{"R", "0", "0x00000000"});
 }
 
 TEST_F(SSDTestFixture, WriteText) {
 	processMockParserFunctions();
 
+	vector<string> input = { "W", "0", "0x11112222" };
 	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
+		.WillRepeatedly(Return(input));
 
-	app.run("W 0 0x11112222");
+	app.run(input);
 	EXPECT_EQ("0x11112222", app.getData(0));
 
 	app.clearData();
@@ -145,10 +148,11 @@ TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 TEST_F(SSDTestFixture, TC_RUN_WRITE) {
 	processMockParserFunctions();
 
+	vector<string> input = { "W", "0", "0x11112222" };
 	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
+		.WillRepeatedly(Return(input));
 
-	app.run("W 0 0x11112222");
+	app.run(input);
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 
@@ -163,10 +167,11 @@ TEST_F(SSDTestFixture, TC_RUN_WRITE) {
 TEST_F(SSDTestFixture, TC_RUN_READ) {
 	processMockParserFunctions();
 
+	vector<string> input = { "R", "0" };
 	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
+		.WillRepeatedly(Return(input));
 
-	app.run("R 0");
+	app.run(input);
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 

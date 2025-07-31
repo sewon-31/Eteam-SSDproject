@@ -11,7 +11,7 @@ public:
 		const std::string& outputPath = "../ssd_output.txt");
 
 
-	void run(const string& commandStr);
+	void run(vector<string> commandVector);
 
 	FileInterface& getNandFile();
 	FileInterface& getOutputFile();

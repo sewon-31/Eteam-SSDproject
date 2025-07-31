@@ -14,14 +14,15 @@ SSD::setParser(std::shared_ptr<SSDCommandParser> parser)
 }
 
 void
-SSD::run(const string& commandStr)
+//SSD::run(const string& commandStr)
+SSD::run(vector<string> commandVector)
 {
 	if (!parser) {
 		parser = std::make_shared<SSDCommandParser>();
 	}
 
 	// parse command
-	parser->setCommand(commandStr);
+	parser->setCommand(commandVector);
 	if (!parser->isValidCommand()) {
 		writeOutputFile("ERROR");
 		return;
