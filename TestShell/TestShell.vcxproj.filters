@@ -95,6 +95,9 @@
     <ClInclude Include="file_util.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="common_test_fixture.h">
+      <Filter>테스트 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -3,7 +3,27 @@
 
 bool ReadCommand::execute(const std::vector<std::string>& args)
 {
-    return false;
+	int lba = std::stoi(args.at(0));
+	std::cout << "Executing read from LBA " << lba << std::endl;
+	read(lba);
+    return true;
+}
+void ReadCommand::read(int lba)
+{
+	try {
+		ssdReadAndPrint(lba);
+	}
+	catch (std::exception e) {
+		std::cout << string(e.what());
+	}
+}
+void ReadCommand::ssdReadAndPrint(int addr)
+{
+	std::string content = ssd->read(addr);
+	std::ostringstream oss;
+	oss << std::setw(2) << std::setfill('0') << addr;
+
+	std::cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
 }
 
 bool WriteCommand::execute(const std::vector<std::string>& args)

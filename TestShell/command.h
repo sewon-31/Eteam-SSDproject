@@ -15,7 +15,16 @@ public:
 // concreate commands
 class ReadCommand : public Command {
 public:
+    ReadCommand(SSDInterface* ssd) : ssd(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
+private:
+    SSDInterface* ssd;
+    const string READ_HEADER = "[Read] LBA ";
+    const string READ_MIDFIX = " : ";
+    const string READ_FOOTER = "\n";
+
+    void read(int lba);
+    void ssdReadAndPrint(int addr);
 };
 class WriteCommand : public Command {
 public:

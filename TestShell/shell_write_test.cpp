@@ -2,8 +2,9 @@
 #include "mock_ssd.h"
 #include "command.h"
 #include <string>
+#include "common_test_fixture.h"
 
-class WriteTestFixture : public testing::Test {
+class WriteTestFixture : public testing::Test, public HandleConsoleOutputFixture {
 public:
 	const int VALID_LBA = 10;
 	const int OVER_LBA = 100;
@@ -23,29 +24,6 @@ public:
 	bool isFileExists(const std::string& path) {
 		std::ifstream file(path);
 		return file.good();
-	}
-	string getLastLine(const std::string& str) {
-		if (str.empty()) {
-			return "";
-		}
-
-		size_t lastNewlinePos = str.find_last_of('\n');
-
-		if (lastNewlinePos == str.length() - 1) {
-			size_t secondLastNewlinePos = str.rfind('\n', lastNewlinePos - 1);
-			if (secondLastNewlinePos == std::string::npos) {
-				return str;
-			}
-			else {
-				return str.substr(secondLastNewlinePos + 1, (lastNewlinePos - (secondLastNewlinePos + 1)) + 1);
-			}
-		}
-		else if (lastNewlinePos != std::string::npos) {
-			return str.substr(lastNewlinePos + 1);
-		}
-		else {
-			return str;
-		}
 	}
 	void executeWrite(int lba, string value) {
 		vector<string> args = { std::to_string(lba), value };

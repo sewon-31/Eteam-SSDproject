@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="command_parser.h" />
     <ClInclude Include="file_util.h" />
+    <ClInclude Include="common_test_fixture.h" />
     <ClInclude Include="mock_ssd.h" />
     <ClInclude Include="ssd_interface.h" />
     <ClInclude Include="test_script.h" />

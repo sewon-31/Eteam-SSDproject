@@ -24,9 +24,8 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_READ) {
-        int lba = std::stoi(commandVector.at(1));
-        std::cout << "Executing read from LBA " << lba << std::endl;
-        read(lba);
+        Command* command = new ReadCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLWRITE) {
         std::string value = commandVector.at(1);
@@ -131,15 +130,6 @@ void TestShell::runScript(std::string filename)
 
 
 
-void TestShell::read(int lba) {
-
-    try {
-        ssdReadAndPrint(lba);
-    }
-    catch(std::exception e){
-        cout << string(e.what());
-    }
-}
 
 void TestShell::fullRead()
 {
