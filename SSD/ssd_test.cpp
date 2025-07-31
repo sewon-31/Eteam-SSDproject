@@ -18,21 +18,22 @@ public:
 class SSDTestFixture : public Test
 {
 protected:
-	void SetUp() override
-	{
-		app.setParser(&mockParser);
+	void SetUp() override {
+		mockParser = std::make_shared<MockParser>();
+		app.setParser(mockParser);
 	}
+
 public:
-	MockParser mockParser;
+	std::shared_ptr<MockParser> mockParser;
 	SSD app;
 	FileInterface& nandFile = app.getNandFile();
 	FileInterface& outputFile = app.getOutputFile();
 
 	void processMockParserFunctions()
 	{
-		EXPECT_CALL(mockParser, setCommand)
+		EXPECT_CALL(*mockParser, setCommand)
 			.Times(1);
-		EXPECT_CALL(mockParser, isValidCommand)
+		EXPECT_CALL(*mockParser, isValidCommand)
 			.WillRepeatedly(Return(true));
 	}
 };
@@ -40,7 +41,7 @@ public:
 TEST_F(SSDTestFixture, GetCommandTest) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(mockParser, getCommandVector())
+	EXPECT_CALL(*mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
 
 	app.run("R 0");
@@ -52,7 +53,7 @@ TEST_F(SSDTestFixture, GetCommandTest) {
 TEST_F(SSDTestFixture, ReadTest) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(mockParser, getCommandVector())
+	EXPECT_CALL(*mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
 
 	app.run("R 0");
@@ -73,10 +74,10 @@ TEST_F(SSDTestFixture, ReadTest) {
 TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(mockParser, isValidCommand)
+	EXPECT_CALL(*mockParser, isValidCommand)
 		.WillRepeatedly(Return(false));
 
-	EXPECT_CALL(mockParser, getCommandVector)
+	EXPECT_CALL(*mockParser, getCommandVector)
 		.Times(0);
 
 	app.run("R 0 0x00000000");
@@ -85,7 +86,7 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 TEST_F(SSDTestFixture, WriteText) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(mockParser, getCommandVector())
+	EXPECT_CALL(*mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
 
 	app.run("W 0 0x11112222");
@@ -102,7 +103,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		app.data[i] = str[i];
+		app.writeData(i, str[i]);
 	}
 
 	EXPECT_TRUE(app.writeNandFile());
@@ -117,7 +118,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		app.data[i] = str[i];
+		app.writeData(i, str[i]);
 	}
 
 	app.writeNandFile();
@@ -125,7 +126,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	EXPECT_TRUE(app.readNandFile());
 
 	for (int i = 0; i < 100; i++) {
-		if (app.data[i] != str[i]) {
+		if (app.getData(i) != str[i]) {
 			ret = false;
 			break;
 		}
@@ -144,7 +145,7 @@ TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 TEST_F(SSDTestFixture, TC_RUN_WRITE) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(mockParser, getCommandVector())
+	EXPECT_CALL(*mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
 
 	app.run("W 0 0x11112222");
@@ -162,7 +163,7 @@ TEST_F(SSDTestFixture, TC_RUN_WRITE) {
 TEST_F(SSDTestFixture, TC_RUN_READ) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(mockParser, getCommandVector())
+	EXPECT_CALL(*mockParser, getCommandVector())
 		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
 
 	app.run("R 0");

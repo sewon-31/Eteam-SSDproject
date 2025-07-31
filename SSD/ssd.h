@@ -1,5 +1,8 @@
 #include "ssd_command_parser.h"
 #include "file_interface.h"
+#include "nand_data.h"
+
+#include <memory>
 
 class SSD
 {
@@ -9,7 +12,6 @@ public:
 
 
 	void run(const string& commandStr);
-	void setParser(SSDCommandParser* parser);
 
 	FileInterface& getNandFile();
 	FileInterface& getOutputFile();
@@ -17,20 +19,26 @@ public:
 	bool writeNandFile();
 	bool writeOutputFile(const string& str);
 
-	string runReadCommand(int lba);
-	void runWriteCommand(int lba, const string& value);
-
-	void clearData();
+	// for unit test
 	string getData(int lba) const;
+	void writeData(int lba, const string& value);
+	void clearData();
+
+	void setParser(std::shared_ptr<SSDCommandParser> parser);
 
 	vector<string> parsedCommand;
 
-	string data[100];
+	//string data[100];
+	NandData storage;
 
 private:
+	string runReadCommand(int lba);
+	void runWriteCommand(int lba, const string& value);
+
 	FileInterface outputFile;
 	FileInterface nandFile;
-	SSDCommandParser* parser = nullptr;
+
+	std::shared_ptr<SSDCommandParser> parser;
+
 	static const int nandFileSize = 1200;
-	static const int maxLbaNum = 100;
 };
