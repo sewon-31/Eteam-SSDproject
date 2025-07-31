@@ -71,30 +71,26 @@ void Logger::rotateIfNeeded(int size) {
 
 std::string Logger::getBackupLogFileName()
 {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::tm local_tm;
-    localtime_s(&local_tm, &t);
-
+    auto localTime = getLocalTime();
     char timestamp[64];
-    std::strftime(timestamp, sizeof(timestamp), "until_%y%m%d_%Hh_%Mm_%Ss.log", &local_tm);
+    std::strftime(timestamp, sizeof(timestamp), "until_%y%m%d_%Hh_%Mm_%Ss.log", &localTime);
     return LOG_DIR + "/" + timestamp;
 }
 
 std::string Logger::getCurrentTimestamp() {
-    std::time_t now = std::time(nullptr);
-    std::tm localTime{};
-    localtime_s(&localTime, &now);
-
+    std::tm localTime = getLocalTime();
     char buf[20];
-    std::snprintf(buf, sizeof(buf), "[%02d.%02d.%02d %02d:%02d]",
-        localTime.tm_year % 100,
-        localTime.tm_mon + 1,
-        localTime.tm_mday,
-        localTime.tm_hour,
-        localTime.tm_min);
-
+    std::strftime(buf, sizeof(buf), "[%y.%m.%d %H:%M]", &localTime);
     return std::string(buf);
+}
+
+std::tm Logger::getLocalTime()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm localTime;
+    localtime_s(&localTime, &t);
+    return localTime;
 }
 
 std::vector<std::string> Logger::getLogFileList() {

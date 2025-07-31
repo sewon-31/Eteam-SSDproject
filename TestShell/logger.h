@@ -20,6 +20,7 @@ private:
     void writeToFile(const std::string& log_msg);
     void rotateIfNeeded(int size);
     std::string getBackupLogFileName();
+    std::tm getLocalTime();
     std::vector<std::string> getLogFileList();
     void zipLogFile();
 };
