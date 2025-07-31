@@ -9,7 +9,7 @@ class ScriptsCommand : public Command{
 public:
 	ScriptsCommand(SSDInterface* device) : ssd(device) {}
 	bool execute(const std::vector<std::string>& args) override { 
-		if (run()) result = "TRUE";
+		if (run()) result = "PASS";
 		std::cout << result << '\n';
 		return true; 
 	};

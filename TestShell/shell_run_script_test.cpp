@@ -37,7 +37,7 @@ TEST_F(ShellRunScript, ExistFileButWrongCommand) {
 
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("read 1   ___   Run ... FAIL!\n", getLastLine(oss.str()));
+	EXPECT_EQ("read 1   ___   Run ... FAIL\n", getLastLine(oss.str()));
 }
 
 TEST_F(ShellRunScript, ExistFileAndGoodCommand) {

@@ -108,30 +108,28 @@ void TestShell::runScript(std::string filename)
     fileUtil.readAllLines(filename, commandList);
 
     for (auto opCommand : commandList) {
-        ScriptsCommand* scriptCommand;
+        Command* command;
+        vector<string> commandVector = { opCommand };
+
         string log = opCommand + "   ___   Run ... ";
         cout << log;
 
         if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
+            command = new ScriptsFullWriteAndReadCompare(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-            scriptCommand = new ScriptsPartialLBAWrite(ssd);
+            command = new ScriptsPartialLBAWrite(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            scriptCommand = new ScriptsWriteReadAging(ssd);
+            command = new ScriptsWriteReadAging(ssd);
         }
         else {
-            cout << FAIL << "!\n";
+            cout << FAIL;
             break;
         }
 
-        if (scriptCommand->run() == false) {
-            cout << FAIL << "!\n";
-            break;
-        }
+        if (command->execute(commandVector) == false) break;
 
-        cout << PASS;
     }
 
 }

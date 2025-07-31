@@ -25,6 +25,5 @@ private:
 	CommandParser commandParser;
 
 	FileUtil fileUtil;
-	const string PASS = "PASS\n";
-	const string FAIL = "FAIL";
+	const string FAIL = "FAIL\n";
 };
