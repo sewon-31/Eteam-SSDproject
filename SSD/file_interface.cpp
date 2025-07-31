@@ -12,8 +12,9 @@ bool FileInterface::fileOpen() {
 	ssdNandFile.open(fileName, std::ios::in | std::ios::out);
 
 	if (!ssdNandFile.is_open()) {
+#if _DEBUG
 		std::cout << "[Debug] Creating new file: " << fileName << std::endl;
-
+#endif
 		std::ofstream create(fileName);
 		create.close();
 
@@ -22,7 +23,9 @@ bool FileInterface::fileOpen() {
 
 	readPoint = 0;
 	bool is_open = ssdNandFile.is_open();
+#if _DEBUG
 	std::cout << "[Debug] fileOpen: is_open=" << is_open << std::endl;
+#endif
 	return is_open;
 }
 
