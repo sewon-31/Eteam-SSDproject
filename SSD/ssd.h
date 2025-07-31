@@ -2,6 +2,8 @@
 #include "file_interface.h"
 #include "nand_data.h"
 
+#include <memory>
+
 class SSD
 {
 public:
@@ -10,7 +12,7 @@ public:
 
 
 	void run(const string& commandStr);
-	void setParser(SSDCommandParser* parser);
+	void setParser(std::shared_ptr<SSDCommandParser> parser);
 
 	FileInterface& getNandFile();
 	FileInterface& getOutputFile();
@@ -33,7 +35,7 @@ private:
 
 	FileInterface outputFile;
 	FileInterface nandFile;
-	SSDCommandParser* parser = nullptr;
+	std::shared_ptr<SSDCommandParser> parser;
 	static const int nandFileSize = 1200;
 	static const int maxLbaNum = 100;
 };
