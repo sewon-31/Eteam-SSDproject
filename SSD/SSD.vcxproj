@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="command.cpp" />
     <ClCompile Include="file_interface.cpp" />
     <ClCompile Include="file_interface_test.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">   %(AdditionalOptions)</AdditionalOptions>
@@ -137,6 +138,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">  %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="nand_data.cpp" />
     <ClCompile Include="ssd.cpp" />
     <ClCompile Include="ssd_command_parser.cpp" />
     <ClCompile Include="ssd_test.cpp">
@@ -147,7 +149,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command.h" />
     <ClInclude Include="file_interface.h" />
+    <ClInclude Include="nand_data.h" />
     <ClInclude Include="ssd.h" />
     <ClInclude Include="ssd_command_parser.h" />
   </ItemGroup>

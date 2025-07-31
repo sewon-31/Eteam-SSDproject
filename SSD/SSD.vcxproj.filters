@@ -42,6 +42,12 @@
     <ClCompile Include="file_interface_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
+    <ClCompile Include="command.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="nand_data.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_command_parser.h">
@@ -51,6 +57,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ssd.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="command.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="nand_data.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
