@@ -27,7 +27,8 @@ bool ScriptsCommand::readCompare(int address, std::string hexValue) const
 	return false;
 }
 
-bool ScriptsFullWriteAndReadCompare::run(void) {
+bool ScriptsFullWriteAndReadCompare::run(void)
+{
 	try {
 		for (int startLba = 0; startLba < MAX_LBA; startLba += OPERATE_COUNT_PER_LOOP) {
 			string data = intToHexString(generateRandomIntValue());
@@ -74,7 +75,8 @@ bool ScriptsPartialLBAWrite::run()
 	catch (...) { return false; }
 }
 
-bool ScriptsWriteReadAging::run() {
+bool ScriptsWriteReadAging::run() 
+{
 	try {
 		for (int i = 0; i < 200; ++i) {
 #if _DEBUG

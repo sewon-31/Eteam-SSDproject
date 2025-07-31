@@ -35,36 +35,26 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_ERASE) {
-        int lba = std::stoi(commandVector.at(1));
-        int size = std::stoi(commandVector.at(2));
-        std::cout << "Executing erase" << std::endl;
-        erase(lba, size);
+        Command* command = new EraseCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
-        int startLba = std::stoi(commandVector.at(1));
-        int endLba = std::stoi(commandVector.at(2));
-        std::cout << "Executing erase_range" << std::endl;
-        eraseRange(startLba, endLba);
+        Command* command = new EraseRangeCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FLUSH) {
-        std::cout << "Executing flush" << std::endl;
-        flush();
+        Command* command = new FlushCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-        std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-        
         Command* command = new ScriptsFullWriteAndReadCompare(ssd);
         if (!command->execute(commandVector)) return false;
  }
     else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-        std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-        
         Command* command = new ScriptsPartialLBAWrite(ssd);
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-        std::cout << "Running script 3: WriteReadAging" << std::endl;
-
         Command* command = new ScriptsWriteReadAging(ssd);
         if (!command->execute(commandVector)) return false;
     }
@@ -128,55 +118,5 @@ void TestShell::runScript(std::string filename)
         }
 
         if (command->execute(commandVector) == false) break;
-
-    }
-
-}
-void TestShell::erase(int lba, int size) {
-    try {
-        // lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX
-        if (size < 0) {
-            if (size + lba < 0) {
-                size = lba + 1;
-                lba = 0;
-            }
-            else {
-                lba = size + lba + 1;
-                size = std::abs(size);
-            }
-        }
-        else if (size + lba > 100) {
-            size = 100 - lba;
-        }
-
-        ssd->erase(lba, size);
-        std::cout << "[ERASE] Done" << std::endl;
-    }
-    catch (SSDExecutionException& e) {
-        std::cout << "[ERASE] Fail" << std::endl;
-    }
-}
-
-void TestShell::eraseRange(int startLba, int endLba) {
-    if (startLba > endLba)
-        std::swap(startLba, endLba);
-    try {
-        erase(startLba, endLba - startLba + 1);
-        std::cout << "[ERASE RANGE] Done" << std::endl;
-    }
-    catch (SSDExecutionException& e) {
-        std::cout << "[ERASE RANGE] Fail" << std::endl;
-    }
-}
-
-void TestShell::flush() {
-    if (ssd == nullptr) return;
-    try {
-        ssd->flush();
-        std::cout << "[FLUSH] Done" << std::endl;
-
-    }
-    catch (SSDExecutionException& e) {
-        std::cout << "[FLUSH] Fail" << std::endl;
     }
 }

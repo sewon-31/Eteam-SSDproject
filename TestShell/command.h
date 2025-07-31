@@ -28,6 +28,7 @@ private:
 
     void read(int lba);
 };
+
 class WriteCommand : public Command {
 public:
     WriteCommand(SSDInterface* ssd) : ssd(ssd) {}
@@ -37,6 +38,7 @@ private:
 
     void write(int lba, std::string value);
 };
+
 class FullReadCommand : public ReadCommand {
 public:
     FullReadCommand(SSDInterface* ssd) : ReadCommand(ssd) {}
@@ -45,6 +47,7 @@ private:
 
     void fullRead();
 };
+
 class FullWriteCommand : public Command {
 public:
     FullWriteCommand(SSDInterface* ssd) : ssd(ssd) {}
@@ -54,13 +57,47 @@ private:
 
     void fullWrite(std::string value);
 };
+
 class ExitCommand : public Command {
 public:
     bool execute(const std::vector<std::string>& args) override;
 };
+
 class HelpCommand : public Command {
 public:
     bool execute(const std::vector<std::string>& args) override;
+};
+
+class EraseCommand : public Command {
+public:
+    EraseCommand(SSDInterface* ssd) : ssd(ssd) {}
+    bool execute(const std::vector<std::string>& args) override;
+
+protected:
+    void erase(int lba, int size);
+
+private:
+    SSDInterface* ssd;
+};
+
+class EraseRangeCommand : public EraseCommand {
+public:
+    EraseRangeCommand(SSDInterface* ssd) : EraseCommand(ssd) {}
+    bool execute(const std::vector<std::string>& args) override;
+
+private:
+    void eraseRange(int startLba, int endLba);
+};
+
+class FlushCommand : public Command {
+public:
+    FlushCommand(SSDInterface* ssd) : ssd(ssd) {}
+    bool execute(const std::vector<std::string>& args) override;
+
+private:
+    SSDInterface* ssd;
+
+    void flush();
 };
 
 // command Factory

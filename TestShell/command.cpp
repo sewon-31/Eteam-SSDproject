@@ -75,6 +75,7 @@ bool FullWriteCommand::execute(const std::vector<std::string>& args)
 	fullWrite(value);
     return true;
 }
+
 void FullWriteCommand::fullWrite(std::string value) {
 	if (ssd == nullptr) return;
 	try {
@@ -124,4 +125,77 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\t\tMust contain exactly 8 hex digits (0-9, A-F)\n";
 	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
     return true;
+}
+
+bool EraseCommand::execute(const std::vector<std::string>& args)
+{
+	int lba = std::stoi(args.at(1));
+	int size = std::stoi(args.at(2));
+	std::cout << "Executing erase" << std::endl;
+	erase(lba, size);
+	return true;
+}
+
+void EraseCommand::erase(int lba, int size) {
+	try {
+		// lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX
+		if (size < 0) {
+			if (size + lba < 0) {
+				size = lba + 1;
+				lba = 0;
+			}
+			else {
+				lba = size + lba + 1;
+				size = std::abs(size);
+			}
+		}
+		else if (size + lba > 100) {
+			size = 100 - lba;
+		}
+
+		ssd->erase(lba, size);
+		std::cout << "[ERASE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[ERASE] Fail" << std::endl;
+	}
+}
+
+bool EraseRangeCommand::execute(const std::vector<std::string>& args)
+{
+	int startLba = std::stoi(args.at(1));
+	int endLba = std::stoi(args.at(2));
+	std::cout << "Executing erase_range" << std::endl;
+	eraseRange(startLba, endLba);
+	return true;
+}
+
+void EraseRangeCommand::eraseRange(int startLba, int endLba) {
+	if (startLba > endLba)
+		std::swap(startLba, endLba);
+	try {
+		erase(startLba, endLba - startLba + 1);
+		std::cout << "[ERASE RANGE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[ERASE RANGE] Fail" << std::endl;
+	}
+}
+
+bool FlushCommand::execute(const std::vector<std::string>& args)
+{
+	std::cout << "Executing flush" << std::endl;
+	flush();
+	return true;
+}
+
+void FlushCommand::flush() {
+	try {
+		ssd->flush();
+		std::cout << "[FLUSH] Done" << std::endl;
+
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[FLUSH] Fail" << std::endl;
+	}
 }
