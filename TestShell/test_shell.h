@@ -14,6 +14,7 @@ public:
 		this->ssd = ssd;
 	}
 	void runShell();
+	void runScript(std::string filename);
 	bool ExecuteCommand(vector<string> commandVector);
 
 	virtual void read(int lba);

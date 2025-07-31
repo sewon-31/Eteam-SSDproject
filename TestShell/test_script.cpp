@@ -27,7 +27,7 @@ bool ScriptsCommand::readCompare(int address, std::string hexValue) const
 	return false;
 }
 
-void ScriptsFullWriteAndReadCompare::run(void) {
+bool ScriptsFullWriteAndReadCompare::run(void) {
 	try {
 		for (int startLba = 0; startLba < MAX_LBA; startLba += OPERATE_COUNT_PER_LOOP) {
 			string data = intToHexString(generateRandomIntValue());
@@ -41,18 +41,17 @@ void ScriptsFullWriteAndReadCompare::run(void) {
 			for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
 				int lba = startLba + offset;
 
-				if (!readCompare(lba, data)) {
-					std::cout << "FAIL" << '\n';
-					return;
+				if (!readCompare(lba, data)) {					
+					return false;
 				}
 			}
 		}
-		std::cout << "PASS" << '\n';
+		return true;
 	}
-	catch (...) { std::cout << "FAIL" << '\n'; }
+	catch (...) { return false; }
 }
 
-void ScriptsPartialLBAWrite::run()
+bool ScriptsPartialLBAWrite::run()
 {
 	try {
 		for (int i = 0; i < 30; i++) {
@@ -66,18 +65,16 @@ void ScriptsPartialLBAWrite::run()
 
 			for (int j = 0; j < 4; j++) {
 				if (!readCompare(j, data)) {
-					std::cout << "FAIL" << '\n';
-					return;
+					return false;
 				}
 			}
 		}
-
-		std::cout << "PASS" << '\n';
+		return true;
 	}
-	catch (...) { std::cout << "FAIL" << '\n'; }
+	catch (...) { return false; }
 }
 
-void ScriptsWriteReadAging::run() {
+bool ScriptsWriteReadAging::run() {
 	try {
 		for (int i = 0; i < 200; ++i) {
 #if _DEBUG
@@ -91,18 +88,15 @@ void ScriptsWriteReadAging::run() {
 			ssd->write(99, val99);
 
 			if (!readCompare(0, val0)) {
-				std::cout << "FAIL" << '\n';
-				return;
+				return false;
 			}
 
 			if (!readCompare(99, val99)) {
-				std::cout << "FAIL" << '\n';
-				return;
+				return false;
 			}
 		}
-
-		std::cout << "PASS" << '\n';
+		return true;
 	}
 
-	catch (...) { std::cout << "FAIL" << '\n'; }
+	catch (...) { return false; }
 }
