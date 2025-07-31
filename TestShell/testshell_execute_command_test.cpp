@@ -6,16 +6,6 @@
 using namespace testing;
 using namespace std;
 
-//class MockTestShell : public TestShell {
-//public:
-//	MOCK_METHOD(void, help, (int lba));
-//	MOCK_METHOD(void, write, (int lba, std::string value));
-//	MOCK_METHOD(void, fullRead, ());
-//	MOCK_METHOD(void, fullWrite, (std::string value));
-//	MOCK_METHOD(void, help, ());
-//private:
-//};
-//
 class TestShellCommandOperatorFixture : public Test {
 public:
 	TestShell app;
