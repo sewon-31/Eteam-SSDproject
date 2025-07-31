@@ -36,6 +36,12 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         std::cout << "Executing fullread" << std::endl;
         fullRead();
     }
+    else if (opCommand == CommandParser::CMD_ERASE) {
+        int lba = std::stoi(commandVector.at(1));
+        int size = std::stoi(commandVector.at(2));
+        std::cout << "Executing erase" << std::endl;
+        erase(lba, size);
+    }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
         ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
 
@@ -128,9 +134,6 @@ void TestShell::runScript(std::string filename)
     scriptListFile.close();
 }
 
-
-
-
 void TestShell::fullRead()
 {
     try {
@@ -162,4 +165,29 @@ void TestShell::fullWrite(std::string value) {
 	catch (SSDExecutionException& e) {
 		std::cout << "[FULL_WRITE] Fail" << std::endl;
 	}
+}
+
+void TestShell::erase(int lba, int size) {
+    try {
+        // lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX
+        if (size < 0) {
+            if (size + lba < 0) {
+                size = lba + 1;
+                lba = 0;
+            }
+            else {
+                lba = size + lba + 1;
+                size = std::abs(size);
+            }
+        }
+        else if (size + lba > 100) {
+            size = 100 - lba;
+        }
+
+        ssd->erase(lba, size);
+        std::cout << "[ERASE] Done" << std::endl;
+    }
+    catch (SSDExecutionException& e) {
+        std::cout << "[ERASE] Fail" << std::endl;
+    }
 }

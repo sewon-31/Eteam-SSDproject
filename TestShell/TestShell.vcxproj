@@ -129,7 +129,6 @@
     <ClCompile Include="command_parser_test.cpp" />
     <ClCompile Include="file_util.cpp" />
     <ClCompile Include="file_util_test.cpp" />
-    <ClCompile Include="concrete_commands.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ssd_interface.cpp" />
     <ClCompile Include="testshell_execute_command_test.cpp">
