@@ -6,6 +6,7 @@ public:
 	MOCK_METHOD(void, write, (int lba, string value), (override));
 	MOCK_METHOD(string, read, (int lba), (override));
 	MOCK_METHOD(void, erase, (int lba, int size), (override));
+	MOCK_METHOD(void, eraseRange, (int startLba, int endLba), (override));
 };
 
 class MockSSDDriver : public SSDDriver {
