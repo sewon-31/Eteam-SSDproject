@@ -134,9 +134,6 @@ void TestShell::runScript(std::string filename)
     scriptListFile.close();
 }
 
-
-
-
 void TestShell::fullRead()
 {
     try {
