@@ -5,7 +5,8 @@ TEST(ShellTest, TestPrintHelp) {
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
-	shell.help();
+	vector<string> commandVector = { "help" };
+	shell.ExecuteCommand(commandVector);
 	std::cout.rdbuf(oldCoutStreamBuf);
 	string expect =
 		"Team: Easiest\n"

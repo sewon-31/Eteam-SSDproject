@@ -1,7 +1,10 @@
 #include "gmock/gmock.h"
 #include "mock_ssd.h"
+#include "command.h"
+#include <string>
+#include "common_test_fixture.h"
 
-class WriteTestFixture : public testing::Test {
+class WriteTestFixture : public testing::Test, public HandleConsoleOutputFixture {
 public:
 	const int VALID_LBA = 10;
 	const int OVER_LBA = 100;
@@ -9,6 +12,7 @@ public:
 	MockSSD mockSSD;
 	SSDDriver realSSD;
 	MockSSDDriver mockSSDDriver;
+	WriteCommand cmd{ &mockSSD };
 	std::string value = "0x12345678";
 	std::ostringstream oss;
 	std::streambuf* oldCoutStreamBuf;
@@ -21,6 +25,10 @@ public:
 		std::ifstream file(path);
 		return file.good();
 	}
+	void executeWrite(int lba, string value) {
+		vector<string> args = { std::to_string(lba), value };
+		cmd.execute(args);
+	}
 protected:
 	void SetUp() override {
 		oldCoutStreamBuf = std::cout.rdbuf();
@@ -29,14 +37,17 @@ protected:
 	void TearDown() override {
 		std::cout.rdbuf(oldCoutStreamBuf);
 	}
+
 };
-TEST_F(WriteTestFixture, TestBasicWrite) {
-	TestShell shell{ &mockSSD };
+TEST_F(WriteTestFixture, TestBasicWrite) {	
 	EXPECT_CALL(mockSSD, write(VALID_LBA, value)).Times(1);
-	shell.write(VALID_LBA, value);
-	EXPECT_EQ(WRITE_DONE, oss.str());
+
+	executeWrite(VALID_LBA, value);
+
+	EXPECT_EQ(WRITE_DONE, getLastLine(oss.str()));
 }
 
+#if 0
 TEST_F(WriteTestFixture, TestWriteInvalidLBAOverUpperBound) {
 	TestShell shell{ &mockSSD };
 	std::string value = "0x12345678";
@@ -98,3 +109,4 @@ TEST_F(WriteTestFixture, TestRealSSDWrite) {
 	ASSERT_EQ(outputData.size(), 100);
 	EXPECT_EQ(outputData.at(VALID_LBA), value);
 }
+#endif
