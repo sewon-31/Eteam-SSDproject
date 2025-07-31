@@ -3,18 +3,25 @@
 #include <fstream>
 #include <iostream>
 
-class FileInterface {
+class FileInterface
+{
 public:
 	FileInterface(const std::string& file);
+
 	bool fileOpen();
-	bool fileReadOneline(std::string& str);
-	bool setReadPoint(unsigned point);
-	bool fileWriteOneline(const std::string str);
 	void fileClose();
 	bool fileClear();
+
+	bool fileReadOneline(std::string& str);
+	bool setReadPoint(unsigned point);
+
+	bool fileWriteOneline(const std::string str);
+
 	int checkSize();
+
 private:
-	std::fstream ssdNandFile;
-	unsigned int readPoint;
 	std::string fileName;
+	std::fstream file;
+
+	unsigned int readPoint;
 };

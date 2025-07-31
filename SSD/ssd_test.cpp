@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "ssd_command_parser.h"
+#include "ssd_command_builder.h"
 #include "ssd.h"
 #include <random>
 #include <cstdlib>
@@ -8,55 +8,92 @@
 
 using namespace testing;
 
-class MockParser : public SSDCommandParser {
+class MockCommand : public ICommand {
 public:
-	MOCK_METHOD(void, setCommand, (const string& command), (override));
+	MOCK_METHOD(void, run, (string& result), (override));
+	MOCK_METHOD(void, execute, (string& result), (override));
+	MOCK_METHOD(CmdType, getCmdType, (), (const, override));
+};
+
+class MockParser : public SSDCommandBuilder {
+public:
+	MOCK_METHOD(void, setCommandVector, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
 	MOCK_METHOD(vector<string>, getCommandVector, (), (const, override));
+	MOCK_METHOD(std::shared_ptr<ICommand>, createCommand, (std::vector<std::string>, NandData&), (override));
 };
 
 class SSDTestFixture : public Test
 {
 protected:
 	void SetUp() override {
+		mockCmd = std::make_shared<MockCommand>();
 		mockParser = std::make_shared<MockParser>();
-		app.setParser(mockParser);
 	}
 
 public:
+	std::shared_ptr<MockCommand> mockCmd;
 	std::shared_ptr<MockParser> mockParser;
+
 	SSD app;
-	FileInterface& nandFile = app.getNandFile();
+	FileInterface& nandFile = app.getStorage().getNandFile();
 	FileInterface& outputFile = app.getOutputFile();
 
 	void processMockParserFunctions()
 	{
-		EXPECT_CALL(*mockParser, setCommand)
-			.Times(1);
+		app.setParser(mockParser);
 		EXPECT_CALL(*mockParser, isValidCommand)
 			.WillRepeatedly(Return(true));
 	}
 };
 
-TEST_F(SSDTestFixture, GetCommandTest) {
+TEST_F(SSDTestFixture, RunExecutesCommand) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
+	std::vector<std::string> input = { "R", "0" };
 
-	app.run("R 0");
+	EXPECT_CALL(*mockParser, createCommand(input, testing::_))
+		.WillOnce(Return(mockCmd));
 
-	EXPECT_EQ("R", app.parsedCommand.at(0));
-	EXPECT_EQ("0", app.parsedCommand.at(1));
+	EXPECT_CALL(*mockCmd, run)
+		.Times(1);
+
+	app.run(input);
 }
 
-TEST_F(SSDTestFixture, ReadTest) {
+TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
+	EXPECT_CALL(*mockParser, isValidCommand)
+		.WillRepeatedly(Return(false));
 
-	app.run("R 0");
+	EXPECT_CALL(*mockParser, createCommand)
+		.Times(1);
+
+	EXPECT_CALL(*mockCmd, execute)
+		.Times(0);
+
+	app.run(vector<string>{"R", "0", "0x00000000"});
+}
+
+// cannot run GetCommandTest anymore
+TEST_F(SSDTestFixture, DISABLED_GetCommandTest) {
+	vector<string> input = { "R", "0" };
+	EXPECT_CALL(*mockParser, getCommandVector())
+		.WillRepeatedly(Return(input));
+
+	app.run(input);
+
+	//EXPECT_EQ("R", app.parsedCommand.at(0));
+	//EXPECT_EQ("0", app.parsedCommand.at(1));
+}
+
+// cannot run ReadTest anymore
+TEST_F(SSDTestFixture, DISABLED_ReadTest) {
+	processMockParserFunctions();
+
+	vector<string> input = { "R", "0" };
+	app.run(input);
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 	string expected;
@@ -71,25 +108,15 @@ TEST_F(SSDTestFixture, ReadTest) {
 	EXPECT_EQ(expected, app.getData(0));
 }
 
-TEST_F(SSDTestFixture, GetInvalidCommandTest) {
+// cannot run WriteText anymore
+TEST_F(SSDTestFixture, DISABLED_WriteText) {
 	processMockParserFunctions();
 
-	EXPECT_CALL(*mockParser, isValidCommand)
-		.WillRepeatedly(Return(false));
-
-	EXPECT_CALL(*mockParser, getCommandVector)
-		.Times(0);
-
-	app.run("R 0 0x00000000");
-}
-
-TEST_F(SSDTestFixture, WriteText) {
-	processMockParserFunctions();
-
+	vector<string> input = { "W", "0", "0x11112222" };
 	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
+		.WillRepeatedly(Return(input));
 
-	app.run("W 0 0x11112222");
+	app.run(input);
 	EXPECT_EQ("0x11112222", app.getData(0));
 
 	app.clearData();
@@ -103,10 +130,9 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		app.writeData(i, str[i]);
+		app.run({ "W", std::to_string(i), str[i] });
 	}
 
-	EXPECT_TRUE(app.writeNandFile());
 	EXPECT_EQ(1200, nandFile.checkSize());
 }
 
@@ -118,12 +144,13 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
-		app.writeData(i, str[i]);
+		app.run({ "W", std::to_string(i), str[i] });
 	}
 
-	app.writeNandFile();
 	EXPECT_EQ(1200, nandFile.checkSize());
-	EXPECT_TRUE(app.readNandFile());
+
+	// to update storage from nand file
+	app.run({ "R", "0" });
 
 	for (int i = 0; i < 100; i++) {
 		if (app.getData(i) != str[i]) {
@@ -138,17 +165,12 @@ TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 	char ret = true;
 	std::string expected_str = "0x12341234";
 
-	EXPECT_TRUE(app.writeOutputFile(expected_str));
+	EXPECT_TRUE(app.updateOutputFile(expected_str));
 	EXPECT_EQ(12, outputFile.checkSize());
 }
 
 TEST_F(SSDTestFixture, TC_RUN_WRITE) {
-	processMockParserFunctions();
-
-	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "W", "0", "0x11112222"}));
-
-	app.run("W 0 0x11112222");
+	app.run({ "W", "0", "0x11112222" });
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 
@@ -161,12 +183,7 @@ TEST_F(SSDTestFixture, TC_RUN_WRITE) {
 }
 
 TEST_F(SSDTestFixture, TC_RUN_READ) {
-	processMockParserFunctions();
-
-	EXPECT_CALL(*mockParser, getCommandVector())
-		.WillRepeatedly(Return(vector<string>{ "R", "0" }));
-
-	app.run("R 0");
+	app.run({ "R", "0" });
 
 	FileInterface nandFile = { "../ssd_nand.txt" };
 

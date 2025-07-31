@@ -1,44 +1,32 @@
-#include "ssd_command_parser.h"
+#include "ssd_command_builder.h"
 #include "file_interface.h"
 #include "nand_data.h"
+#include "command.h"
 
 #include <memory>
 
 class SSD
 {
 public:
-	explicit SSD(const std::string& nandPath = "../ssd_nand.txt",
-		const std::string& outputPath = "../ssd_output.txt");
+	explicit SSD(
+		const string& nandPath = "../ssd_nand.txt",
+		const string& outputPath = "../ssd_output.txt");
 
-
-	void run(const string& commandStr);
-
-	FileInterface& getNandFile();
-	FileInterface& getOutputFile();
-	bool readNandFile();
-	bool writeNandFile();
-	bool writeOutputFile(const string& str);
+	void run(vector<string> commandVector);
+	bool updateOutputFile(const string& result);
 
 	// for unit test
 	string getData(int lba) const;
 	void writeData(int lba, const string& value);
 	void clearData();
-
-	void setParser(std::shared_ptr<SSDCommandParser> parser);
-
-	vector<string> parsedCommand;
-
-	//string data[100];
-	NandData storage;
+	void setParser(std::shared_ptr<SSDCommandBuilder> parser);
+	FileInterface& getOutputFile();
+	NandData& getStorage();
 
 private:
-	string runReadCommand(int lba);
-	void runWriteCommand(int lba, const string& value);
-
+	NandData storage;
 	FileInterface outputFile;
-	FileInterface nandFile;
-
-	std::shared_ptr<SSDCommandParser> parser;
+	std::shared_ptr<SSDCommandBuilder> parser;
 
 	static const int nandFileSize = 1200;
 };
