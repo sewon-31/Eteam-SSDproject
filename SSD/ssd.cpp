@@ -8,7 +8,7 @@ SSD::SSD(const std::string& nandPath, const std::string& outputPath)
 }
 
 void
-SSD::setParser(SSDCommandParser* parser)
+SSD::setParser(std::shared_ptr<SSDCommandParser> parser)
 {
 	this->parser = parser;
 }
@@ -16,9 +16,8 @@ SSD::setParser(SSDCommandParser* parser)
 void
 SSD::run(const string& commandStr)
 {
-	if (parser == nullptr) {
-		SSDCommandParser myParser;
-		parser = &myParser;
+	if (!parser) {
+		parser = std::make_shared<SSDCommandParser>();
 	}
 
 	// parse command
