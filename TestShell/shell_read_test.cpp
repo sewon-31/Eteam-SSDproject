@@ -36,7 +36,7 @@ TEST_F(TestShellRead, ReadPassWithMockSSD) {
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	vector<string> args = { std::to_string(0) };
+	vector<string> args = { "read", std::to_string(0)};
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
@@ -117,7 +117,7 @@ TEST_F(TestShellRead, ReadPassWithMockRunExe) {
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	vector<string> args = { std::to_string(0) };
+	vector<string> args = { "read", std::to_string(0)};
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 

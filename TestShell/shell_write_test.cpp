@@ -27,11 +27,11 @@ public:
 		return file.good();
 	}
 	void executeWrite(int lba, string value) {
-		vector<string> args = { std::to_string(lba), value };
+		vector<string> args = { "write", std::to_string(lba), value};
 		writeCmd.execute(args);
 	}
 	void executeFullWrite(string value) {
-		vector<string> args = { value };
+		vector<string> args = { "full_write", value};
 		fullWriteCmd.execute(args);
 	}
 protected:
