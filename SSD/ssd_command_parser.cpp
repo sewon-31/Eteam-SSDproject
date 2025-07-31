@@ -9,23 +9,6 @@ using std::istringstream;
 void
 SSDCommandParser::setCommandVector(vector<string> inputCommandVector)
 {
-	/*
-	// set commandStr
-	this->commandStr = command;
-
-	// set commandVector
-	commandVector.clear();
-
-	istringstream ss{ commandStr };
-	string strBuf;
-
-	while (getline(ss, strBuf, ' ')) {
-		if (!strBuf.empty()) {
-			commandVector.push_back(strBuf);
-		}
-	}
-	*/
-
 	commandVector = inputCommandVector;
 }
 
@@ -62,8 +45,7 @@ SSDCommandParser::isValidCommand() const
 
 		// check lba range
 		string lbaStr = commandVector.at(LBA);
-		int lba = std::stoi(lbaStr);
-		if (lba < 0 || lba > 99) {
+		if (isValidLBA(std::stoi(lbaStr)) == false) {
 			return false;
 		}
 
@@ -111,4 +93,10 @@ SSDCommandParser::isValidValue(const string& valueStr) const
 {
 	std::regex re("^0x[0-9A-F]{8}$");
 	return std::regex_match(valueStr, re);
+}
+
+bool
+SSDCommandParser::isValidLBA(int lba) const
+{
+	return lba >= NandData::LBA::MIN && lba <= NandData::LBA::MAX;
 }

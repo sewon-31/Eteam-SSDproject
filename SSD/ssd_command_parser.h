@@ -20,9 +20,9 @@ public:
 	};
 
 	virtual void setCommandVector(vector<string> inputCommandVector);
-	virtual bool isValidCommand() const;
 	virtual vector<string> getCommandVector() const;
 
+	virtual bool isValidCommand() const;
 	virtual std::shared_ptr<ICommand> createCommand(vector<string> commandVector, NandData& storage);
 
 	static constexpr const char* CMD_READ = "R";
@@ -30,8 +30,7 @@ public:
 
 private:
 	bool isValidValue(const string& valueStr) const;
+	bool isValidLBA(int lba) const;
 
-	string commandStr;
 	vector<string> commandVector;
-public:
 };
