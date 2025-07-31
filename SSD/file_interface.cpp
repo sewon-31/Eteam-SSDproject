@@ -15,9 +15,7 @@ bool FileInterface::fileOpen() {
 #if _DEBUG
 		std::cout << "[Debug] Creating new file: " << fileName << std::endl;
 #endif
-		std::ofstream create(fileName);
-		create.close();
-
+		std::ofstream(fileName).close();
 		ssdNandFile.open(fileName, std::ios::in | std::ios::out);
 	}
 
@@ -48,7 +46,7 @@ bool FileInterface::setReadPoint(unsigned point) {
 bool FileInterface::fileWriteOneline(const std::string str) {
 	if (!ssdNandFile.is_open()) return false;
 
-	ssdNandFile.seekg(0, std::ios::end);
+	ssdNandFile.seekp(0, std::ios::end);
 	ssdNandFile << str << '\n';
 
 	if (!ssdNandFile.good()) {
@@ -65,7 +63,7 @@ void FileInterface::fileClose() {
 	}
 }
 
-bool FileInterface::fileRemove() {
+bool FileInterface::fileClear() {
 	std::ofstream file(fileName, std::ios::trunc);
 	if (file.is_open()) {
 		file.close();

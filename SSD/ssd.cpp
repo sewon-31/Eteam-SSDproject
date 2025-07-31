@@ -104,7 +104,7 @@ bool
 SSD::writeNandFile() {
 	bool ret;
 
-	nandFile.fileRemove();
+	nandFile.fileClear();
 	nandFile.fileOpen();
 
 	for (int i = 0; i < maxLbaNum; i++)
@@ -122,7 +122,7 @@ bool
 SSD::writeOutputFile(const string& str) {
 	bool ret;
 
-	outputFile.fileRemove();
+	outputFile.fileClear();
 	outputFile.fileOpen();
 	ret = outputFile.fileWriteOneline(str);
 	outputFile.fileClose();
