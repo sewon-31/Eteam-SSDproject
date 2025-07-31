@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 class Logger {
 public:
     static Logger& getInstance();
@@ -9,7 +10,7 @@ private:
     const std::string LOG_DIR = "../log";
     const std::string LOG_FILE = LOG_DIR + "/latest.log";
 #if _DEBUG
-    const int MAX_LOG_SIZE = 200;//for test: 100B, real: 100KB
+    const int MAX_LOG_SIZE = 200;//for test: 200B, real: 100KB
 #else
     const int MAX_LOG_SIZE = 100 * 1024;
 #endif
@@ -18,4 +19,6 @@ private:
     std::string getLogMessage(const char* funcName, const char* fmt, va_list args);
     void writeToFile(const std::string& log_msg);
     void rotateIfNeeded(int size);
+    std::vector<std::string> getLogFileList();
+    void zipLogFile();
 };
