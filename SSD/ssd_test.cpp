@@ -187,7 +187,7 @@ TEST_F(SSDTestFixture, TC_RUN_READ) {
 }
 
 
-TEST_F(SSDTestFixture, reduceCMDBuffer) {
+TEST_F(SSDTestFixture, reduceCMDBuffer1) {
 	string op[6] = { "W","E","E","W","W","E" };
 	int lba[6] = { 1,12,23,34,45,56 };
 	int size[6] = { 1,2,3,1,1,6 };
@@ -217,11 +217,10 @@ TEST_F(SSDTestFixture, reduceCMDBuffer) {
 	EXPECT_EQ(21, error);
 }
 
-
-TEST_F(SSDTestFixture, reduceCMDBuffer1) {
+TEST_F(SSDTestFixture, reduceCMDBuffer2) {
 	string op[6] = { "W","E","E","W","W","E" };
-	int lba[6] = { 1,12,23,34,45,56 };
-	int size[6] = { 1,2,3,1,1,6 };
+	int lba[6] = { 1,12,20,34,45,56 };
+	int size[6] = { 1,9, 1,1,1,6 };
 	string data[6] = { "0x00012300",
 						"",
 						"",
@@ -236,7 +235,7 @@ TEST_F(SSDTestFixture, reduceCMDBuffer1) {
 		test_in.data[i] = data[i];
 	}
 
-	app.reduceCMDBuffer(test_in, test_out);
+	EXPECT_EQ(5, app.reduceCMDBuffer(test_in, test_out));
 
 	int error = 0;
 	for (int i = 0; i < 6; i++) {
