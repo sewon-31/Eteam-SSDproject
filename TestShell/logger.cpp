@@ -5,6 +5,7 @@
 #include "file_util.h"
 #include <iomanip> 
 #include <chrono>
+#include <io.h>
 
 Logger& Logger::getInstance() {
     static Logger instance;
@@ -43,12 +44,23 @@ void Logger::writeToFile(const std::string& log_msg) {
     }
     FileUtil::writeLine(LOG_FILE, log_msg, true);
 }
+
+void Logger::zipLogFile() {
+    auto files = getLogFileList();
+    if (files.empty()) return;
+    auto oldFileName = LOG_DIR + "/" + files.at(0);
+
+    const std::string oldExt = ".log";
+    const std::string newExt = ".zip";
+    std::string newFileName = oldFileName.substr(0, oldFileName.size() - oldExt.size()) + newExt;
+    std::rename(oldFileName.c_str(), newFileName.c_str());
+}
+
 void Logger::rotateIfNeeded(int size) {
     if (!FileUtil::directoryExists(LOG_DIR)) return;
     if (!FileUtil::fileExists(LOG_FILE)) return;
     if (FileUtil::getFileSize(LOG_FILE) + size < MAX_LOG_SIZE) return;
-
-    // 날짜+시간 문자열 생성
+    zipLogFile();
     auto now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
     std::tm local_tm;
@@ -76,4 +88,17 @@ std::string Logger::getCurrentTimestamp() {
         localTime.tm_min);
 
     return std::string(buf);
+}
+
+std::vector<std::string> Logger::getLogFileList() {
+    struct _finddata_t fileinfo;
+    intptr_t hFile = _findfirst((LOG_DIR + "/until_*.log").c_str(), &fileinfo);
+    std::vector<std::string> files;
+    if (hFile != -1) {
+        do {
+            files.push_back(fileinfo.name);
+        } while (_findnext(hFile, &fileinfo) == 0);
+        _findclose(hFile);
+    }
+    return files;
 }
