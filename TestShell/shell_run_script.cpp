@@ -4,6 +4,10 @@
 
 class ShellRunScript : public testing::Test, public HandleConsoleOutputFixture {
 public:
+	bool isFileExists(const std::string& path) {
+		std::ifstream file(path);
+		return file.good();
+	}
 };
 
 TEST_F(ShellRunScript, NoFile) {
@@ -41,6 +45,10 @@ TEST_F(ShellRunScript, ExistFileButWrongCommand) {
 }
 
 TEST_F(ShellRunScript, ExistFileAndGoodCommand) {
+	if (!isFileExists("SSD.exe")) {
+		GTEST_SKIP() << "SSD.exe not found, skipping test.";
+	}
+
 	TestShell shell(new SSDDriver());
 
 	std::ostringstream oss;
