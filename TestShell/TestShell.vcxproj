@@ -129,6 +129,8 @@
     <ClCompile Include="command_parser_test.cpp" />
     <ClCompile Include="file_util.cpp" />
     <ClCompile Include="file_util_test.cpp" />
+    <ClCompile Include="logger.cpp" />
+    <ClCompile Include="logger_test.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ssd_interface.cpp" />
     <ClCompile Include="testshell_execute_command_test.cpp">
@@ -153,6 +155,7 @@
     <ClInclude Include="command_parser.h" />
     <ClInclude Include="file_util.h" />
     <ClInclude Include="common_test_fixture.h" />
+    <ClInclude Include="logger.h" />
     <ClInclude Include="mock_ssd.h" />
     <ClInclude Include="ssd_interface.h" />
     <ClInclude Include="test_script.h" />
