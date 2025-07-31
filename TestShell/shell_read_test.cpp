@@ -100,7 +100,7 @@ TEST(SSDDriverRead, ReadFailWithMockRunExe) {
 		FAIL();
 	}
 	catch (std::runtime_error e) {
-		EXPECT_EQ(std::string(e.what()), "There is no SSD.exe\n");
+		EXPECT_EQ(std::string(e.what()), "Failed to execute ssd.exe for read()");
 	}
 }
 
@@ -171,7 +171,7 @@ TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("Executing read from LBA 0\nThere is no SSD.exe\n", oss.str());
+	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()", oss.str());
 }
 
 TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
@@ -190,5 +190,5 @@ TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("Executing fullread\nThere is no SSD.exe\n", oss.str());
+	EXPECT_EQ("Executing fullread\nFailed to execute ssd.exe for read()", oss.str());
 }
