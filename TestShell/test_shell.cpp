@@ -202,7 +202,7 @@ void TestShell::eraseRange(int startLba, int endLba) {
     if (startLba > endLba)
         std::swap(startLba, endLba);
     try {
-        ssd->eraseRange(startLba, endLba);
+        erase(startLba, endLba - startLba + 1);
         std::cout << "[ERASE RANGE] Done" << std::endl;
     }
     catch (SSDExecutionException& e) {

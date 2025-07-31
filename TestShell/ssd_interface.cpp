@@ -26,8 +26,3 @@ void SSDDriver::erase(int lba, int size)
 		throw SSDExecutionException("Execution failed: " + command);
 	}
 }
-
-void SSDDriver::eraseRange(int startLba, int endLba)
-{
-	erase(startLba, endLba - startLba + 1);
-}
