@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "ssd_command_parser.h"
+#include "ssd_command_builder.h"
 #include "ssd.h"
 #include <random>
 #include <cstdlib>
@@ -15,7 +15,7 @@ public:
 	MOCK_METHOD(CmdType, getCmdType, (), (const, override));
 };
 
-class MockParser : public SSDCommandParser {
+class MockParser : public SSDCommandBuilder {
 public:
 	MOCK_METHOD(void, setCommandVector, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
