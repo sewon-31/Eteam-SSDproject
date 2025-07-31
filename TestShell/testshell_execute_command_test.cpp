@@ -25,6 +25,7 @@ public:
 	}
 public:
 	MockSSD mockSSD;
+	string testData = "0x00012345";
 };
 
 TEST_F(TestShellCommandOperatorFixture, Read) {
@@ -80,6 +81,49 @@ TEST_F(TestShellCommandOperatorFixture, Flush) {
 
 	EXPECT_CALL(mockSSD, flush())
 		.Times(1);
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, TestScript1) {
+	vector<string> commandVector = { "1_" };
+
+	EXPECT_CALL(mockSSD, write(_, _))
+		.Times(100);
+	EXPECT_CALL(mockSSD, read(_))
+		.Times(100)
+		.WillRepeatedly(Return(testData));
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, TestScript2) {
+	vector<string> commandVector = { "2_" };
+
+	// Write expectations
+	EXPECT_CALL(mockSSD, write(_, _))
+		.WillRepeatedly(Return());
+
+	// Read expectations
+	EXPECT_CALL(mockSSD, read(_))
+		.WillRepeatedly(Return(testData));
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, TestScript3) {
+	vector<string> commandVector = { "3_" };
+
+	std::string val0 = "0x00001111";
+	std::string val99 = "0x00009999";
+
+	EXPECT_CALL(mockSSD, write(0, val0))
+		.Times(200);
+	EXPECT_CALL(mockSSD, write(99, val99))
+		.Times(200);
+	EXPECT_CALL(mockSSD, read(0))
+		.Times(200)
+		.WillRepeatedly(Return(val0));
+	EXPECT_CALL(mockSSD, read(99))
+		.Times(200)
+		.WillRepeatedly(Return(val99));
 
 	app.ExecuteCommand(commandVector);
 }
