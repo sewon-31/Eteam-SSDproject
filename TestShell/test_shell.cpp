@@ -42,6 +42,12 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         std::cout << "Executing erase" << std::endl;
         erase(lba, size);
     }
+    else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
+        int startLba = std::stoi(commandVector.at(1));
+        int endLba = std::stoi(commandVector.at(2));
+        std::cout << "Executing erase_range" << std::endl;
+        eraseRange(startLba, endLba);
+    }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
         ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
 
@@ -189,5 +195,17 @@ void TestShell::erase(int lba, int size) {
     }
     catch (SSDExecutionException& e) {
         std::cout << "[ERASE] Fail" << std::endl;
+    }
+}
+
+void TestShell::eraseRange(int startLba, int endLba) {
+    if (startLba > endLba)
+        std::swap(startLba, endLba);
+    try {
+        ssd->eraseRange(startLba, endLba);
+        std::cout << "[ERASE RANGE] Done" << std::endl;
+    }
+    catch (SSDExecutionException& e) {
+        std::cout << "[ERASE RANGE] Fail" << std::endl;
     }
 }
