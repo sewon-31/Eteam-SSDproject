@@ -10,31 +10,18 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
 
-    if (opCommand == CommandParser::CMD_EXIT) {
-        Command* command = new ExitCommand();
-        if (!command->execute(commandVector)) return false;
+    std::unique_ptr<Command> command = CommandFactory::createCommand(commandVector, ssd);
+
+    if (command) {
+        std::vector<std::string> args(commandVector.begin() + 1, commandVector.end());
+        return command->execute(args);
     }
-    else if (opCommand == CommandParser::CMD_HELP) {
-        Command* command = new HelpCommand();
-        if (!command->execute(commandVector)) return false;
+    else {
+        std::cout << "[Error] Unknown command: " << commandVector.at(0) << std::endl;
+        return true;
     }
-    else if (opCommand == CommandParser::CMD_WRITE) {
-        Command* command = new WriteCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_READ) {
-        Command* command = new ReadCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_FULLWRITE) {
-        Command* command = new FullWriteCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_FULLREAD) {
-        Command* command = new FullReadCommand(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_ERASE) {
+
+    if (opCommand == CommandParser::CMD_ERASE) {
         Command* command = new EraseCommand(ssd);
         if (!command->execute(commandVector)) return false;
     }
@@ -45,21 +32,6 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
     else if (opCommand == CommandParser::CMD_FLUSH) {
         Command* command = new FlushCommand(ssd);
         if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-        Command* command = new ScriptsFullWriteAndReadCompare(ssd);
-        if (!command->execute(commandVector)) return false;
- }
-    else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-        Command* command = new ScriptsPartialLBAWrite(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-        Command* command = new ScriptsWriteReadAging(ssd);
-        if (!command->execute(commandVector)) return false;
-    }
-    else {
-        std::cout << "[Error] Unknown command: " << opCommand << std::endl;
     }
 
     return true;
