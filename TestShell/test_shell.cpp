@@ -9,7 +9,6 @@ using std::cout;
 bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
-    string result = FAIL + "\n";
 
     if (opCommand == CommandParser::CMD_EXIT) {
         Command* command = new ExitCommand();

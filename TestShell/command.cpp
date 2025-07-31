@@ -70,7 +70,7 @@ void FullReadCommand::fullRead()
 
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
 {
-	std::string value = args.at(0);
+	std::string value = args.at(1);
 	std::cout << "Executing fullwrite with value " << value << std::endl;
 	fullWrite(value);
     return true;

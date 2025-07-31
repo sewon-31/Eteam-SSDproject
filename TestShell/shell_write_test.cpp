@@ -31,7 +31,7 @@ public:
 		writeCmd.execute(args);
 	}
 	void executeFullWrite(string value) {
-		vector<string> args = { "full_write", value};
+		vector<string> args = { "fullwrite", value};
 		fullWriteCmd.execute(args);
 	}
 protected:
