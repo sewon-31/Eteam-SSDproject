@@ -73,3 +73,9 @@ bool FileUtil::readAllLines(const std::string& filePath, std::vector<std::string
     }
     return ifs.eof();
 }
+
+size_t FileUtil::getFileSize(const std::string& filePath) {
+    std::ifstream ifs(filePath.c_str());
+    if (!ifs.is_open()) return 0;
+    return ifs.tellg();
+}

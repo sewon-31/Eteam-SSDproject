@@ -13,5 +13,5 @@ public:
     static bool clearFile(const std::string& filePath);
     static bool writeAllLines(const std::string& filePath, const std::vector<std::string>& lines, bool append = false);
     static bool readAllLines(const std::string& filePath, std::vector<std::string>& linesOut);
-
+    static size_t getFileSize(const std::string& filePath);
 };
