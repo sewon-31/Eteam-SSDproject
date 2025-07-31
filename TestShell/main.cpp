@@ -11,15 +11,17 @@ int main() {
 
 #else
 
-int main() {
+int main(int argc, char* argv[]) {
+	TestShell ts(new SSDDriver());
 
-	TestShell ts;
+	if (argc == 1) {
+		ts.runShell();
+	}
 
-	SSDDriver ssd;
-	ts.setSSD(&ssd);
-
-	ts.runShell();
-
+	if (argc > 1) {
+		ts.runScript(argv[1]);
+	}
+	
 	return 0;
 }
 

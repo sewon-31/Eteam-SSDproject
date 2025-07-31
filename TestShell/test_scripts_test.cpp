@@ -24,8 +24,6 @@ public:
 
 TEST_F(TestScriptsFixture, Success) {
 	makeTests("FullWriteAndReadCompare");
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oss.rdbuf());
 
 	EXPECT_CALL(mockSSD, write(_, _))
 		.Times(100);
@@ -33,34 +31,22 @@ TEST_F(TestScriptsFixture, Success) {
 		.Times(100)
 		.WillRepeatedly(Return(testData));
 	
-	script->run();
-
-	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("PASS\n", oss.str());
+	EXPECT_TRUE(script->run());
 }
 
 TEST_F(TestScriptsFixture, FailWithInvalidData) {
 	makeTests("FullWriteAndReadCompare");
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oss.rdbuf());
 
 	EXPECT_CALL(mockSSD, write(_, _))
 		.Times(5);
 	EXPECT_CALL(mockSSD, read(_))
 		.WillRepeatedly(Return(invalidData));
 
-	script->run();
-
-	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("FAIL\n", oss.str());
+	EXPECT_FALSE(script->run());
 }
 
 TEST_F(TestScriptsFixture, TestScript2) {
 	makeTests("PartialLBAWrite");
-
-	std::ostringstream oss;
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oss.rdbuf());
 
 	// Write expectations
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -70,20 +56,11 @@ TEST_F(TestScriptsFixture, TestScript2) {
 	EXPECT_CALL(mockSSD, read(_))
 		.WillRepeatedly(Return(testData));
 
-	script->run();
-
-	// Act
-	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("PASS\n", oss.str());
+	EXPECT_TRUE(script->run());
 }
 
 TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
 	makeTests("WriteReadAging");
-
-	// For check "PASS" output
-	std::ostringstream oss;
-	auto oldCoutStreamBuf = std::cout.rdbuf();
-	std::cout.rdbuf(oss.rdbuf());
 
 	std::string val0 = "0x00001111";
 	std::string val99 = "0x00009999";
@@ -99,9 +76,5 @@ TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
 		.Times(200)
 		.WillRepeatedly(Return(val99));
 
-	// Act
-	script->run();
-
-	std::cout.rdbuf(oldCoutStreamBuf);
-	EXPECT_EQ("PASS\n", oss.str());
+	EXPECT_TRUE(script->run());
 }
