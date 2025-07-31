@@ -51,12 +51,40 @@ void WriteCommand::write(int lba, std::string value)
 
 bool FullReadCommand::execute(const std::vector<std::string>& args)
 {
-    return false;
+	std::cout << "Executing fullread" << std::endl;
+	fullRead();
+    return true;
+}
+
+void FullReadCommand::fullRead()
+{
+	try {
+		for (int addr = 0; addr < MAX_LBA; addr++) {
+			ssdReadAndPrint(addr);
+		}
+	}
+	catch (std::exception e) {
+		std::cout << string(e.what());
+	}
 }
 
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
 {
-    return false;
+	std::string value = args.at(0);
+	std::cout << "Executing fullwrite with value " << value << std::endl;
+	fullWrite(value);
+    return true;
+}
+void FullWriteCommand::fullWrite(std::string value) {
+	if (ssd == nullptr) return;
+	try {
+		for (int i = 0; i < 100; i++)
+			ssd->write(i, value);
+		std::cout << "[FULL_WRITE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[FULL_WRITE] Fail" << std::endl;
+	}
 }
 
 bool ExitCommand::execute(const std::vector<std::string>& args)
@@ -96,19 +124,4 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\t\tMust contain exactly 8 hex digits (0-9, A-F)\n";
 	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
     return true;
-}
-
-bool TestScript1Command::execute(const std::vector<std::string>& args)
-{
-    return false;
-}
-
-bool TestScript2Command::execute(const std::vector<std::string>& args)
-{
-    return false;
-}
-
-bool TestScript3Command::execute(const std::vector<std::string>& args)
-{
-    return false;
 }

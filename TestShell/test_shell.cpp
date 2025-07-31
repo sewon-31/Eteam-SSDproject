@@ -9,6 +9,7 @@ using std::cout;
 bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
+
     string result = "FAIL";
 
     if (opCommand == CommandParser::CMD_EXIT) {
@@ -28,13 +29,12 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLWRITE) {
-        std::string value = commandVector.at(1);
-        std::cout << "Executing fullwrite with value " << value << std::endl;
-        fullWrite(value);
+        Command* command = new FullWriteCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLREAD) {
-        std::cout << "Executing fullread" << std::endl;
-        fullRead();
+        Command* command = new FullReadCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_ERASE) {
         int lba = std::stoi(commandVector.at(1));
@@ -53,28 +53,22 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         flush();
     }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-        ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
-
         std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-        if (scriptCommand->run()) result = "TRUE";
-
-        std::cout << result << '\n';
-    }
-    else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-        ScriptsCommand* scriptCommand = new ScriptsPartialLBAWrite(ssd);
         
+        Command* command = new ScriptsFullWriteAndReadCompare(ssd);
+        if (!command->execute(commandVector)) return false;
+ }
+    else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
         std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-        if (scriptCommand->run()) result = "TRUE";
-
-        std::cout << result << '\n';
+        
+        Command* command = new ScriptsPartialLBAWrite(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-        ScriptsCommand* scriptCommand = new ScriptsWriteReadAging(ssd);
-
         std::cout << "Running script 3: WriteReadAging" << std::endl;
-        if (scriptCommand->run()) result = "TRUE";
 
-        std::cout << result << '\n';
+        Command* command = new ScriptsWriteReadAging(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else {
         std::cout << "[Error] Unknown command: " << opCommand << std::endl;
@@ -143,40 +137,6 @@ void TestShell::runScript(std::string filename)
 
     scriptListFile.close();
 }
-
-void TestShell::fullRead()
-{
-    try {
-	    for (int addr = 0; addr < MAX_LBA; addr++) {       
-            ssdReadAndPrint(addr);
-	    }
-    }
-    catch (std::exception e) {
-        cout << string(e.what());
-    }
-}
-
-void TestShell::ssdReadAndPrint(int addr)
-{
-    std::string content = ssd->read(addr);
-    std::ostringstream oss;
-    oss << std::setw(2) << std::setfill('0') << addr;
-
-    cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
-}
-
-void TestShell::fullWrite(std::string value) {
-    if (ssd == nullptr) return;
-	try {
-		for (int i = 0; i < 100; i++)
-			ssd->write(i, value);
-		std::cout << "[FULL_WRITE] Done" << std::endl;
-	}
-	catch (SSDExecutionException& e) {
-		std::cout << "[FULL_WRITE] Fail" << std::endl;
-	}
-}
-
 void TestShell::erase(int lba, int size) {
     try {
         // lba : 0 <= lba < 100, size : -INT_MAX ~ INT_MAX

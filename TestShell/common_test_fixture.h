@@ -26,4 +26,17 @@ public:
 			return str;
 		}
 	}
+	std::string excludeFirstLine(const std::string& str) {
+		if (str.empty()) {
+			return "";
+		}
+
+		size_t firstNewlinePos = str.find('\n');
+
+		if (firstNewlinePos == std::string::npos) {
+			return "";
+		}
+
+		return str.substr(firstNewlinePos + 1);
+	}
 };

@@ -9,6 +9,8 @@ public:
     virtual 
     virtual ~Command() = default;
     virtual bool execute(const std::vector<std::string>& args) = 0;
+
+    const static int MAX_LBA = 100;
 };
 
 // concreate commands
@@ -16,6 +18,8 @@ class ReadCommand : public Command {
 public:
     ReadCommand(SSDInterface* ssd) : ssd(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
+protected:
+    void ssdReadAndPrint(int addr);
 private:
     SSDInterface* ssd;
     const string READ_HEADER = "[Read] LBA ";
@@ -23,7 +27,6 @@ private:
     const string READ_FOOTER = "\n";
 
     void read(int lba);
-    void ssdReadAndPrint(int addr);
 };
 class WriteCommand : public Command {
 public:
@@ -34,31 +37,28 @@ private:
 
     void write(int lba, std::string value);
 };
-class FullReadCommand : public Command {
+class FullReadCommand : public ReadCommand {
 public:
+    FullReadCommand(SSDInterface* ssd) : ReadCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
+private:
+
+    void fullRead();
 };
 class FullWriteCommand : public Command {
 public:
+    FullWriteCommand(SSDInterface* ssd) : ssd(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
+private:
+    SSDInterface* ssd;
+
+    void fullWrite(std::string value);
 };
 class ExitCommand : public Command {
 public:
     bool execute(const std::vector<std::string>& args) override;
 };
 class HelpCommand : public Command {
-public:
-    bool execute(const std::vector<std::string>& args) override;
-};
-class TestScript1Command : public Command {
-public:
-    bool execute(const std::vector<std::string>& args) override;
-};
-class TestScript2Command : public Command {
-public:
-    bool execute(const std::vector<std::string>& args) override;
-};
-class TestScript3Command : public Command {
 public:
     bool execute(const std::vector<std::string>& args) override;
 };

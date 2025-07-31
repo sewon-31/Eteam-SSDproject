@@ -51,13 +51,16 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 		.Times(100)
 		.WillRepeatedly(Return(EXPECT_AA));
 
-	shell.setSSD(&mockSSD);
+//	shell.setSSD(&mockSSD);
+	FullReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.fullRead();
+	vector<string> args = {};
+//	shell.fullRead();
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = "";
@@ -72,7 +75,7 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 		expect += FOOTER;
 	}
 
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
 
@@ -129,13 +132,15 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 		.Times(100)
 		.WillRepeatedly(Return(true));
 
-	shell.setSSD(&SSDwithMockRunExe);
+	FullReadCommand cmd{ &SSDwithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.fullRead();
+	vector<string> args = {};
+	//	shell.fullRead();
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = "";
@@ -150,7 +155,7 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 		expect += FOOTER;
 	}
 
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
 //TEST_F(TestShellRead, ReadFailWithMockRunExe) {
