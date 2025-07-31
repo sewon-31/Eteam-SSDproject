@@ -53,7 +53,7 @@ bool FullReadCommand::execute(const std::vector<std::string>& args)
 {
 	std::cout << "Executing fullread" << std::endl;
 	fullRead();
-    return false;
+    return true;
 }
 
 void FullReadCommand::fullRead()
@@ -73,7 +73,7 @@ bool FullWriteCommand::execute(const std::vector<std::string>& args)
 	std::string value = args.at(0);
 	std::cout << "Executing fullwrite with value " << value << std::endl;
 	fullWrite(value);
-    return false;
+    return true;
 }
 void FullWriteCommand::fullWrite(std::string value) {
 	if (ssd == nullptr) return;
@@ -89,7 +89,7 @@ void FullWriteCommand::fullWrite(std::string value) {
 
 bool ExitCommand::execute(const std::vector<std::string>& args)
 {
-    return false;
+    return true;
 }
 
 bool HelpCommand::execute(const std::vector<std::string>& args)
@@ -124,19 +124,4 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\t\tMust contain exactly 8 hex digits (0-9, A-F)\n";
 	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
     return true;
-}
-
-bool TestScript1Command::execute(const std::vector<std::string>& args)
-{
-    return false;
-}
-
-bool TestScript2Command::execute(const std::vector<std::string>& args)
-{
-    return false;
-}
-
-bool TestScript3Command::execute(const std::vector<std::string>& args)
-{
-    return false;
 }

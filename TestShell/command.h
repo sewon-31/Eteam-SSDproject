@@ -62,18 +62,6 @@ class HelpCommand : public Command {
 public:
     bool execute(const std::vector<std::string>& args) override;
 };
-class TestScript1Command : public Command {
-public:
-    bool execute(const std::vector<std::string>& args) override;
-};
-class TestScript2Command : public Command {
-public:
-    bool execute(const std::vector<std::string>& args) override;
-};
-class TestScript3Command : public Command {
-public:
-    bool execute(const std::vector<std::string>& args) override;
-};
 
 // command Factory
 
