@@ -8,7 +8,25 @@ bool ReadCommand::execute(const std::vector<std::string>& args)
 
 bool WriteCommand::execute(const std::vector<std::string>& args)
 {
-    return false;
+	int lba = std::stoi(args.at(0));
+	std::string value = args.at(1);
+	std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
+	write(lba, value);
+    return true;
+}
+
+void WriteCommand::write(int lba, std::string value)
+{
+	if (ssd == nullptr) return;
+	if (lba >= 100 || lba < 0)
+		return;
+	try {
+		ssd->write(lba, value);
+		std::cout << "[WRITE] Done" << std::endl;
+	}
+	catch (SSDExecutionException& e) {
+		std::cout << "[WRITE] Fail" << std::endl;
+	}
 }
 
 bool FullReadCommand::execute(const std::vector<std::string>& args)

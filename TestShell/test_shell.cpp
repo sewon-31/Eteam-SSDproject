@@ -20,10 +20,8 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_WRITE) {
-        int lba = std::stoi(commandVector.at(1));
-        std::string value = commandVector.at(2);
-        std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
-        write(lba, value);
+        Command* command = new WriteCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_READ) {
         int lba = std::stoi(commandVector.at(1));
@@ -162,20 +160,6 @@ void TestShell::ssdReadAndPrint(int addr)
     oss << std::setw(2) << std::setfill('0') << addr;
 
     cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
-}
-
-
-void TestShell::write(int lba, std::string value) {
-	if (ssd == nullptr) return;
-	if (lba >= 100 || lba < 0)
-		return;
-	try {
-		ssd->write(lba, value);
-		std::cout << "[WRITE] Done" << std::endl;
-	}
-	catch (SSDExecutionException& e) {
-		std::cout << "[WRITE] Fail" << std::endl;
-	}
 }
 
 void TestShell::fullWrite(std::string value) {

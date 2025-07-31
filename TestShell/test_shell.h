@@ -19,7 +19,7 @@ public:
 
 	virtual void read(int lba);
 	virtual void fullRead();
-	virtual void write(int lba, std::string value);
+//	virtual void write(int lba, std::string value);
 	virtual void fullWrite(std::string value);
 private:
 	SSDInterface* ssd;
