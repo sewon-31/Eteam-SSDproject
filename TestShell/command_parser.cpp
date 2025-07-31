@@ -45,6 +45,7 @@ bool CommandParser::isValidCommand() const
 			&& opCommand != CMD_FULLREAD
 			&& opCommand != CMD_FULLWRITE
 			&& opCommand != CMD_ERASE
+			&& opCommand != CMD_ERASE_RANGE
 			&& opCommand != CMD_SCRIPT1
 			&& opCommand != CMD_SCRIPT1_NAME
 			&& opCommand != CMD_SCRIPT2
@@ -62,6 +63,7 @@ bool CommandParser::isValidCommand() const
 			(opCommand == CMD_FULLREAD && commandVector.size() != 1) ||
 			(opCommand == CMD_FULLWRITE && commandVector.size() != 2) ||
 			(opCommand == CMD_ERASE && commandVector.size() != 3) ||
+			(opCommand == CMD_ERASE_RANGE && commandVector.size() != 3) ||
 			((opCommand == CMD_SCRIPT1 || opCommand == CMD_SCRIPT1_NAME) && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT2 || opCommand == CMD_SCRIPT2_NAME) && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT3 || opCommand == CMD_SCRIPT3_NAME) && commandVector.size() != 1)) {
@@ -73,6 +75,20 @@ bool CommandParser::isValidCommand() const
 			string lbaStr = commandVector.at(1);
 			int lba = std::stoi(lbaStr);
 			if (lba < 0 || lba > 99) {
+				return false;
+			}
+		}
+
+		if (opCommand == CMD_ERASE_RANGE) {
+			string lbaStr1 = commandVector.at(1);
+			string lbaStr2 = commandVector.at(2);
+			int lba1 = std::stoi(lbaStr1);
+			int lba2 = std::stoi(lbaStr2);
+
+			if (lba1 < 0 || lba1 > 99) {
+				return false;
+			}
+			if (lba2 < 0 || lba2 > 99) {
 				return false;
 			}
 		}
