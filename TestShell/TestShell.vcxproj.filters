@@ -57,9 +57,6 @@
     <ClCompile Include="test_script.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="test_scripts_test.cpp">
-      <Filter>테스트 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ssd_interface.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -67,6 +64,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="file_util_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="logger_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
     <ClCompile Include="testshell_execute_command_test.cpp">
@@ -77,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="command.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_scripts_test.cpp">
+      <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="common_test_fixture.h">
       <Filter>테스트 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
