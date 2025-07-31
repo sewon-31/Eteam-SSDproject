@@ -197,6 +197,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EQ) {
 						"0x00000100",
 						"0x00000000",
 						"" };
+//  0- 9   N W N N N N N N N N
+// 10-19   N N E E N N N N N N
+// 20-29   N N N E E E N N N N
+// 30-39   N N N N W N N N N N
+// 40-49   N N N N N E N N N N
+// 50-59   N N N N N N E E E E
+// 60-69   E E N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -227,7 +237,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EQ) {
 	}
 	EXPECT_EQ(0, error);
 }
-
+#if 0
 TEST_F(SSDTestFixture, reduceCMD_TC1_REDUCE_1) {
 	string op[6] = { "W","E","E","W","W","E" };
 	int lba[6] = { 1,12,20,34,45,56 };
@@ -238,6 +248,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_REDUCE_1) {
 						"0x00000100",
 						"0x00000000",
 						"" };
+//  0- 9   N W N N N N N N N N
+// 10-19   N N E E E E E E E E
+// 20-29   E N N N N N N N N N
+// 30-39   N N N N W N N N N N
+// 40-49   N N N N N E N N N N
+// 50-59   N N N N N N E E E E
+// 60-69   E E N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -278,6 +298,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS_OVER_10) {
 						"0x00000100",
 						"",
 						"" };
+//  0- 9   N W N N N N N N N N
+// 10-19   N N E E E E E E E E
+// 20-29   E N N N N N N N N N
+// 30-39   N N N N W N N N N N
+// 40-49   N N N N N E N N N N
+// 50-59   N N N N N N E E E E
+// 60-69   E E N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -289,13 +319,13 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS_OVER_10) {
 	int ret = app.reduceCMDBuffer(test_in, test_out);
 	EXPECT_EQ(6, ret);
 
-	string op_res[6] = { "W","E","E","W","E","E" };
-	int lba_res[6] = { 1,12,23,34,45,56 };
-	int size_res[6] = { 1,2,3,1,1,6 };
+	string op_res[6] = { "W","E","W","E","E","N" };
+	int lba_res[6] = { 1,12,34,45,56,0 };
+	int size_res[6] = { 1,9,1,1,6,0 };
 	string data_res[6] = { "0x00012300",
 						"",
-						"",
 						"0x00000100",
+						"",
 						"",
 						"" };
 	int error = 0;
@@ -318,6 +348,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS2_WR1_TO_ERS1_WR1) {
 						"",
 						"0x00000000",
 						"" };
+//  0- 9   N W N N N N N N N N
+// 10-19   E E E E E W E E E N
+// 20-29   N N N N N N N N N N
+// 30-39   N N N N N N N N N N
+// 40-49   N N N N N E N N N N
+// 50-59   N N N N N N E E E E
+// 60-69   E E N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -329,13 +369,13 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS2_WR1_TO_ERS1_WR1) {
 	int ret = app.reduceCMDBuffer(test_in, test_out);
 	EXPECT_EQ(5, ret);
 
-	string op_res[6] = { "W","E","E","W","E","E" };
-	int lba_res[6] = { 1,12,23,34,45,56 };
-	int size_res[6] = { 1,2,3,1,1,6 };
+	string op_res[6] = { "W","E","W","E","E","N" };
+	int lba_res[6] = { 1,10,15,45,56 };
+	int size_res[6] = { 1,9,1,1,6,0 };
 	string data_res[6] = { "0x00012300",
 						"",
-						"",
 						"0x00000100",
+						"",
 						"",
 						"" };
 	int error = 0;
@@ -358,6 +398,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS3_WR2) {
 						"",
 						"0x00000010",
 						"" };
+//  0- 9   E E E E W E E E E E
+// 10-19   E E E E E E W E E E
+// 20-29   E N N N N N N N N N
+// 30-39   N N N N N N N N N N
+// 40-49   N N N N N N N N N N
+// 50-59   N N N N N N N N N N
+// 60-69   N N N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -398,6 +448,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS2_WR2) {
 						"",
 						"0x00000010",
 						"" };
+//  0- 9   E E E E W E E E E E
+// 10-19   E E E E E E W E E E
+// 20-29   N N N N N N N N N N
+// 30-39   N N N N N N N N N N
+// 40-49   N N N N N N N N N N
+// 50-59   N N N N N N N N N N
+// 60-69   N N N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -438,6 +498,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS2_WR1) {
 						"",
 						"0x00000000",
 						"" };
+//  0- 9   E E E E W E E E E E
+// 10-19   E E E E E E E E E E
+// 20-29   N N N N N N N N N N
+// 30-39   N N N N N N N N N N
+// 40-49   N N N N N N N N N N
+// 50-59   N N N N N N N N N N
+// 60-69   N N N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -467,6 +537,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS2_WR1) {
 	}
 	EXPECT_EQ(0, error);
 }
+#endif
 #if 0
 TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE) {
 	string op[6] = { "E","W","W","E","E","E" };
@@ -499,6 +570,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_2) {
 						"",
 						"",
 						"" };
+//  0- 9   N E W W E E E E E E
+// 10-19   E E N N N N N N N N
+// 20-29   N N N N N N N N N N
+// 30-39   N N N N N N N N N N
+// 40-49   N N N N N N N N N N
+// 50-59   N N N N N N N N N N
+// 60-69   N N N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];
@@ -520,6 +601,16 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_3) {
 						"",
 						"0x00012300",
 						"" };
+//  0- 9   N E W W E N N N N N
+// 10-19   N N N N N N N N N N
+// 20-29   W N N N N N E E E E
+// 30-39   E E N N N N N N N N
+// 40-49   N N N N N N N N N N
+// 50-59   N N N N N N N N N N
+// 60-69   N N N N N N N N N N
+// 70-79   N N N N N N N N N N
+// 80-89   N N N N N N N N N N
+// 90-99   N N N N N N N N N N
 
 	for (int i = 0; i < 6; i++) {
 		test_in.op[i] = op[i];

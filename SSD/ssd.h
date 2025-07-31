@@ -37,6 +37,10 @@ public:
 	string data[100];
 
 private:
+	int reduceCMDBufferDisplay(TEST_CMD in);
+	int reduceCMDBufferSeqCMD(TEST_CMD in, TEST_CMD& out);
+	int reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out);
+
 	FileInterface outputFile;
 	FileInterface nandFile;
 	SSDCommandParser* parser = nullptr;

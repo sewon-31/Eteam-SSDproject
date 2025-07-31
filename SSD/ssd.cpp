@@ -130,9 +130,16 @@ SSD::writeOutputFile(const string& str) {
 }
 
 int
-SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
-    bool ret = true;
+SSD::reduceCMDBufferDisplay(TEST_CMD in) {
+    // display
+    for (int idx_cb = 0; idx_cb < 6; idx_cb++) {
+        std::cout << in.op[idx_cb] << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
+    }
+    return 0;
+}
 
+int
+SSD::reduceCMDBufferSeqCMD(TEST_CMD in, TEST_CMD& out) {
     int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
 
     const int OP_NULL = 9;
@@ -142,13 +149,7 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
     // 1. Replcae w iba "0x00000000" >  E iba
     // 2. make virtual data 
     // 3. Make CMD
-        //3-1. Make new CMD E range check and W  
-        //3-2. Single W (n+1 , n-1 is E)  2 E , 1 W-> merge E, 1W && merge E len <= 10
-
-    // display
-    for (int idx_cb = 0; idx_cb < 6; idx_cb++) {
-        std::cout << in.op[idx_cb] << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
-    }
+        //3-1. Make new CMD E range check and W
 
     // step - 1
     for (int idx_cb = 0; idx_cb < 6; idx_cb++) {
@@ -191,18 +192,17 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
     int newCMDCount = 0;
 
     // step - 3-1
-    TEST_CMD step3_1;
     for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
         // Check E
         if (virtual_op[idx_iba] == OP_E) {
             if (continue_E_CMD == 0) {
-                step3_1.op[newCMDCount] = "E";
-                step3_1.lba[newCMDCount] = idx_iba;
-                step3_1.size[newCMDCount] = 1;
+                out.op[newCMDCount] = "E";
+                out.lba[newCMDCount] = idx_iba;
+                out.size[newCMDCount] = 1;
                 continue_E_CMD = 1;
             }
             else {
-                step3_1.size[newCMDCount]++;
+                out.size[newCMDCount]++;
                 continue_E_CMD++;
                 if (continue_E_CMD == 10) {
                     continue_E_CMD = 0;
@@ -218,18 +218,27 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
 
         //Check W
         if (virtual_op[idx_iba] <= OP_W_MAX) {
-            step3_1.op[newCMDCount] = "W";
-            step3_1.lba[newCMDCount] = idx_iba;
-            step3_1.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-            step3_1.size[newCMDCount] = 1;
+            out.op[newCMDCount] = "W";
+            out.lba[newCMDCount] = idx_iba;
+            out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+            out.size[newCMDCount] = 1;
             newCMDCount++;
         }
     }
     // display
     for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << step3_1.op[idx_cb] << " " << step3_1.lba[idx_cb] << " " << step3_1.data[idx_cb] << " " << step3_1.size[idx_cb] << "\n";
+        std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
     }
     std::cout << "\n";
+
+    return newCMDCount;
+}
+
+int
+SSD::reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out) {
+
+    TEST_CMD step3_1;
+    int newCMDCount = reduceCMDBufferSeqCMD(in, step3_1);
 
     // step - 3-2 Merge
     int idx_merge = 0;
@@ -237,7 +246,7 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
 
     for (idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
         if (idx_cb < newCMDCount - 1) {
-            if (step3_1.op[idx_cb] == "E" && step3_1.op[idx_cb + 1] == "E") {
+            if (in.op[idx_cb] == "E" && in.op[idx_cb + 1] == "E") {
                 if (step3_1.lba[idx_cb] + step3_1.size[idx_cb] >= step3_1.lba[idx_cb + 1]) {
                     if (step3_1.lba[idx_cb + 1] >= step3_1.lba[idx_cb + 2] - 1) {
                         //Merge check (E-E -> E)
@@ -279,8 +288,8 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
                             out.lba[idx_merge + 1] = step3_1.lba[idx_cb + 1];
                             out.size[idx_merge + 1] = step3_1.size[idx_cb + 1];
                             out.data[idx_merge + 1] = step3_1.data[idx_cb + 1];
-                            idx_merge ++;
-                            idx_cb ++;
+                            idx_merge++;
+                            idx_cb++;
                             continue;
                         }
                         //Fill left CMD (E(5)-W(1)-E(5) -> E(10)-W(1)-E(5))
@@ -300,7 +309,7 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
 
             if (step3_1.op[idx_cb + pos] == "E") {
                 if (step3_1.size[idx_cb] + pos + step3_1.size[idx_cb + pos] <= 10) {
-                    
+
                 }
             }
         }
@@ -319,4 +328,14 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
     }
 
     return newCMDCount;
+}
+
+int
+SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
+    bool ret = true;
+
+    TEST_CMD step3_1;
+    int newCMDCount = reduceCMDBufferSeqCMD(in, step3_1);
+    return reduceCMDBufferNonSeqCMD(step3_1 , out);
+   
 }
