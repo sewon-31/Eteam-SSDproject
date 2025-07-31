@@ -7,7 +7,7 @@
 using std::istringstream;
 
 void
-SSDCommandParser::setCommandVector(vector<string> commandVector)
+SSDCommandParser::setCommandVector(vector<string> inputCommandVector)
 {
 	/*
 	// set commandStr
@@ -26,7 +26,7 @@ SSDCommandParser::setCommandVector(vector<string> commandVector)
 	}
 	*/
 
-	this->commandVector = commandVector;
+	commandVector = inputCommandVector;
 }
 
 vector<string>
@@ -44,9 +44,6 @@ SSDCommandParser::isValidCommand() const
 			|| commandVector.size() > MAX_ARG_LENGTH) {
 			return false;
 		}
-
-		string CMD_READ = "R";
-		string CMD_WRITE = "W";
 
 		// check operation command
 		string opCommand = commandVector.at(OP);
@@ -81,6 +78,31 @@ SSDCommandParser::isValidCommand() const
 	}
 	catch (...) {
 		return false;
+	}
+}
+
+std::shared_ptr<ICommand>
+SSDCommandParser::createCommand(vector<string> inputCommandVector, NandData& storage)
+{
+	setCommandVector(inputCommandVector);
+
+	if (!isValidCommand()) {
+		return nullptr;
+	}
+	
+	// convert lba into int
+	int lba = std::stoi(commandVector.at(LBA));
+
+	// create command
+	string opCommand = commandVector.at(OP);
+	if (opCommand == CMD_READ) {
+		return std::make_shared<ReadCommand>(storage, lba);
+	}
+	else if (opCommand == CMD_WRITE) {
+		return std::make_shared<WriteCommand>(storage, lba, commandVector.at(VAL));
+	}
+	else {
+		return nullptr;
 	}
 }
 

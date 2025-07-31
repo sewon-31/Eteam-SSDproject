@@ -22,10 +22,17 @@ SSD::run(vector<string> commandVector)
 	}
 
 	// parse command
-	parser->setCommandVector(commandVector);
-	if (!parser->isValidCommand()) {
+	auto cmd = parser->createCommand(commandVector, storage);
+	if (cmd == nullptr) {
 		writeOutputFile("ERROR");
 		return;
+	}
+
+	cmd->execute();
+
+	/*
+	parser->setCommandVector(commandVector);
+	if (!parser->isValidCommand()) {
 	}
 	parsedCommand = parser->getCommandVector();
 
@@ -45,6 +52,8 @@ SSD::run(vector<string> commandVector)
 	}
 
 	cmd->execute();
+
+	*/
 }
 
 string
