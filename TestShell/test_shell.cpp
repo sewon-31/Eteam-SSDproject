@@ -107,7 +107,7 @@ void TestShell::runScript(std::string filename)
 
     std::string opCommand;
     ScriptsCommand* scriptCommand;
-    /* Should be edited after adding full read in file_util
+    // Should be edited after adding full read in file_util
     while (fileUtil.readLine(filename, opCommand)) {
         cout << opCommand <<"   ___   Run ... ";
 
@@ -132,7 +132,6 @@ void TestShell::runScript(std::string filename)
 
         cout << "PASS\n";
     }
-*/
 }
 void TestShell::erase(int lba, int size) {
     try {
