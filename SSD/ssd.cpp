@@ -95,7 +95,7 @@ SSD::readNandFile() {
 
 	if (nandFile.checkSize() != nandFileSize)  return false;
 
-	for (int i = 0; i < maxLbaNum; i++)
+	for (int i = 0; i <= NandData::LBA::MAX; i++)
 	{
 		string data;
 		ret = nandFile.fileReadOneline(data);
@@ -114,7 +114,7 @@ SSD::writeNandFile() {
 	nandFile.fileClear();
 	nandFile.fileOpen();
 
-	for (int i = 0; i < maxLbaNum; i++)
+	for (int i = 0; i <= NandData::LBA::MAX; i++)
 	{
 		ret = nandFile.fileWriteOneline(storage.read(i));
 

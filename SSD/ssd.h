@@ -12,7 +12,6 @@ public:
 
 
 	void run(const string& commandStr);
-	void setParser(std::shared_ptr<SSDCommandParser> parser);
 
 	FileInterface& getNandFile();
 	FileInterface& getOutputFile();
@@ -20,9 +19,12 @@ public:
 	bool writeNandFile();
 	bool writeOutputFile(const string& str);
 
+	// for unit test
 	string getData(int lba) const;
 	void writeData(int lba, const string& value);
 	void clearData();
+
+	void setParser(std::shared_ptr<SSDCommandParser> parser);
 
 	vector<string> parsedCommand;
 
@@ -35,7 +37,8 @@ private:
 
 	FileInterface outputFile;
 	FileInterface nandFile;
+
 	std::shared_ptr<SSDCommandParser> parser;
+
 	static const int nandFileSize = 1200;
-	static const int maxLbaNum = 100;
 };
