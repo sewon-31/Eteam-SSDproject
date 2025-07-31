@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "test_shell.h"
 TEST(ShellTest, TestPrintHelp) {
-	TestShell shell;
+	TestShell shell(new SSDDriver);
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());

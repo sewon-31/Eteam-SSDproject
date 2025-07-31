@@ -132,6 +132,7 @@
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="logger_test.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shell_run_script_test.cpp" />
     <ClCompile Include="ssd_interface.cpp" />
     <ClCompile Include="testshell_execute_command_test.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> %(AdditionalOptions)</AdditionalOptions>

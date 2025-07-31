@@ -6,9 +6,9 @@ using namespace testing;
 
 class TestShellRead : public Test, public HandleConsoleOutputFixture {
 public:
-	TestShell shell;
 	MockSSD mockSSD;
 	MockSSDDriver SSDwithMockRunExe;
+	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
 	const string MIDFIX = " : ";
@@ -51,15 +51,14 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 		.Times(100)
 		.WillRepeatedly(Return(EXPECT_AA));
 
-//	shell.setSSD(&mockSSD);
+
 	FullReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	vector<string> args = {};
-//	shell.fullRead();
+	vector<string> args = { "fullread" };
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
@@ -138,8 +137,7 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	vector<string> args = {};
-	//	shell.fullRead();
+	vector<string> args = { "fullread" };
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
@@ -158,37 +156,39 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
-//TEST_F(TestShellRead, ReadFailWithMockRunExe) {
-//
-//	EXPECT_CALL(SSDwithMockRunExe, runExe)
-//		.WillRepeatedly(Return(false));
-//
-//	shell.setSSD(&SSDwithMockRunExe);
-//
-//	std::ostringstream oss;
-//	auto oldCoutStreamBuf = std::cout.rdbuf();
-//	std::cout.rdbuf(oss.rdbuf());
-//
-//	shell.read(0);
-//	std::cout.rdbuf(oldCoutStreamBuf);
-//
-//	EXPECT_EQ("There is no SSD.exe\n", oss.str());
-//}
-//
-//TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
-//	ssdReadFileSetUp();
-//
-//	EXPECT_CALL(SSDwithMockRunExe, runExe)
-//		.WillRepeatedly(Return(false));
-//
-//	shell.setSSD(&SSDwithMockRunExe);
-//
-//	std::ostringstream oss;
-//	auto oldCoutStreamBuf = std::cout.rdbuf();
-//	std::cout.rdbuf(oss.rdbuf());
-//
-//	shell.fullRead();
-//	std::cout.rdbuf(oldCoutStreamBuf);
-//
-//	EXPECT_EQ("There is no SSD.exe\n", oss.str());
-//}
+TEST_F(TestShellRead, ReadFailWithMockRunExe) {
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
+		.WillRepeatedly(Return(false));
+
+	ReadCommand cmd{ &SSDwithMockRunExe };
+
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	vector<string> args = { "read", std::to_string(0)};
+	cmd.execute(args);
+	std::cout.rdbuf(oldCoutStreamBuf);
+
+	EXPECT_EQ("Executing read from LBA 0\nThere is no SSD.exe\n", oss.str());
+}
+
+TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
+	ssdReadFileSetUp();
+
+	EXPECT_CALL(SSDwithMockRunExe, runExe)
+		.WillRepeatedly(Return(false));
+
+	FullReadCommand cmd{ &SSDwithMockRunExe };
+
+	std::ostringstream oss;
+	auto oldCoutStreamBuf = std::cout.rdbuf();
+	std::cout.rdbuf(oss.rdbuf());
+
+	vector<string> args = { "fullread" };
+	cmd.execute(args);
+	std::cout.rdbuf(oldCoutStreamBuf);
+
+	EXPECT_EQ("Executing fullread\nThere is no SSD.exe\n", oss.str());
+}

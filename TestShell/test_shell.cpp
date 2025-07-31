@@ -10,8 +10,6 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
 
-    string result = "FAIL";
-
     if (opCommand == CommandParser::CMD_EXIT) {
         Command* command = new ExitCommand();
         if (!command->execute(commandVector)) return false;
@@ -100,42 +98,39 @@ void TestShell::runShell()
 
 void TestShell::runScript(std::string filename)
 {
-    std::fstream scriptListFile(filename, std::ios::in);
-
-    if (scriptListFile.is_open() == false) {
+    if (fileUtil.fileExists(filename) == false) {
         std::cout << "[Error] Invalid File Name." << std::endl;
         return;
     }
-    
-    std::string opCommand;
-    ScriptsCommand* scriptCommand;
 
-    while (std::getline(scriptListFile, opCommand)) {
-        cout << opCommand <<"   ___   Run ... ";
+    vector<std::string> commandList;
+    fileUtil.readAllLines(filename, commandList);
+
+    for (auto opCommand : commandList) {
+        Command* command;
+        vector<string> commandVector = { opCommand };
+
+        string log = opCommand + "   ___   Run ... ";
+        cout << log;
 
         if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            scriptCommand  = new ScriptsFullWriteAndReadCompare(ssd);  
+            command = new ScriptsFullWriteAndReadCompare(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-            scriptCommand = new ScriptsPartialLBAWrite(ssd);
+            command = new ScriptsPartialLBAWrite(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            scriptCommand = new ScriptsWriteReadAging(ssd);         
+            command = new ScriptsWriteReadAging(ssd);
         }
         else {
-            cout << "FAIL!\n";
+            cout << FAIL;
             break;
         }
 
-        if (scriptCommand->run() == false) {
-            cout << "FAIL!\n";
-            break;
-        }
+        if (command->execute(commandVector) == false) break;
 
-        cout << "PASS\n";
     }
 
-    scriptListFile.close();
 }
 void TestShell::erase(int lba, int size) {
     try {

@@ -3,7 +3,7 @@
 #include <string>
 #include "ssd_interface.h"
 #include "command_parser.h"
-#include <vector>
+#include "file_util.h"
 
 class TestShell {
 public:
@@ -23,4 +23,7 @@ public:
 private:
 	SSDInterface* ssd;
 	CommandParser commandParser;
+
+	FileUtil fileUtil;
+	const string FAIL = "FAIL\n";
 };
