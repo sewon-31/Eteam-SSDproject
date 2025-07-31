@@ -13,7 +13,10 @@ bool SSDDriver::runExe(const string& command) {
 	iss >> exe;
 
 	string args;
-	std::getline(iss, args); // args = " W 3 0x123456"
+	if (!std::getline(iss, args)) {
+		std::cerr << "[runExe] Failed to parse arguments from command: " << command << std::endl;
+		return false;
+	}
 
 	string fullCommandLine = exe + args;
 
@@ -21,16 +24,17 @@ bool SSDDriver::runExe(const string& command) {
 	strcpy_s(cmdLine, fullCommandLine.c_str());
 
 	BOOL result = CreateProcessA(
-		exe.c_str(),      // execution file e.g. SSD.exe
-		cmdLine,          // total cmd line
+		exe.c_str(),      // application name e.g. SSD.exe
+		cmdLine,          // full command line
 		NULL, NULL,
 		FALSE,
-		0,                // flag like CREATE_NO_WINDOW if needed
+		0,
 		NULL, NULL,
 		&si, &pi
 	);
 
 	if (!result) {
+		std::cerr << "CreateProcessA failed for command: " << fullCommandLine << std::endl;
 		return false;
 	}
 
@@ -59,9 +63,12 @@ string SSDDriver::read(int lba) {
 	}
 
 	string content;
-	std::getline(file, content);
-	file.close();
+	if (!std::getline(file, content)) {
+		file.close();
+		throw std::runtime_error("Failed to read line from result file: " + SSD_READ_RESULT);
+	}
 
+	file.close();
 	return content;
 }
 
