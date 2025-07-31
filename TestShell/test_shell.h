@@ -23,7 +23,10 @@ public:
 	virtual void fullWrite(std::string value);
 	virtual void erase(int lba, int size);
 	virtual void eraseRange(int startLba, int endLba);
+<<<<<<< HEAD
 	virtual void flush();
+=======
+>>>>>>> 9a104b2 ([feature] TestShell : erase_range implementation in Test Shell)
 
 private:
 	SSDInterface* ssd;

@@ -48,10 +48,13 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         std::cout << "Executing erase_range" << std::endl;
         eraseRange(startLba, endLba);
     }
+<<<<<<< HEAD
     else if (opCommand == CommandParser::CMD_FLUSH) {
         std::cout << "Executing flush" << std::endl;
         flush();
     }
+=======
+>>>>>>> 9a104b2 ([feature] TestShell : erase_range implementation in Test Shell)
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
         ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
 
@@ -212,6 +215,7 @@ void TestShell::eraseRange(int startLba, int endLba) {
     catch (SSDExecutionException& e) {
         std::cout << "[ERASE RANGE] Fail" << std::endl;
     }
+<<<<<<< HEAD
 }
 
 void TestShell::flush() {
@@ -224,4 +228,6 @@ void TestShell::flush() {
     catch (SSDExecutionException& e) {
         std::cout << "[FLUSH] Fail" << std::endl;
     }
+=======
+>>>>>>> 9a104b2 ([feature] TestShell : erase_range implementation in Test Shell)
 }
