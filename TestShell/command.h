@@ -8,7 +8,6 @@ class Command {
 public:
     virtual 
     virtual ~Command() = default;
-    // 반환값은 TestShell이 계속 실행될지(true) 종료될지(false)를 나타냅니다.
     virtual bool execute(const std::vector<std::string>& args) = 0;
 };
 
