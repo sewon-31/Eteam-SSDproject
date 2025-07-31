@@ -18,3 +18,11 @@ string SSDDriver::read(int lba) {
 
 	return content;
 }
+
+void SSDDriver::erase(int lba, int size)
+{
+	string command = "\"ssd E " + std::to_string(lba) + std::to_string(size) + " >nul 2>&1\"";
+	if (runExe(command) == false) {
+		throw SSDExecutionException("Execution failed: " + command);
+	}
+}
