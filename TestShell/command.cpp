@@ -3,7 +3,7 @@
 
 bool ReadCommand::execute(const std::vector<std::string>& args)
 {
-	int lba = std::stoi(args.at(0));
+	int lba = std::stoi(args.at(1));
 	std::cout << "Executing read from LBA " << lba << std::endl;
 	read(lba);
     return true;
@@ -28,8 +28,8 @@ void ReadCommand::ssdReadAndPrint(int addr)
 
 bool WriteCommand::execute(const std::vector<std::string>& args)
 {
-	int lba = std::stoi(args.at(0));
-	std::string value = args.at(1);
+	int lba = std::stoi(args.at(1));
+	std::string value = args.at(2);
 	std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
 	write(lba, value);
     return true;
