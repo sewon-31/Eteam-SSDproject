@@ -143,7 +143,7 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
     // 2. make virtual data 
     // 3. Make CMD
         //3-1. Make new CMD E range check and W  
-        //3-2. single W (n+1 , n-1 is E)  2 E , 1 W-> merge E, 1W && merge E len <= 10
+        //3-2. Single W (n+1 , n-1 is E)  2 E , 1 W-> merge E, 1W && merge E len <= 10
 
     // display
     for (int idx_cb = 0; idx_cb < 6; idx_cb++) {
@@ -230,20 +230,8 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
         std::cout << step3_1.op[idx_cb] << " " << step3_1.lba[idx_cb] << " " << step3_1.data[idx_cb] << " " << step3_1.size[idx_cb] << "\n";
     }
     std::cout << "\n";
+
     // step - 3-2 Merge
-    int upOrderGain = 0;
-#if 0
-    if (newCMDCount > 2) {
-        for (int idx_cb = 0; idx_cb < newCMDCount - 2; idx_cb++) {
-            if (step3_1.op[idx_cb] == "E" && step3_1.op[idx_cb + 1] == "W" && step3_1.op[idx_cb + 2] == "E") {
-                if (step3_1.iba[idx_cb] + )
-                    int sum_size = step3_1.size[idx_cb] + step3_1.size[idx_cb + 2];
-                step3_1.size[idx_cb] = std::min(sum_size, 10);
-                step3_1.size[idx_cb + 2] = sum_size - step3_1.size[idx_cb];
-            }
-        }
-    }
-#endif
     int idx_merge = 0;
     int idx_cb = 0;
 
@@ -253,11 +241,15 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
                 if (step3_1.lba[idx_cb] + step3_1.size[idx_cb] >= step3_1.lba[idx_cb + 1]) {
                     if (step3_1.lba[idx_cb + 1] >= step3_1.lba[idx_cb + 2] - 1) {
                         //Merge check (E-E -> E)
-                        if (step3_1.size[idx_merge] + step3_1.size[idx_cb + 1] <= 10) {
+                        if (step3_1.size[idx_cb] + step3_1.size[idx_cb + 1] <= 10) {
                             out.op[idx_merge] = step3_1.op[idx_cb];
                             out.lba[idx_merge] = step3_1.lba[idx_cb];
                             out.size[idx_merge] = step3_1.size[idx_cb] + step3_1.size[idx_cb + 1];
                             out.data[idx_merge] = step3_1.data[idx_cb];
+                            step3_1.op[idx_cb + 1] = step3_1.op[idx_cb];
+                            step3_1.lba[idx_cb + 1] = step3_1.lba[idx_cb];
+                            step3_1.size[idx_cb + 1] = step3_1.size[idx_cb] + step3_1.size[idx_cb + 1];
+                            step3_1.data[idx_cb + 1] = step3_1.data[idx_cb];
                             continue;
                         }
                         //Fill left CMD (E(6)-E(5) -> E(10)-E(1))
@@ -278,7 +270,7 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
                 if (step3_1.lba[idx_cb] + step3_1.size[idx_cb] >= step3_1.lba[idx_cb + 1]) {
                     if (step3_1.lba[idx_cb + 1] >= step3_1.lba[idx_cb + 2] - 1) {
                         //Merge check (E-W-E -> E-W)
-                        if (step3_1.size[idx_merge] + step3_1.size[idx_cb + 2] + 1 <= 10) {
+                        if (step3_1.size[idx_cb] + step3_1.size[idx_cb + 2] + 1 <= 10) {
                             out.op[idx_merge] = step3_1.op[idx_cb];
                             out.lba[idx_merge] = step3_1.lba[idx_cb];
                             out.size[idx_merge] = step3_1.size[idx_cb] + step3_1.size[idx_cb + 2] + 1;
@@ -287,93 +279,44 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
                             out.lba[idx_merge + 1] = step3_1.lba[idx_cb + 1];
                             out.size[idx_merge + 1] = step3_1.size[idx_cb + 1];
                             out.data[idx_merge + 1] = step3_1.data[idx_cb + 1];
-                            idx_merge += 2;
-                            idx_cb += 2;
+                            idx_merge ++;
+                            idx_cb ++;
                             continue;
                         }
                         //Fill left CMD (E(5)-W(1)-E(5) -> E(10)-W(1)-E(5))
                         int sum_size = step3_1.size[idx_cb] + step3_1.size[idx_cb + 2] + 1;
 
                         step3_1.size[idx_cb] = std::min(sum_size, 10);
-                        step3_1.size[idx_cb + 2] = sum_size - step3_1.size[idx_cb] + 1;
-                        step3_1.lba[idx_cb + 2] = step3_1.lba[idx_cb] + step3_1.size[idx_cb] -1;
+                        step3_1.size[idx_cb + 2] = sum_size - step3_1.size[idx_cb];
+                        step3_1.lba[idx_cb + 2] = step3_1.lba[idx_cb] + step3_1.size[idx_cb];
                     }
                 }
             }
         }
-        out.op[idx_merge] = step3_1.op[idx_cb];
-        out.lba[idx_merge] = step3_1.lba[idx_cb];
-        out.size[idx_merge] = step3_1.size[idx_cb];
-        out.data[idx_merge] = step3_1.data[idx_cb];
-        idx_merge++;
-    }
+        int hit_EWNE = 0;
+        //Merge check (E-WxN-E -> E-WxN)
+        for (int pos = 3; pos < (newCMDCount - idx_cb); pos++) {
+            if (step3_1.size[idx_cb] + pos > 10) break;
 
-
-#if 0
-if (newCMDCount > idx_cb) {
-    out.op[idx_merge] = step3_1.op[idx_cb];
-    out.lba[idx_merge] = step3_1.lba[idx_cb];
-    out.size[idx_merge] = step3_1.size[idx_cb];
-    out.data[idx_merge] = step3_1.data[idx_cb];
-    idx_merge++;
-    idx_cb++;
-}
-if (newCMDCount > idx_cb) {
-    out.op[idx_merge] = step3_1.op[idx_cb];
-    out.lba[idx_merge] = step3_1.lba[idx_cb];
-    out.size[idx_merge] = step3_1.size[idx_cb];
-    out.data[idx_merge] = step3_1.data[idx_cb];
-    idx_merge++;
-
-    idx_cb++;
-}
-#endif
-newCMDCount = idx_merge;
-#if 0
-if (upOrderGain) {
-    for (int idx_cb = 0; idx_cb < newCMDCount - 2; idx_cb++) {
-        out.op[idx_merge] = step3_1.op[idx_cb];
-        out.lba[idx_merge] = step3_1.lba[idx_cb];
-        out.size[idx_merge] = step3_1.size[idx_cb];
-        out.data[idx_merge] = step3_1.data[idx_cb];
-        if (newCMDCount > 2) {
-            if (step3_1.op[idx_merge] == "E" && step3_1.op[idx_cb + 1] == "W" && step3_1.op[idx_cb + 2] == "E") {
-                if (step3_1.size[idx_merge] + step3_1.size[idx_cb + 2] < 9) {
-                    out.op[idx_merge] = step3_1.op[idx_cb];
-                    out.lba[idx_merge] = step3_1.lba[idx_cb];
-                    out.size[idx_merge] = step3_1.size[idx_cb] + out.size[idx_cb + 2] + 1;
-                    out.data[idx_merge] = step3_1.data[idx_cb];
-                    out.op[idx_merge + 1] = step3_1.op[idx_cb + 1];
-                    out.lba[idx_merge + 1] = step3_1.lba[idx_cb + 1];
-                    out.size[idx_merge + 1] = step3_1.size[idx_cb + 1];
-                    out.data[idx_merge + 1] = step3_1.data[idx_cb + 1];
-                    idx_merge++;
-                    idx_cb += 2;
+            if (step3_1.op[idx_cb + pos] == "E") {
+                if (step3_1.size[idx_cb] + pos + step3_1.size[idx_cb + pos] <= 10) {
+                    
                 }
             }
         }
+
+        out.op[idx_merge] = step3_1.op[idx_cb];
+        out.lba[idx_merge] = step3_1.lba[idx_cb];
+        out.size[idx_merge] = step3_1.size[idx_cb];
+        out.data[idx_merge] = step3_1.data[idx_cb];
         idx_merge++;
     }
-    out.op[idx_merge] = step3_1.op[newCMDCount - 2];
-    out.lba[idx_merge] = step3_1.lba[newCMDCount - 2];
-    out.size[idx_merge] = step3_1.size[newCMDCount - 2];
-    out.data[idx_merge] = step3_1.data[newCMDCount - 2];
-    idx_merge++;
-    out.op[idx_merge] = step3_1.op[newCMDCount - 1];
-    out.lba[idx_merge] = step3_1.lba[newCMDCount - 1];
-    out.size[idx_merge] = step3_1.size[newCMDCount - 1];
-    out.data[idx_merge] = step3_1.data[newCMDCount - 1];
-    idx_merge++;
     newCMDCount = idx_merge;
-}
-else {
 
-}
-#endif
-// display
-for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-    std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
-}
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
+    }
 
-return newCMDCount;
+    return newCMDCount;
 }
