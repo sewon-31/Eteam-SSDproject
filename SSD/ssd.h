@@ -1,5 +1,6 @@
 #include "ssd_command_parser.h"
 #include "file_interface.h"
+#include "nand_data.h"
 
 class SSD
 {
@@ -20,12 +21,13 @@ public:
 	string runReadCommand(int lba);
 	void runWriteCommand(int lba, const string& value);
 
-	void clearData();
 	string getData(int lba) const;
+	void clearData();
 
 	vector<string> parsedCommand;
 
-	string data[100];
+	//string data[100];
+	NandData storage;
 
 private:
 	FileInterface outputFile;

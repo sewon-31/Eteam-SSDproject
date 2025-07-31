@@ -29,7 +29,7 @@ SSD::run(const string& commandStr)
 	}
 	parsedCommand = parser->getCommandVector();
 
-	clearData();
+	storage.clear();
 	readNandFile();
 
 	// run command
@@ -51,25 +51,25 @@ SSD::run(const string& commandStr)
 string
 SSD::runReadCommand(int lba)
 {
-	return data[lba];
-}
-
-void
-SSD::clearData()
-{
-	std::fill(std::begin(data), std::end(data), "0x00000000");
+	return storage.read(lba);
 }
 
 void
 SSD::runWriteCommand(int lba, const string& value)
 {
-	data[lba] = value;
+	storage.write(lba, value);
 }
 
 string
 SSD::getData(int lba) const
 {
-	return data[lba];
+	return storage.read(lba);
+}
+
+void
+SSD::clearData()
+{
+	storage.clear();
 }
 
 FileInterface& 
@@ -92,7 +92,9 @@ SSD::readNandFile() {
 
 	for (int i = 0; i < maxLbaNum; i++)
 	{
-		ret = nandFile.fileReadOneline(data[i]);
+		string data;
+		ret = nandFile.fileReadOneline(data);
+		storage.write(i, data);
 
 		if (!ret)  break;
 	}
@@ -109,7 +111,7 @@ SSD::writeNandFile() {
 
 	for (int i = 0; i < maxLbaNum; i++)
 	{
-		ret = nandFile.fileWriteOneline(data[i]);
+		ret = nandFile.fileWriteOneline(storage.read(i));
 
 		if (!ret)
 			break;
