@@ -10,6 +10,7 @@ public:
 	virtual void write(int lba, string value) = 0;
 	virtual string read(int lba) = 0;
 	virtual void erase(int lba, int size) = 0;
+	virtual void eraseRange(int startLba, int endLba) = 0;
 };
 
 class SSDDriver : public SSDInterface {
@@ -23,6 +24,7 @@ public:
 	void write(int lba, string value) override;
 	string read(int lba) override;
 	void erase(int lba, int size) override;
+	void eraseRange(int startLba, int endLba) override;
 
 private:
 	const string SSD_READ_RESULT = "../ssd_output.txt";
