@@ -8,20 +8,24 @@ Logger& Logger::getInstance() {
 }
 
 void Logger::log(const char* funcName, const char* fmt, ...) {
-    std::string funcStr = std::string(funcName);
+    va_list args;
+    va_start(args, fmt);
+    std::string log_line = getLogMessage(funcName, fmt, args);
+    va_end(args);
+
+    // TODO: file IO
+    std::cout << log_line << std::endl;
+}
+
+std::string Logger::getLogMessage(const char* funcName, const char* fmt, va_list args) {
+    std::string funcStr(funcName);
     if (funcStr.length() < 30) {
         funcStr.append(30 - funcStr.length(), ' ');
     }
-
     char msgBuf[1024];
-    va_list args;
-    va_start(args, fmt);
     vsnprintf(msgBuf, sizeof(msgBuf), fmt, args);
-    va_end(args);
 
-    std::string log_line = getCurrentTimestamp() + " " + funcStr + " : " + msgBuf;
-    //TODO: file io
-    std::cout << log_line << std::endl;
+    return getCurrentTimestamp() + " " + funcStr + " : " + msgBuf;
 }
 
 std::string Logger::getCurrentTimestamp() {
