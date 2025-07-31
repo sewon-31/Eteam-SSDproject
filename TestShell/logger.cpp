@@ -61,6 +61,16 @@ void Logger::rotateIfNeeded(int size) {
     if (!FileUtil::fileExists(LOG_FILE)) return;
     if (FileUtil::getFileSize(LOG_FILE) + size < MAX_LOG_SIZE) return;
     zipLogFile();
+    auto backupFile = getBackupLogFileName();
+    if (std::rename(LOG_FILE.c_str(), backupFile.c_str()) != 0) {
+        std::cerr << "Failed to rename log file for rotation\n";
+        return;
+    }
+    FileUtil::clearFile(LOG_FILE);
+}
+
+std::string Logger::getBackupLogFileName()
+{
     auto now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
     std::tm local_tm;
@@ -68,10 +78,7 @@ void Logger::rotateIfNeeded(int size) {
 
     char timestamp[64];
     std::strftime(timestamp, sizeof(timestamp), "until_%y%m%d_%Hh_%Mm_%Ss.log", &local_tm);
-
-    std::string rotatedFile = LOG_DIR + "/" + timestamp;
-    std::rename(LOG_FILE.c_str(), rotatedFile.c_str());
-    FileUtil::clearFile(LOG_FILE);
+    return LOG_DIR + "/" + timestamp;
 }
 
 std::string Logger::getCurrentTimestamp() {
