@@ -35,36 +35,42 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_ERASE) {
-        int lba = std::stoi(commandVector.at(1));
-        int size = std::stoi(commandVector.at(2));
-        std::cout << "Executing erase" << std::endl;
-        erase(lba, size);
+        Command* command = new EraseCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
-        int startLba = std::stoi(commandVector.at(1));
-        int endLba = std::stoi(commandVector.at(2));
-        std::cout << "Executing erase_range" << std::endl;
-        eraseRange(startLba, endLba);
+        Command* command = new EraseRangeCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FLUSH) {
-        std::cout << "Executing flush" << std::endl;
-        flush();
+        Command* command = new FlushCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
+    //else if (opCommand == CommandParser::CMD_ERASE) {
+    //    int lba = std::stoi(commandVector.at(1));
+    //    int size = std::stoi(commandVector.at(2));
+    //    std::cout << "Executing erase" << std::endl;
+    //    erase(lba, size);
+    //}
+    //else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
+    //    int startLba = std::stoi(commandVector.at(1));
+    //    int endLba = std::stoi(commandVector.at(2));
+    //    std::cout << "Executing erase_range" << std::endl;
+    //    eraseRange(startLba, endLba);
+    //}
+    //else if (opCommand == CommandParser::CMD_FLUSH) {
+    //    std::cout << "Executing flush" << std::endl;
+    //    flush();
+    //}
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-        std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-        
         Command* command = new ScriptsFullWriteAndReadCompare(ssd);
         if (!command->execute(commandVector)) return false;
  }
     else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-        std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-        
         Command* command = new ScriptsPartialLBAWrite(ssd);
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-        std::cout << "Running script 3: WriteReadAging" << std::endl;
-
         Command* command = new ScriptsWriteReadAging(ssd);
         if (!command->execute(commandVector)) return false;
     }

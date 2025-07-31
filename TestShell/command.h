@@ -82,6 +82,7 @@ private:
 
 class EraseRangeCommand : public EraseCommand {
 public:
+    EraseRangeCommand(SSDInterface* ssd) : EraseCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 
 private:
@@ -90,6 +91,7 @@ private:
 
 class FlushCommand : public Command {
 public:
+    FlushCommand(SSDInterface* ssd) : ssd(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 
 private:
