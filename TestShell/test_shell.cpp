@@ -32,8 +32,8 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLREAD) {
-        std::cout << "Executing fullread" << std::endl;
-        fullRead();
+        Command* command = new FullReadCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_ERASE) {
         int lba = std::stoi(commandVector.at(1));
@@ -135,27 +135,6 @@ void TestShell::runScript(std::string filename)
     }
 
     scriptListFile.close();
-}
-
-void TestShell::fullRead()
-{
-    try {
-	    for (int addr = 0; addr < MAX_LBA; addr++) {       
-            ssdReadAndPrint(addr);
-	    }
-    }
-    catch (std::exception e) {
-        cout << string(e.what());
-    }
-}
-
-void TestShell::ssdReadAndPrint(int addr)
-{
-    std::string content = ssd->read(addr);
-    std::ostringstream oss;
-    oss << std::setw(2) << std::setfill('0') << addr;
-
-    cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
 }
 void TestShell::erase(int lba, int size) {
     try {

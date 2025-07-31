@@ -16,21 +16,10 @@ public:
 	void runShell();
 	void runScript(std::string filename);
 	bool ExecuteCommand(vector<string> commandVector);
-
-//	virtual void read(int lba);
-	virtual void fullRead();
-//	virtual void write(int lba, std::string value);
-//	virtual void fullWrite(std::string value);
 	virtual void erase(int lba, int size);
 	virtual void flush();
 
 private:
 	SSDInterface* ssd;
 	CommandParser commandParser;
-	const int MAX_LBA = 100;
-	const string READ_HEADER = "[Read] LBA ";
-	const string READ_MIDFIX = " : ";
-	const string READ_FOOTER = "\n";
-
-	void ssdReadAndPrint(int addr);
 };

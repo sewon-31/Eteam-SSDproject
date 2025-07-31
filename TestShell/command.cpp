@@ -51,7 +51,21 @@ void WriteCommand::write(int lba, std::string value)
 
 bool FullReadCommand::execute(const std::vector<std::string>& args)
 {
+	std::cout << "Executing fullread" << std::endl;
+	fullRead();
     return false;
+}
+
+void FullReadCommand::fullRead()
+{
+	try {
+		for (int addr = 0; addr < MAX_LBA; addr++) {
+			ssdReadAndPrint(addr);
+		}
+	}
+	catch (std::exception e) {
+		std::cout << string(e.what());
+	}
 }
 
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
