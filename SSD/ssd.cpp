@@ -67,6 +67,12 @@ SSD::getData(int lba) const
 }
 
 void
+SSD::writeData(int lba, const string& value)
+{
+	storage.write(lba, value);
+}
+
+void
 SSD::clearData()
 {
 	storage.clear();
