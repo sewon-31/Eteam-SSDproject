@@ -19,7 +19,6 @@ public:
 	string testData = "0x00012345";
 
 	ScriptsCommand* script;
-	ostringstream oss;
 };
 
 TEST_F(TestScriptsFixture, Success) {

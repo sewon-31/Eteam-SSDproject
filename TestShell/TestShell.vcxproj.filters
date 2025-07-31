@@ -54,17 +54,38 @@
     <ClCompile Include="command_parser.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="testshell_execute_command_test.cpp">
+    <ClCompile Include="test_script.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="test_script.cpp">
+    <ClCompile Include="ssd_interface.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="file_util.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="file_util_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="logger_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="testshell_execute_command_test.cpp">
+      <Filter>테스트 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="command.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="command.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="test_scripts_test.cpp">
       <Filter>테스트 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ssd_interface.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="shell_run_script_test.cpp">
+      <Filter>테스트 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +99,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="mock_ssd.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="file_util.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="common_test_fixture.h">
+      <Filter>테스트 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

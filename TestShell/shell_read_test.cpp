@@ -1,12 +1,14 @@
 #include "mock_ssd.h"
+#include "command.h"
+#include "common_test_fixture.h"
 
 using namespace testing;
 
-class TestShellRead : public Test {
+class TestShellRead : public Test, public HandleConsoleOutputFixture {
 public:
-	TestShell shell;
 	MockSSD mockSSD;
 	MockSSDDriver SSDwithMockRunExe;
+	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
 	const string MIDFIX = " : ";
@@ -28,17 +30,18 @@ TEST_F(TestShellRead, ReadPassWithMockSSD) {
 		.Times(1)
 		.WillRepeatedly(Return(EXPECT_AA));
 
-	shell.setSSD(&mockSSD);
+	ReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.read(0);
+	vector<string> args = { "read", std::to_string(0)};
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(expect, getLastLine(oss.str()));
 }
 
 TEST_F(TestShellRead, FullReadPassWithMockSSD) {
@@ -48,13 +51,15 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 		.Times(100)
 		.WillRepeatedly(Return(EXPECT_AA));
 
-	shell.setSSD(&mockSSD);
+
+	FullReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.fullRead();
+	vector<string> args = { "fullread" };
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = "";
@@ -69,7 +74,7 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 		expect += FOOTER;
 	}
 
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
 
@@ -105,17 +110,18 @@ TEST_F(TestShellRead, ReadPassWithMockRunExe) {
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	shell.setSSD(&SSDwithMockRunExe);
+	ReadCommand cmd{ &SSDwithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.read(0);
+	vector<string> args = { "read", std::to_string(0)};
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = HEADER + "00" + MIDFIX + EXPECT_AA + FOOTER;
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(expect, getLastLine(oss.str()));
 }
 
 TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
@@ -125,13 +131,14 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 		.Times(100)
 		.WillRepeatedly(Return(true));
 
-	shell.setSSD(&SSDwithMockRunExe);
+	FullReadCommand cmd{ &SSDwithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.fullRead();
+	vector<string> args = { "fullread" };
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
 	string expect = "";
@@ -146,7 +153,7 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 		expect += FOOTER;
 	}
 
-	EXPECT_EQ(expect, oss.str());
+	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
 TEST_F(TestShellRead, ReadFailWithMockRunExe) {
@@ -154,16 +161,17 @@ TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.WillRepeatedly(Return(false));
 
-	shell.setSSD(&SSDwithMockRunExe);
+	ReadCommand cmd{ &SSDwithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.read(0);
+	vector<string> args = { "read", std::to_string(0)};
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("There is no SSD.exe\n", oss.str());
+	EXPECT_EQ("Executing read from LBA 0\nThere is no SSD.exe\n", oss.str());
 }
 
 TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
@@ -172,14 +180,15 @@ TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.WillRepeatedly(Return(false));
 
-	shell.setSSD(&SSDwithMockRunExe);
+	FullReadCommand cmd{ &SSDwithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
 	std::cout.rdbuf(oss.rdbuf());
 
-	shell.fullRead();
+	vector<string> args = { "fullread" };
+	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("There is no SSD.exe\n", oss.str());
+	EXPECT_EQ("Executing fullread\nThere is no SSD.exe\n", oss.str());
 }

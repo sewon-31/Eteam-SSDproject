@@ -44,6 +44,9 @@ bool CommandParser::isValidCommand() const
 			&& opCommand != CMD_HELP
 			&& opCommand != CMD_FULLREAD
 			&& opCommand != CMD_FULLWRITE
+			&& opCommand != CMD_ERASE
+			&& opCommand != CMD_ERASE_RANGE
+			&& opCommand != CMD_FLUSH
 			&& opCommand != CMD_SCRIPT1
 			&& opCommand != CMD_SCRIPT1_NAME
 			&& opCommand != CMD_SCRIPT2
@@ -60,6 +63,9 @@ bool CommandParser::isValidCommand() const
 			(opCommand == CMD_HELP && commandVector.size() != 1) ||
 			(opCommand == CMD_FULLREAD && commandVector.size() != 1) ||
 			(opCommand == CMD_FULLWRITE && commandVector.size() != 2) ||
+			(opCommand == CMD_ERASE && commandVector.size() != 3) ||
+			(opCommand == CMD_ERASE_RANGE && commandVector.size() != 3) ||
+			(opCommand == CMD_FLUSH && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT1 || opCommand == CMD_SCRIPT1_NAME) && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT2 || opCommand == CMD_SCRIPT2_NAME) && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT3 || opCommand == CMD_SCRIPT3_NAME) && commandVector.size() != 1)) {
@@ -67,10 +73,24 @@ bool CommandParser::isValidCommand() const
 		}
 
 		// check lba range
-		if (opCommand == CMD_READ || opCommand == CMD_WRITE) {
+		if (opCommand == CMD_READ || opCommand == CMD_WRITE || opCommand == CMD_ERASE) {
 			string lbaStr = commandVector.at(1);
 			int lba = std::stoi(lbaStr);
 			if (lba < 0 || lba > 99) {
+				return false;
+			}
+		}
+
+		if (opCommand == CMD_ERASE_RANGE) {
+			string lbaStr1 = commandVector.at(1);
+			string lbaStr2 = commandVector.at(2);
+			int lba1 = std::stoi(lbaStr1);
+			int lba2 = std::stoi(lbaStr2);
+
+			if (lba1 < 0 || lba1 > 99) {
+				return false;
+			}
+			if (lba2 < 0 || lba2 > 99) {
 				return false;
 			}
 		}
@@ -88,6 +108,12 @@ bool CommandParser::isValidCommand() const
 			}
 		}
 
+		if (opCommand == CMD_ERASE) {
+			if (!isValidSize(commandVector.at(2))) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 	catch (...) {
@@ -99,4 +125,15 @@ bool CommandParser::isValidValue(const string& valueStr) const
 {
 	std::regex re("^0x[0-9A-F]{8}$");
 	return std::regex_match(valueStr, re);
+}
+
+bool CommandParser::isValidSize(const string& sizeStr) const
+{
+	try {
+		int size = std::stoi(sizeStr);
+	}
+	catch (...) {
+		return false;
+	}
+	return true;
 }

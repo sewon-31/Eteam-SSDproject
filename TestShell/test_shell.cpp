@@ -1,6 +1,7 @@
 ﻿#include "test_shell.h"
 #include "command_parser.h"
 #include "test_script.h"
+#include "command.h"
 
 #include <iostream>
 
@@ -8,57 +9,54 @@ using std::cout;
 bool TestShell::ExecuteCommand(vector<string> commandVector)
 {
     std::string opCommand = commandVector.at(0);
-    string result = "FAIL";
 
     if (opCommand == CommandParser::CMD_EXIT) {
-        return false;
+        Command* command = new ExitCommand();
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_HELP) {
-        help();
+        Command* command = new HelpCommand();
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_WRITE) {
-        int lba = std::stoi(commandVector.at(1));
-        std::string value = commandVector.at(2);
-        std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
-        write(lba, value);
+        Command* command = new WriteCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_READ) {
-        int lba = std::stoi(commandVector.at(1));
-        std::cout << "Executing read from LBA " << lba << std::endl;
-        read(lba);
+        Command* command = new ReadCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLWRITE) {
-        std::string value = commandVector.at(1);
-        std::cout << "Executing fullwrite with value " << value << std::endl;
-        fullWrite(value);
+        Command* command = new FullWriteCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_FULLREAD) {
-        std::cout << "Executing fullread" << std::endl;
-        fullRead();
+        Command* command = new FullReadCommand(ssd);
+        if (!command->execute(commandVector)) return false;
+    }
+    else if (opCommand == CommandParser::CMD_ERASE) {
+        Command* command = new EraseCommand(ssd);
+        if (!command->execute(commandVector)) return false;
+    }
+    else if (opCommand == CommandParser::CMD_ERASE_RANGE) {
+        Command* command = new EraseRangeCommand(ssd);
+        if (!command->execute(commandVector)) return false;
+    }
+    else if (opCommand == CommandParser::CMD_FLUSH) {
+        Command* command = new FlushCommand(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-        ScriptsCommand* scriptCommand = new ScriptsFullWriteAndReadCompare(ssd);
-
-        std::cout << "Running script 1: FullWriteAndReadCompare" << std::endl;
-        if (scriptCommand->run()) result = "TRUE";
-
-        std::cout << result << '\n';
-    }
+        Command* command = new ScriptsFullWriteAndReadCompare(ssd);
+        if (!command->execute(commandVector)) return false;
+ }
     else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-        ScriptsCommand* scriptCommand = new ScriptsPartialLBAWrite(ssd);
-        
-        std::cout << "Running script 2: PartialLBAWrite" << std::endl;
-        if (scriptCommand->run()) result = "TRUE";
-
-        std::cout << result << '\n';
+        Command* command = new ScriptsPartialLBAWrite(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-        ScriptsCommand* scriptCommand = new ScriptsWriteReadAging(ssd);
-
-        std::cout << "Running script 3: WriteReadAging" << std::endl;
-        if (scriptCommand->run()) result = "TRUE";
-
-        std::cout << result << '\n';
+        Command* command = new ScriptsWriteReadAging(ssd);
+        if (!command->execute(commandVector)) return false;
     }
     else {
         std::cout << "[Error] Unknown command: " << opCommand << std::endl;
@@ -90,131 +88,35 @@ void TestShell::runShell()
 
 void TestShell::runScript(std::string filename)
 {
-    std::fstream scriptListFile(filename, std::ios::in);
-
-    if (scriptListFile.is_open() == false) {
+    if (fileUtil.fileExists(filename) == false) {
         std::cout << "[Error] Invalid File Name." << std::endl;
         return;
     }
-    
-    std::string opCommand;
-    ScriptsCommand* scriptCommand;
 
-    while (std::getline(scriptListFile, opCommand)) {
-        cout << opCommand <<"   ___   Run ... ";
+    vector<std::string> commandList;
+    fileUtil.readAllLines(filename, commandList);
+
+    for (auto opCommand : commandList) {
+        Command* command;
+        vector<string> commandVector = { opCommand };
+
+        string log = opCommand + "   ___   Run ... ";
+        cout << log;
 
         if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            scriptCommand  = new ScriptsFullWriteAndReadCompare(ssd);  
+            command = new ScriptsFullWriteAndReadCompare(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-            scriptCommand = new ScriptsPartialLBAWrite(ssd);
+            command = new ScriptsPartialLBAWrite(ssd);
         }
         else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            scriptCommand = new ScriptsWriteReadAging(ssd);         
+            command = new ScriptsWriteReadAging(ssd);
         }
         else {
-            cout << "FAIL!\n";
+            cout << FAIL;
             break;
         }
 
-        if (scriptCommand->run() == false) {
-            cout << "FAIL!\n";
-            break;
-        }
-
-        cout << "PASS\n";
+        if (command->execute(commandVector) == false) break;
     }
-
-    scriptListFile.close();
-}
-
-
-
-void TestShell::read(int lba) {
-
-    try {
-        ssdReadAndPrint(lba);
-    }
-    catch(std::exception e){
-        cout << string(e.what());
-    }
-}
-
-void TestShell::fullRead()
-{
-    try {
-	    for (int addr = 0; addr < MAX_LBA; addr++) {       
-            ssdReadAndPrint(addr);
-	    }
-    }
-    catch (std::exception e) {
-        cout << string(e.what());
-    }
-}
-
-void TestShell::ssdReadAndPrint(int addr)
-{
-    std::string content = ssd->read(addr);
-    std::ostringstream oss;
-    oss << std::setw(2) << std::setfill('0') << addr;
-
-    cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
-}
-
-
-void TestShell::write(int lba, std::string value) {
-	if (ssd == nullptr) return;
-	if (lba >= 100 || lba < 0)
-		return;
-	try {
-		ssd->write(lba, value);
-		std::cout << "[WRITE] Done" << std::endl;
-	}
-	catch (SSDExecutionException& e) {
-		std::cout << "[WRITE] Fail" << std::endl;
-	}
-}
-
-void TestShell::fullWrite(std::string value) {
-    if (ssd == nullptr) return;
-	try {
-		for (int i = 0; i < 100; i++)
-			ssd->write(i, value);
-		std::cout << "[FULL_WRITE] Done" << std::endl;
-	}
-	catch (SSDExecutionException& e) {
-		std::cout << "[FULL_WRITE] Fail" << std::endl;
-	}
-}
-
-void TestShell::help() {
-	std::cout << "Team: Easiest\n";
-	std::cout << "Member: Sewon Joo, Dokyeong Kim, Nayoung Yoon, Seungah Lim, Jaeyeong Jeon, Insang Cho, Dooyeun Hwang\n\n";
-
-	std::cout << "Available commands:\n\n";
-
-	std::cout << "\twrite <address> <value>\n";
-	std::cout << "\t\tWrite a 32-bit value to the specified address.\n\n";
-
-	std::cout << "\tread <address>\n";
-	std::cout << "\t\tRead a 32-bit value from the specified decimal address.\n\n";
-
-	std::cout << "\tfullwrite <value>\n";
-	std::cout << "\t\tFill the entire memory region with the specified 32-bit hex value.\n\n";
-
-	std::cout << "\tfullread\n";
-	std::cout << "\t\tRead and display the entire memory region.\n\n";
-
-	std::cout << "\thelp\n";
-	std::cout << "\t\tShow this help message.\n\n";
-
-	std::cout << "\texit\n";
-	std::cout << "\t\tExit the program.\n\n";
-
-	std::cout << "Address / Value format:\n";
-	std::cout << "\t<address> : Decimal integer (e.g., 16, 255)\n";
-	std::cout << "\t<value>   : 32-bit hexadecimal number\n";
-	std::cout << "\t\tMust start with '0x'\n";
-	std::cout << "\t\tMust contain exactly 8 hex digits (0-9, A-F)\n";
-	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
 }
