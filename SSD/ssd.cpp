@@ -1,5 +1,7 @@
 #include "ssd.h"
 #include "file_interface.h"
+#include "command_buffer.h"
+
 #include <algorithm>
 #include <iostream>
 
@@ -13,16 +15,18 @@ SSD::SSD(const std::string& nandPath, const std::string& outputPath)
 void
 SSD::run(vector<string> commandVector)
 {
-	if (!parser) {
-		parser = std::make_shared<SSDCommandBuilder>();
+	if (!builder) {
+		builder = std::make_shared<SSDCommandBuilder>();
 	}
 
 	// parse command
-	auto cmd = parser->createCommand(commandVector, storage);
+	auto cmd = builder->createCommand(commandVector, storage);
 	if (cmd == nullptr) {
 		updateOutputFile("ERROR");
 		return;
 	}
+
+	CommandBuffer commandBuffer;
 
 	string result("");
 
@@ -69,9 +73,9 @@ SSD::clearData()
 }
 
 void
-SSD::setParser(std::shared_ptr<SSDCommandBuilder> parser)
+SSD::setBuilder(std::shared_ptr<SSDCommandBuilder> builder)
 {
-	this->parser = parser;
+	this->builder = builder;
 }
 
 NandData& 

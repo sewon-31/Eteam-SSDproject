@@ -41,7 +41,7 @@ public:
 
 	void processMockParserFunctions()
 	{
-		app.setParser(mockParser);
+		app.setBuilder(mockParser);
 		EXPECT_CALL(*mockParser, isValidCommand)
 			.WillRepeatedly(Return(true));
 	}
