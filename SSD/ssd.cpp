@@ -29,26 +29,46 @@ SSD::run(vector<string> commandVector)
 	}
 
 	string result("");
+#if 1
+	if (cmd->getCmdType() == CmdType::READ) {
+	    cmd->run(result);
+	}
+	else {
+		int bufSize = cmdBuf.getBufferSize();
 
-	//if (cmd->getCmdType() == CmdType::READ) {
-	cmd->run(result);
-	//}
-	//else {
-		//int bufSize = cmdBuf.getBufferSize();
+		if (bufSize == 0) {
+			cmdBuf.addCommand(cmd);
+		}
+		else if (bufSize == CommandBuffer::BUFFER_MAX) {
+			cmdBuf.flushBuffer();
+			cmdBuf.addCommand(cmd);
+		}
+		else {
+			cmdBuf.addCommand(cmd);
+			cmdBuf.optimizeBuffer();
+		}
+	}
+#else
 
-		//if (bufSize == 0) {
-		//	cmdBuf.addCommand(cmd);
-		//}
-		//else if (bufSize == CommandBuffer::BUFFER_MAX) {
-		//	cmdBuf.flushBuffer();
-		//	cmdBuf.addCommand(cmd);
-		//}
-		//else {
-		//	cmdBuf.addCommand(cmd);
-		//	cmdBuf.optimizeBuffer();
-		//}
-	//}
+    //if (cmd->getCmdType() == CmdType::READ) {
+    cmd->run(result);
+    //}
+    //else {
+        //int bufSize = cmdBuf.getBufferSize();
 
+        //if (bufSize == 0) {
+        //	cmdBuf.addCommand(cmd);
+        //}
+        //else if (bufSize == CommandBuffer::BUFFER_MAX) {
+        //	cmdBuf.flushBuffer();
+        //	cmdBuf.addCommand(cmd);
+        //}
+        //else {
+        //	cmdBuf.addCommand(cmd);
+        //	cmdBuf.optimizeBuffer();
+        //}
+    //}
+#endif
 	cmdBuf.updateToDirectory();
 
 	if (!result.empty()) {

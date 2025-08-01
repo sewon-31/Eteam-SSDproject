@@ -767,3 +767,20 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_3) {
 	}
 	//EXPECT_EQ(0, error);
 }
+
+TEST_F(SSDTestFixture, TC_OpmizeBuffer) {
+	vector<string> input;
+
+	input = { "W", "0", "0x11112222" };
+	app.run(input);
+	input = { "W", "1", "0x11112222" };
+	app.run(input);
+	input = { "W", "2", "0x11112222" };
+	app.run(input);
+	input = { "W", "3", "0x11112222" };
+	app.run(input);
+	input = { "W", "4", "0x11112222" };
+	app.run(input);
+	input = { "W", "7", "0x11112222" };
+	app.run(input);
+}

@@ -59,6 +59,26 @@ CommandBuffer::flushBuffer()
 bool
 CommandBuffer::optimizeBuffer()
 {
+	int buf_size = buffer.size();
+	auto cmd = buffer.at(0);
+	auto type = cmd->getCmdType();
+	string lbaStr = std::to_string(cmd->getLBA());
+
+	std::cout << "optimizeBuffer" << buf_size << "\n";
+
+	std::cout << "buf_size" << buf_size << "\n";
+
+
+	if (type == CmdType::WRITE) {
+		std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+
+	}
+	if (type == CmdType::ERASE) {
+		std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+
+	}
+	//cmd->getLBA
+		//cmd->getLBA
 	return true;
 }
 
