@@ -244,6 +244,8 @@ TEST_F(SSDTestFixture, TC_ERASE) {
 	char buffer[16];
 	char ret = true;
 
+	nandFile.fileClear();
+
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
 		str[i] = std::string(buffer);
