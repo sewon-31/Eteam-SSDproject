@@ -128,6 +128,7 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
         }
     }
 #endif
+
     // step - 2
     for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
         virtual_op[idx_iba] = OP_NULL;
@@ -138,8 +139,16 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
             virtual_op[in.lba[idx_cb]] = idx_cb;
         }
         else if (in.op[idx_cb] == "E") {
-            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++)
+            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++) {
+                if (virtual_op[in.lba[idx_cb] + idx_size] <= OP_W_MAX) {
+                    for (int idx_cb2 = 0; idx_cb2 < cmdCount; idx_cb2++)
+                    {
+                        if(in.lba[idx_cb ] + idx_size == in.lba[idx_cb2])
+                            in.op[idx_cb2] = "E";
+                    }
+                }
                 virtual_op[in.lba[idx_cb] + idx_size] = OP_E;
+            }
         }
     }
     // display
@@ -170,6 +179,7 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
                 else {
                     temp.op[newCMDCount] = "W";
                     temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                    continue;
                 }
                 temp.lba[newCMDCount] = idx_iba;
                 temp.size[newCMDCount] = 1;

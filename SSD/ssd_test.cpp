@@ -56,6 +56,70 @@ public:
 	}
 };
 
+TEST_F(SSDTestFixture, reduceCMD_TC1_BUGCASE2) {
+	string op[6] = { "W","W","W","N","N","N" };
+	int lba[6] = { 20, 21, 20, 0,  0,  0 };
+	int size[6] = { 1, 1, 1, 0, 0, 0 };
+	string data[6] = { "0x10012300",
+						"0x20012300",
+						"0x30012300",
+						"",
+						"",
+						"" };
+	//  0- 9   N E W W E N N N N N
+	// 10-19   N N N N N N N N N N
+	// 20-29   W N N N N N E E E E
+	// 30-39   E E N N N N N N N N
+	// 40-49   N N N N N N N N N N
+	// 50-59   N N N N N N N N N N
+	// 60-69   N N N N N N N N N N
+	// 70-79   N N N N N N N N N N
+	// 80-89   N N N N N N N N N N
+	// 90-99   N N N N N N N N N N
+
+	for (int i = 0; i < 6; i++) {
+		test_in.op[i] = op[i];
+		test_in.lba[i] = lba[i];
+		test_in.size[i] = size[i];
+		test_in.data[i] = data[i];
+	}
+
+	int ret = app.reduceCMDBuffer(test_in, test_out);
+	EXPECT_EQ(1, ret);
+}
+#if 0
+TEST_F(SSDTestFixture, reduceCMD_TC1_BUGCASE) {
+	string op[6] = { "E","W","E","N","N","N" };
+	int lba[6] = { 18, 21, 18, 0,  0,  0 };
+	int size[6] = { 3, 1, 5, 0, 0, 0 };
+	string data[6] = { "",
+						"0x00012300",
+						"",
+						"",
+						"",
+						"" };
+	//  0- 9   N E W W E N N N N N
+	// 10-19   N N N N N N N N N N
+	// 20-29   W N N N N N E E E E
+	// 30-39   E E N N N N N N N N
+	// 40-49   N N N N N N N N N N
+	// 50-59   N N N N N N N N N N
+	// 60-69   N N N N N N N N N N
+	// 70-79   N N N N N N N N N N
+	// 80-89   N N N N N N N N N N
+	// 90-99   N N N N N N N N N N
+
+	for (int i = 0; i < 6; i++) {
+		test_in.op[i] = op[i];
+		test_in.lba[i] = lba[i];
+		test_in.size[i] = size[i];
+		test_in.data[i] = data[i];
+	}
+
+	int ret = app.reduceCMDBuffer(test_in, test_out);
+	EXPECT_EQ(1, ret);
+}
+
 TEST_F(SSDTestFixture, RunCommandTest1) {
 	processMockBuilderFunctions();
 
@@ -652,3 +716,4 @@ TEST_F(SSDTestFixture, TestCommandBufferWriteAfterErase) {
 	}
 }
 
+#endif

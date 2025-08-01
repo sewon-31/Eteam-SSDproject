@@ -45,7 +45,7 @@ private:
 
 	void initDirectory();
 	void updateFromDirectory();
-	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out);
+	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount);
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;

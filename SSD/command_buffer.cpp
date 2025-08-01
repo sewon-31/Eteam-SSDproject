@@ -118,7 +118,7 @@ CommandBuffer::optimizeBuffer()
     }
     std::cout << "\n";
 
-    int new_buf_size = reduceCMDBuffer(in, out);
+    int new_buf_size = reduceCMDBuffer(in, out, in_buf_idx);
     if (new_buf_size < buf_size)
     {
         std::shared_ptr<SSDCommandBuilder> builder;
@@ -300,16 +300,15 @@ CommandBuffer::updateToDirectory()
 		}
 	}
 }
-
+#define PRINT_DEBUG 1
 int
-CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) 
+CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount)
 {
     int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
 
     const int OP_NULL = 9;
     const int OP_E = 7;
     const int OP_W_MAX = 5;
-    int cmdCount = 5;
 
     CMD_BUF temp;
     // 1. Replcae w iba "0x00000000" >  E iba
@@ -335,10 +334,17 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out)
             virtual_op[in.lba[idx_cb]] = idx_cb;
         }
         else if (in.op[idx_cb] == CmdType::ERASE) {
-            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++)
+            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++) {
+                for (int idx_cb2 = 0; idx_cb2 < cmdCount; idx_cb2++)
+                {
+                    if (in.lba[idx_cb] + idx_size == in.lba[idx_cb2])
+                        in.op[idx_cb2] = CmdType::ERASE;
+                }
                 virtual_op[in.lba[idx_cb] + idx_size] = OP_E;
+            }
         }
     }
+
     // display
     for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
         if (virtual_op[idx_iba] == OP_NULL)
