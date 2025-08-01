@@ -128,12 +128,12 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\t\tExit the program.\n\n";
 
 	std::cout << "Address / Value format:\n";
-	std::cout << "\t<address> : Decimal integer (e.g., 16, 255)\n";
+	std::cout << "\t<address> : Decimal integer (e.g. 16, 255)\n";
 	std::cout << "\t<value>   : 32-bit hexadecimal number\n";
 	std::cout << "\t\tMust start with '0x'\n";
 	std::cout << "\t\tMust contain exactly 8 hex digits (0-9, A-F)\n";
 	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n";
-	std::cout << "\t<size>   : Decimal integer (e.g., 16, 255)\n\n";
+	std::cout << "\t<size>   : Decimal integer (e.g. 16, 255)\n\n";
     return true;
 }
 
