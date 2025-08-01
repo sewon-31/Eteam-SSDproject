@@ -88,11 +88,9 @@ TEST_F(TestShellCommandOperatorFixture, TestScript1) {
 TEST_F(TestShellCommandOperatorFixture, TestScript2) {
 	vector<string> commandVector = { "2_" };
 
-	// Write expectations
 	EXPECT_CALL(mockSSD, write(_, _))
 		.WillRepeatedly(Return());
 
-	// Read expectations
 	EXPECT_CALL(mockSSD, read(_))
 		.WillRepeatedly(Return(testData));
 
@@ -114,6 +112,29 @@ TEST_F(TestShellCommandOperatorFixture, TestScript3) {
 	EXPECT_CALL(mockSSD, read(99))
 		.Times(200)
 		.WillRepeatedly(Return(val99));
+
+	app.ExecuteCommand(commandVector);
+}
+TEST_F(TestShellCommandOperatorFixture, TestScript4) {
+	vector<string> commandVector = { "4_" };
+
+	string writeValue = "0x00001111";
+	string overWriteValue = "0x00009999";
+	string erasedData = "0x00000000";
+
+	const int LOOP = 30;
+	const int TOTAL_SSD_CALL_IN_LOOP = 48;
+	const int TOTAL_READ = 3;
+
+	EXPECT_CALL(mockSSD, erase(_, 3))
+		.Times(1 + TOTAL_SSD_CALL_IN_LOOP * LOOP);
+	EXPECT_CALL(mockSSD, write(_, writeValue))
+		.Times(TOTAL_SSD_CALL_IN_LOOP * LOOP);
+	EXPECT_CALL(mockSSD, write(_, overWriteValue))
+		.Times(TOTAL_SSD_CALL_IN_LOOP * LOOP);
+	EXPECT_CALL(mockSSD, read(_))
+		.Times(TOTAL_SSD_CALL_IN_LOOP * TOTAL_READ * LOOP)
+		.WillRepeatedly(Return(erasedData));
 
 	app.ExecuteCommand(commandVector);
 }
