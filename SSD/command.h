@@ -19,8 +19,8 @@ enum class CmdType {
 interface ICommand
 {
 	virtual ~ICommand() = default;
-	virtual void run(string& result) = 0;
-	virtual void execute(string& result) = 0;
+	virtual void run(string& result) = 0;		// run whole process (including file read/write)
+	virtual void execute(string& result) = 0;	// execute core action
 	virtual CmdType getCmdType() const = 0;
 };
 
@@ -72,12 +72,12 @@ private:
 class EraseCommand : public BaseCommand
 {
 public:
-	EraseCommand(NandData& storage, int lba, int size);
+    EraseCommand(NandData& storage, int lba, int size);
 
 	void run(string& result) override;
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
 
 private:
-	int size;   // 0~10
+    int size;
 };

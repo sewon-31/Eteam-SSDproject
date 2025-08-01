@@ -12,11 +12,17 @@ public:
 
 	const string CMD_READ = "R";
 	const string CMD_WRITE = "W";
+	const string CMD_ERASE = "E";
 	const string CMD_INVALID = "D";
 
 	const string VALID_LBA = "3";
 	const string INVALID_LBA_OUT_OF_RANGE = "100";
 	const string INVALID_LBA_NOT_A_NUMBER = "FF";
+
+	const string MIN_SIZE = "0";
+	const string MAX_SIZE = "10";
+	const string INVALID_SIZE1 = "-1";
+	const string INVALID_SIZE2 = "F";
 
 	const string VALID_VALUE = "0xAAAABBBB";
 	const string INVALID_VALUE1 = "0xG112BBBB";
@@ -57,6 +63,9 @@ TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
 
 	parser.setCommandVector({ CMD_READ, VALID_LBA, VALID_VALUE });
 	EXPECT_FALSE(parser.isValidCommand());
+
+	parser.setCommandVector({ CMD_ERASE, VALID_LBA });
+	EXPECT_FALSE(parser.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidLBA)
@@ -80,11 +89,38 @@ TEST_F(SSDCommandParserTestFixture, InvalidValue)
 	EXPECT_FALSE(parser.isValidCommand());
 }
 
+TEST_F(SSDCommandParserTestFixture, InvalidSize)
+{
+	parser.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE1 });
+	EXPECT_FALSE(parser.isValidCommand());
+
+	parser.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE2 });
+	EXPECT_FALSE(parser.isValidCommand());
+
+	parser.setCommandVector({ CMD_ERASE, VALID_LBA, MIN_SIZE });
+	EXPECT_TRUE(parser.isValidCommand());
+}
+
+TEST_F(SSDCommandParserTestFixture, InvalidLBARange)
+{
+	parser.setCommandVector({ CMD_ERASE, "90", MAX_SIZE});
+	EXPECT_FALSE(parser.isValidCommand());
+
+	parser.setCommandVector({ CMD_ERASE, "89", MAX_SIZE});
+	EXPECT_TRUE(parser.isValidCommand());
+
+	parser.setCommandVector({ CMD_ERASE, "0", MIN_SIZE});
+	EXPECT_TRUE(parser.isValidCommand());
+}
+
 TEST_F(SSDCommandParserTestFixture, ValidValue)
 {
 	parser.setCommandVector({ CMD_WRITE, VALID_LBA, VALID_VALUE });
 	EXPECT_TRUE(parser.isValidCommand());
 
 	parser.setCommandVector({ CMD_READ, VALID_LBA });
+	EXPECT_TRUE(parser.isValidCommand());
+
+	parser.setCommandVector({ CMD_ERASE, VALID_LBA, MAX_SIZE });
 	EXPECT_TRUE(parser.isValidCommand());
 }

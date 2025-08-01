@@ -30,28 +30,46 @@ SSDCommandBuilder::isValidCommand() const
 
 		// check operation command
 		string opCommand = commandVector.at(OP);
-		if (opCommand != CMD_READ && opCommand != CMD_WRITE) {
+		if (opCommand != CMD_READ && opCommand != CMD_WRITE && opCommand != CMD_ERASE) {
 			return false;
 		}
 
 		// check parameter count for each operation case
-		if (opCommand == CMD_READ && commandVector.size() != MAX_ARG_LENGTH - 1) {
+		if (opCommand == CMD_READ 
+			&& commandVector.size() != MAX_ARG_LENGTH - 1) {
 			return false;
 		}
 
-		if (opCommand == CMD_WRITE && commandVector.size() != MAX_ARG_LENGTH) {
+		if ((opCommand == CMD_WRITE || opCommand == CMD_ERASE)
+			&& commandVector.size() != MAX_ARG_LENGTH) {
 			return false;
 		}
 
 		// check lba range
-		string lbaStr = commandVector.at(LBA);
-		if (isValidLBA(std::stoi(lbaStr)) == false) {
+		int lba = std::stoi(commandVector.at(LBA));
+		if (!isValidLBA(lba)) {
 			return false;
 		}
 
-		// check value
+		// check value (write)
 		if (opCommand == CMD_WRITE) {
-			if (isValidValue(commandVector.at(VAL)) == false) {
+			if (!isValidValue(commandVector.at(VAL))) {
+				return false;
+			}
+		}
+
+		// chek size (erase)
+		if (opCommand == CMD_ERASE) {
+
+			// check size validity
+			int size = std::stoi(commandVector.at(SIZE));
+
+			if (!isValidSize(size)) {
+				return false;
+			}
+
+			// check lba range
+			if (!isValidLBA(lba, size)) {
 				return false;
 			}
 		}
@@ -83,6 +101,10 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector, NandData& st
 	else if (opCommand == CMD_WRITE) {
 		return std::make_shared<WriteCommand>(storage, lba, commandVector.at(VAL));
 	}
+	else if (opCommand == CMD_ERASE) {
+		int size = std::stoi(commandVector.at(SIZE));
+		return std::make_shared<EraseCommand>(storage, lba, size);
+	}
 	else {
 		return nullptr;
 	}
@@ -96,7 +118,17 @@ SSDCommandBuilder::isValidValue(const string& valueStr) const
 }
 
 bool
-SSDCommandBuilder::isValidLBA(int lba) const
+SSDCommandBuilder::isValidLBA(int lba, int size) const
 {
-	return lba >= NandData::LBA::MIN && lba <= NandData::LBA::MAX;
+	if (size == Size::MIN) {
+		return lba >= NandData::LBA::MIN && lba <= NandData::LBA::MAX;
+	}
+
+	return lba + size <= NandData::LBA::MAX;
+}
+
+bool
+SSDCommandBuilder::isValidSize(int size) const
+{
+	return size >= Size::MIN && size <= Size::MAX;
 }

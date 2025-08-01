@@ -201,3 +201,24 @@ TEST_F(SSDTestFixture, TC_RUN_READ) {
 
 	EXPECT_EQ(expected, actual);
 }
+
+TEST_F(SSDTestFixture, TC_RUN_ERASE) {
+	string str[100];
+	char buffer[16];
+	char ret = true;
+
+	for (int i = 0; i < 100; i++) {
+		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
+		str[i] = std::string(buffer);
+		app.run({ "W", std::to_string(i), str[i] });
+	}
+
+	EXPECT_EQ(1200, nandFile.checkSize());
+
+	// to update storage from nand file
+	app.run({ "E", "0", "10" });
+
+	app.run({ "R", "0" });
+	EXPECT_EQ(app.getData(9), "0x00000000");
+	EXPECT_EQ(app.getData(10), str[10]);
+}

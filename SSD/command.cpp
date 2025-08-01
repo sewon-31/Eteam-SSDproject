@@ -41,7 +41,6 @@ void
 WriteCommand::run(string& result)
 {
 	storage.clear();
-
 	storage.updateFromFile();
 
 	execute(result);
@@ -70,13 +69,18 @@ EraseCommand::EraseCommand(NandData& storage, int lba, int size)
 void
 EraseCommand::run(string& result)
 {
-	// storage.erase();
+	storage.clear();
+	storage.updateFromFile();
+
+	execute(result);
+
+	storage.updateToFile();
 }
 
 void
 EraseCommand::execute(string& result)
 {
-	// storage.erase();
+	storage.erase(lba, lba + size - 1);
 }
 
 CmdType
