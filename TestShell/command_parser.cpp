@@ -52,7 +52,9 @@ bool CommandParser::isValidCommand() const
 			&& opCommand != CMD_SCRIPT2
 			&& opCommand != CMD_SCRIPT2_NAME
 			&& opCommand != CMD_SCRIPT3
-			&& opCommand != CMD_SCRIPT3_NAME) {
+			&& opCommand != CMD_SCRIPT3_NAME
+			&& opCommand != CMD_SCRIPT4
+			&& opCommand != CMD_SCRIPT4_NAME) {
 			return false;
 		}
 
@@ -68,7 +70,8 @@ bool CommandParser::isValidCommand() const
 			(opCommand == CMD_FLUSH && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT1 || opCommand == CMD_SCRIPT1_NAME) && commandVector.size() != 1) ||
 			((opCommand == CMD_SCRIPT2 || opCommand == CMD_SCRIPT2_NAME) && commandVector.size() != 1) ||
-			((opCommand == CMD_SCRIPT3 || opCommand == CMD_SCRIPT3_NAME) && commandVector.size() != 1)) {
+			((opCommand == CMD_SCRIPT3 || opCommand == CMD_SCRIPT3_NAME) && commandVector.size() != 1) ||
+			((opCommand == CMD_SCRIPT4 || opCommand == CMD_SCRIPT4_NAME) && commandVector.size() != 1)) {
 			return false;
 		}
 

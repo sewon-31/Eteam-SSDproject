@@ -77,6 +77,8 @@ protected:
 
 private:
     SSDInterface* ssd;
+
+    void parseSizeAndErase(int size, int lba);
 };
 
 class EraseRangeCommand : public EraseCommand {

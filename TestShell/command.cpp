@@ -112,6 +112,15 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\tfullread\n";
 	std::cout << "\t\tRead and display the entire memory region.\n\n";
 
+	std::cout << "\terase <address> <size>\n";
+	std::cout << "\t\tErase contents starting from the specified LBA address for size.\n\n";
+
+	std::cout << "\terase_range <start address> <end address>\n";
+	std::cout << "\t\tErase contents from Start LBA address to End LBA address (inclusive).\n\n";
+
+	std::cout << "\tflush\n";
+	std::cout << "\t\tExecute all commands in the command buffer and clear the buffer.\n\n";
+
 	std::cout << "\thelp\n";
 	std::cout << "\t\tShow this help message.\n\n";
 
@@ -119,11 +128,12 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 	std::cout << "\t\tExit the program.\n\n";
 
 	std::cout << "Address / Value format:\n";
-	std::cout << "\t<address> : Decimal integer (e.g., 16, 255)\n";
+	std::cout << "\t<address> : Decimal integer (e.g. 16, 255)\n";
 	std::cout << "\t<value>   : 32-bit hexadecimal number\n";
 	std::cout << "\t\tMust start with '0x'\n";
 	std::cout << "\t\tMust contain exactly 8 hex digits (0-9, A-F)\n";
-	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
+	std::cout << "\t\tExample: 0x12345678, 0xDEADBEEF\n";
+	std::cout << "\t<size>   : Decimal integer (e.g. 16, 255)\n\n";
     return true;
 }
 
@@ -153,11 +163,27 @@ void EraseCommand::erase(int lba, int size) {
 			size = 100 - lba;
 		}
 
-		ssd->erase(lba, size);
+		parseSizeAndErase(size, lba);
+
 		std::cout << "[ERASE] Done" << std::endl;
 	}
 	catch (SSDExecutionException& e) {
 		std::cout << "[ERASE] Fail" << std::endl;
+	}
+}
+
+void EraseCommand::parseSizeAndErase(int size, int lba)
+{
+	while (size > 0) {
+		if (size > 10) {
+			ssd->erase(lba, 10);
+			lba = lba + 10;
+			size = size - 10;
+		}
+		else {
+			ssd->erase(lba, size);
+			size = 0;
+		}
 	}
 }
 

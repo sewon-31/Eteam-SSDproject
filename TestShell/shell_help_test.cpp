@@ -20,16 +20,23 @@ TEST(ShellTest, TestPrintHelp) {
 		"\t\tFill the entire memory region with the specified 32-bit hex value.\n\n"
 		"\tfullread\n"
 		"\t\tRead and display the entire memory region.\n\n"
+		"\terase <address> <size>\n"
+		"\t\tErase contents starting from the specified LBA address for size.\n\n"
+		"\terase_range <start address> <end address>\n"
+		"\t\tErase contents from Start LBA address to End LBA address (inclusive).\n\n"
+		"\tflush\n"
+		"\t\tExecute all commands in the command buffer and clear the buffer.\n\n"
 		"\thelp\n"
 		"\t\tShow this help message.\n\n"
 		"\texit\n"
 		"\t\tExit the program.\n\n"
 		"Address / Value format:\n"
-		"\t<address> : Decimal integer (e.g., 16, 255)\n"
+		"\t<address> : Decimal integer (e.g. 16, 255)\n"
 		"\t<value>   : 32-bit hexadecimal number\n"
 		"\t\tMust start with '0x'\n"
 		"\t\tMust contain exactly 8 hex digits (0-9, A-F)\n"
-		"\t\tExample: 0x12345678, 0xDEADBEEF\n\n";
+		"\t\tExample: 0x12345678, 0xDEADBEEF\n"
+		"\t<size>   : Decimal integer (e.g. 16, 255)\n\n";
 
 
 	EXPECT_EQ(expect, oss.str());

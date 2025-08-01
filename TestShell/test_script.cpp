@@ -102,3 +102,33 @@ bool ScriptsWriteReadAging::run()
 
 	catch (...) { return false; }
 }
+
+bool ScriptsEraseAndWriteAging::run()
+{
+	try {
+		ssd->erase(0, 3);
+
+		for (int i = 0; i < 30; ++i) {
+#if _DEBUG
+			std::string writeValue = "0x00001111";
+			std::string overWriteValue = "0x00009999";
+#else
+			std::string writeValue = intToHexString(generateRandomIntValue());
+			std::string overWriteValue = intToHexString(generateRandomIntValue());
+#endif
+			for (int j = 2; j <= 96; j += 2) {
+				ssd->write(j, writeValue);
+				ssd->write(j, overWriteValue);
+				ssd->erase(j, 3);
+				for (int k = 0; k < 3; k++) {
+					if (!readCompare(j + k, "0x00000000")) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	catch (...) { return false; }
+}

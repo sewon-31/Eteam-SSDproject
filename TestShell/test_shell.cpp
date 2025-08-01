@@ -70,6 +70,9 @@ void TestShell::runScript(std::string filename)
         else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
             command = new ScriptsWriteReadAging(ssd);
         }
+        else if (opCommand == CommandParser::CMD_SCRIPT4 || opCommand == CommandParser::CMD_SCRIPT4_NAME) {
+            command = new ScriptsEraseAndWriteAging(ssd);
+        }
         else {
             cout << FAIL;
             break;
