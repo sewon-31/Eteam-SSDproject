@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include "gmock/gmock.h"
+#include <windows.h>
+#include <string>
 
 using std::string;
 
@@ -15,12 +17,7 @@ public:
 
 class SSDDriver : public SSDInterface {
 public:
-	virtual bool runExe(const string& command) {
-		int isFail = system(command.c_str());
-
-		if (isFail) return false;
-		return true;
-	}
+	virtual bool runExe(const string& command);
 	void write(int lba, string value) override;
 	string read(int lba) override;
 	void erase(int lba, int size) override;
