@@ -205,7 +205,7 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
                 temp.op[newCMDCount] = "E";
                 temp.lba[newCMDCount] = idx_iba;
                 temp.size[newCMDCount] = 1;
-                temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];;
+                //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
                 continue_E_CMD = 1;
             }
             else {
@@ -307,9 +307,6 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
 
 int
 SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
-
-    TEST_CMD step3_1;
-
     int newCMDCount = reduceCMDBufferMerge(in, out, 6);
 
     return newCMDCount;
