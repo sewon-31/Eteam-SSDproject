@@ -1,4 +1,5 @@
 #include "command_parser.h"
+#include "command.h"
 
 #include <sstream>
 #include <iostream>
@@ -35,7 +36,7 @@ bool CommandParser::isValidCommand() const
 		}
 
 		// check operation command
-		string opCommand = commandVector.at(0);
+		string opCommand = commandVector.at(INPUT_IDX_OPCOMMAND);
 
 		// check valid commands
 		if (opCommand != CMD_READ
@@ -59,60 +60,51 @@ bool CommandParser::isValidCommand() const
 		}
 
 		// check parameter count for each operation case
-		if ((opCommand == CMD_READ && commandVector.size() != 2) ||
-			(opCommand == CMD_WRITE && commandVector.size() != 3) ||
-			(opCommand == CMD_EXIT && commandVector.size() != 1) ||
-			(opCommand == CMD_HELP && commandVector.size() != 1) ||
-			(opCommand == CMD_FULLREAD && commandVector.size() != 1) ||
-			(opCommand == CMD_FULLWRITE && commandVector.size() != 2) ||
-			(opCommand == CMD_ERASE && commandVector.size() != 3) ||
-			(opCommand == CMD_ERASE_RANGE && commandVector.size() != 3) ||
-			(opCommand == CMD_FLUSH && commandVector.size() != 1) ||
-			((opCommand == CMD_SCRIPT1 || opCommand == CMD_SCRIPT1_NAME) && commandVector.size() != 1) ||
-			((opCommand == CMD_SCRIPT2 || opCommand == CMD_SCRIPT2_NAME) && commandVector.size() != 1) ||
-			((opCommand == CMD_SCRIPT3 || opCommand == CMD_SCRIPT3_NAME) && commandVector.size() != 1) ||
-			((opCommand == CMD_SCRIPT4 || opCommand == CMD_SCRIPT4_NAME) && commandVector.size() != 1)) {
+		if ((opCommand == CMD_READ && commandVector.size() != NUM_INPUTS_FOR_READ) ||
+			(opCommand == CMD_WRITE && commandVector.size() != NUM_INPUTS_FOR_WRITE) ||
+			(opCommand == CMD_EXIT && commandVector.size() != NUM_INPUTS_FOR_EXIT) ||
+			(opCommand == CMD_HELP && commandVector.size() != NUM_INPUTS_FOR_HELP) ||
+			(opCommand == CMD_FULLREAD && commandVector.size() != NUM_INPUTS_FOR_FULLREAD) ||
+			(opCommand == CMD_FULLWRITE && commandVector.size() != NUM_INPUTS_FOR_FULLWRITE) ||
+			(opCommand == CMD_ERASE && commandVector.size() != NUM_INPUTS_FOR_ERASE) ||
+			(opCommand == CMD_ERASE_RANGE && commandVector.size() != NUM_INPUTS_FOR_ERASE_RANGE) ||
+			(opCommand == CMD_FLUSH && commandVector.size() != NUM_INPUTS_FOR_FLUSH) ||
+			((opCommand == CMD_SCRIPT2 || opCommand == CMD_SCRIPT2_NAME) && commandVector.size() != NUM_INPUTS_FOR_TESTSCRIPT) ||
+			((opCommand == CMD_SCRIPT3 || opCommand == CMD_SCRIPT3_NAME) && commandVector.size() != NUM_INPUTS_FOR_TESTSCRIPT) ||
+			((opCommand == CMD_SCRIPT1 || opCommand == CMD_SCRIPT1_NAME) && commandVector.size() != NUM_INPUTS_FOR_TESTSCRIPT) ||
+			((opCommand == CMD_SCRIPT4 || opCommand == CMD_SCRIPT4_NAME) && commandVector.size() != NUM_INPUTS_FOR_TESTSCRIPT)) {
 			return false;
 		}
 
 		// check lba range
 		if (opCommand == CMD_READ || opCommand == CMD_WRITE || opCommand == CMD_ERASE) {
-			string lbaStr = commandVector.at(1);
-			int lba = std::stoi(lbaStr);
-			if (lba < 0 || lba > 99) {
-				return false;
-			}
+			int lba = std::stoi(commandVector.at(INPUT_IDX_LBA));
+			if (!isValidLBA(lba)) return false;
 		}
 
 		if (opCommand == CMD_ERASE_RANGE) {
-			string lbaStr1 = commandVector.at(1);
-			string lbaStr2 = commandVector.at(2);
-			int lba1 = std::stoi(lbaStr1);
-			int lba2 = std::stoi(lbaStr2);
+			int lba1 = std::stoi(commandVector.at(INPUT_IDX_START_LBA));
+			int lba2 = std::stoi(commandVector.at(INPUT_IDX_END_LBA));
 
-			if (lba1 < 0 || lba1 > 99) {
-				return false;
-			}
-			if (lba2 < 0 || lba2 > 99) {
-				return false;
-			}
+			if (!isValidLBA(lba1)) return false;
+			if (!isValidLBA(lba2)) return false;
 		}
 
 		// check value format
 		if (opCommand == CMD_WRITE) {
-			if (!isValidValue(commandVector.at(2))) {
+			if (!isValidValue(commandVector.at(INPUT_IDX_WRITE_VALUE))) {
 				return false;
 			}
 		}
 
 		if (opCommand == CMD_FULLWRITE) {
-			if (!isValidValue(commandVector.at(1))) {
+			if (!isValidValue(commandVector.at(INPUT_IDX_FULL_WRITE_VALUE))) {
 				return false;
 			}
 		}
 
 		if (opCommand == CMD_ERASE) {
-			if (!isValidSize(commandVector.at(2))) {
+			if (!isValidSize(commandVector.at(INPUT_IDX_ERASE_SIZE))) {
 				return false;
 			}
 		}
@@ -122,6 +114,12 @@ bool CommandParser::isValidCommand() const
 	catch (...) {
 		return false;
 	}
+}
+
+bool CommandParser::isValidLBA(int lba) const
+{
+	if (lba < Command::MIN_LBA || lba > Command::MAX_LBA) return false;
+	return true;
 }
 
 bool CommandParser::isValidValue(const string& valueStr) const

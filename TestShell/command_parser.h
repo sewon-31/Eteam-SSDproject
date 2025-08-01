@@ -34,7 +34,27 @@ public:
 private:
 	bool isValidValue(const string& valueStr) const;
 	bool isValidSize(const string& sizeStr) const;
+	bool isValidLBA(const int lba) const;
 
 	string commandStr;
 	vector<string> commandVector;
+
+	const int NUM_INPUTS_FOR_READ = 2;
+	const int NUM_INPUTS_FOR_WRITE = 3;
+	const int NUM_INPUTS_FOR_EXIT = 1;
+	const int NUM_INPUTS_FOR_HELP = 1;
+	const int NUM_INPUTS_FOR_FULLREAD = 1;
+	const int NUM_INPUTS_FOR_FULLWRITE = 2;
+	const int NUM_INPUTS_FOR_ERASE = 3;
+	const int NUM_INPUTS_FOR_ERASE_RANGE = 3;
+	const int NUM_INPUTS_FOR_FLUSH = 1;
+	const int NUM_INPUTS_FOR_TESTSCRIPT = 1;
+
+	const int INPUT_IDX_OPCOMMAND = 0;
+	const int INPUT_IDX_LBA = 1;
+	const int INPUT_IDX_START_LBA = 1;
+	const int INPUT_IDX_END_LBA = 2;
+	const int INPUT_IDX_WRITE_VALUE = 2;
+	const int INPUT_IDX_FULL_WRITE_VALUE = 1;
+	const int INPUT_IDX_ERASE_SIZE = 2;
 };
