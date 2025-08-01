@@ -45,14 +45,14 @@ CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
 	int bufSize = buffer.size();
 
 	if (bufSize == 0) {
-		addCommand(command);
+		addCommandToBuffer(command);
 	}
 	else if (bufSize == CommandBuffer::BUFFER_MAX) {
 		flushBuffer();
-		addCommand(command);;
+		addCommandToBuffer(command);;
 	}
 	else {
-		addCommand(command);
+		addCommandToBuffer(command);
 		optimizeBuffer();
 	}
 }
