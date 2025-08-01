@@ -1,32 +1,11 @@
 #pragma once
 #define interface struct
 
-#include "nand_data.h"
-#include "file_interface.h"
+#include "command_buffer.h"
 
-#include <string>
 #include <vector>
 
 using std::string;
-
-class CommandBuffer;
-
-enum class CmdType {
-	READ = 0,
-	WRITE,
-	ERASE,
-	FLUSH
-};
-
-// ICommand (abstract class)
-interface ICommand
-{
-	virtual ~ICommand() = default;
-	virtual void run(string& result) = 0;		// run whole process (including file read/write)
-	virtual void execute(string& result) = 0;	// execute core action
-	virtual CmdType getCmdType() const = 0;
-	virtual int getLBA() const = 0;
-};
 
 // BaseCommand (abstract class) for common data members
 class BaseCommand : public ICommand
@@ -55,6 +34,10 @@ public:
 	void run(string& result) override;
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
+
+private:
+	string fastReadFromBuffer();
+	string INVALID = "";
 };
 
 // WriteCommand

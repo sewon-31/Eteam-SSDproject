@@ -26,6 +26,7 @@ public:
 
 private:
 	NandData& storage;
+	CommandBuffer& cmdBuf;
 	FileInterface outputFile;
 	std::shared_ptr<SSDCommandBuilder> builder;
 

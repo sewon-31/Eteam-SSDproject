@@ -1,6 +1,7 @@
 #include <random>
 
 #include "test_script.h"
+#include "logger.h"
 
 int ScriptsCommand::generateRandomIntValue() const
 {
@@ -23,12 +24,15 @@ std::string ScriptsCommand::intToHexString(int hexValue) const
 
 bool ScriptsCommand::readCompare(int address, std::string hexValue) const
 {
-	if (ssd->read(address) == hexValue) return true;
+	auto readData = ssd->read(address);
+	if (readData == hexValue) return true;
+	PRINT_LOG("Read Compare Fail! lba: %d, exp: %s, actual: %s", address, hexValue, readData);
 	return false;
 }
 
 bool ScriptsFullWriteAndReadCompare::run(void)
 {
+	PRINT_LOG("start");
 	try {
 		for (int startLba = 0; startLba < MAX_LBA; startLba += OPERATE_COUNT_PER_LOOP) {
 			string data = intToHexString(generateRandomIntValue());
@@ -42,18 +46,23 @@ bool ScriptsFullWriteAndReadCompare::run(void)
 			for (int offset = 0; offset < OPERATE_COUNT_PER_LOOP; offset++) {
 				int lba = startLba + offset;
 
-				if (!readCompare(lba, data)) {					
+				if (!readCompare(lba, data)) {
 					return false;
 				}
 			}
 		}
+		PRINT_LOG("Done");
 		return true;
 	}
-	catch (...) { return false; }
+	catch (...) { 
+		PRINT_LOG("Fail! (exception)");
+		return false; 
+	}
 }
 
 bool ScriptsPartialLBAWrite::run()
 {
+	PRINT_LOG("start");
 	try {
 		for (int i = 0; i < 30; i++) {
 			string data = intToHexString(generateRandomIntValue());
@@ -70,13 +79,18 @@ bool ScriptsPartialLBAWrite::run()
 				}
 			}
 		}
+		PRINT_LOG("Done");
 		return true;
 	}
-	catch (...) { return false; }
+	catch (...) {
+		PRINT_LOG("Fail! (exception)");
+		return false; 
+	}
 }
 
 bool ScriptsWriteReadAging::run() 
 {
+	PRINT_LOG("start");
 	try {
 		for (int i = 0; i < 200; ++i) {
 #if _DEBUG
@@ -97,14 +111,18 @@ bool ScriptsWriteReadAging::run()
 				return false;
 			}
 		}
+		PRINT_LOG("Done");
 		return true;
 	}
-
-	catch (...) { return false; }
+	catch (...) {
+		PRINT_LOG("Fail! (exception)");
+		return false;
+	}
 }
 
 bool ScriptsEraseAndWriteAging::run()
 {
+	PRINT_LOG("start");
 	try {
 		ssd->erase(0, 3);
 
@@ -127,8 +145,11 @@ bool ScriptsEraseAndWriteAging::run()
 				}
 			}
 		}
+		PRINT_LOG("Done");
 		return true;
 	}
-
-	catch (...) { return false; }
+	catch (...) {
+		PRINT_LOG("Fail! (exception)");
+		return false;
+	}
 }

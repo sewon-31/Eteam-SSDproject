@@ -3,6 +3,7 @@
 #include "test_script.h"
 #include "command_factory.h"
 #include <iostream>
+#include "logger.h"
 
 using std::cout;
 bool TestShell::ExecuteCommand(vector<string> commandVector)
@@ -16,6 +17,7 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
         return command->execute(args);
     }
     else {
+        PRINT_LOG("[Error] Unknown command: ");
         std::cout << "[Error] Unknown command: " << commandVector.at(0) << std::endl;
         return true;
     }
@@ -33,9 +35,11 @@ void TestShell::runShell()
 
         if (inputLine.empty()) continue;
 
+        PRINT_LOG(inputLine.c_str());
         commandParser.setCommand(inputLine);
 
         if (!commandParser.isValidCommand()) {
+            PRINT_LOG("[Error] Invalid command or arguments.");
             std::cout << "[Error] Invalid command or arguments." << std::endl;
             continue;
         }
@@ -47,6 +51,7 @@ void TestShell::runShell()
 void TestShell::runScript(std::string filename)
 {
     if (fileUtil.fileExists(filename) == false) {
+        PRINT_LOG("[Error] Invalid File Name.");
         std::cout << "[Error] Invalid File Name." << std::endl;
         return;
     }
@@ -55,25 +60,15 @@ void TestShell::runScript(std::string filename)
     fileUtil.readAllLines(filename, commandList);
 
     for (auto opCommand : commandList) {
-        Command* command;
         vector<string> commandVector = { opCommand };
 
         string log = opCommand + "   ___   Run ... ";
         cout << log;
+        PRINT_LOG(log.c_str());
 
-        if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            command = new ScriptsFullWriteAndReadCompare(ssd);
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-            command = new ScriptsPartialLBAWrite(ssd);
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            command = new ScriptsWriteReadAging(ssd);
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT4 || opCommand == CommandParser::CMD_SCRIPT4_NAME) {
-            command = new ScriptsEraseAndWriteAging(ssd);
-        }
-        else {
+        std::unique_ptr<Command> command = CommandFactory::createScriptCommand(commandVector, ssd);
+
+       if(command == nullptr) {
             cout << FAIL;
             break;
         }

@@ -18,11 +18,14 @@ ReadCommand::run(string& result)
 {
 	storage.clear();
 
-	// updateNandDataFromBuffer();
-	storage.updateFromFile();
+	string readData = fastReadFromBuffer();
 
-	execute(result);
-	std::cout << result << std::endl;
+	if (readData == INVALID) {
+		storage.updateFromFile();
+		execute(result);
+	}
+	
+	std::cout << result << std::endl; // for debug
 }
 
 void
@@ -35,6 +38,29 @@ CmdType
 ReadCommand::getCmdType() const
 {
 	return CmdType::READ;
+}
+
+string ReadCommand::fastReadFromBuffer()
+{
+	std::vector<std::shared_ptr<ICommand>> buffers = CommandBuffer::getInstance().getBuffer();
+
+	string result = INVALID;
+	for (auto command : buffers) {
+		
+		if (command->getCmdType() == CmdType::ERASE) {
+			std::shared_ptr<EraseCommand> erase = std::dynamic_pointer_cast<EraseCommand>(command);
+
+			int startLBA = erase->getLBA();
+			int endLBA = startLBA + erase->getSize() - 1;
+
+			if (lba >= startLBA && lba <= endLBA) result = ERASE_DATA;
+		}
+		if (command->getCmdType() == CmdType::WRITE) {
+			std::shared_ptr<WriteCommand> write = std::dynamic_pointer_cast<WriteCommand>(command);
+			if (write->getLBA() == lba) result = write->getValue();
+		}
+	}
+	return result;
 }
 
 // WriteCommand

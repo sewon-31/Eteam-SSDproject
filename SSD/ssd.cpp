@@ -7,7 +7,8 @@
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
 	: outputFile(outputPath),
-	storage(NandData::getInstance())
+	storage(NandData::getInstance()),
+	cmdBuf(CommandBuffer::getInstance())
 {
 }
 
@@ -18,7 +19,6 @@ SSD::run(vector<string> commandVector)
 		builder = std::make_shared<SSDCommandBuilder>();
 	}
 
-	CommandBuffer cmdBuf;
 	cmdBuf.Init();
 
 	// parse command

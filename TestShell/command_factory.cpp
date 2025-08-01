@@ -36,7 +36,18 @@ std::unique_ptr<Command> CommandFactory::createCommand(const std::vector<std::st
 	else if (opCommand == CommandParser::CMD_FLUSH) {
 		return std::make_unique<FlushCommand>(ssd);
 	}
-	else if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
+
+	return createScriptCommand(commandVector, ssd);
+}
+
+std::unique_ptr<Command> CommandFactory::createScriptCommand(const std::vector<std::string>& commandVector, SSDInterface* ssd) {
+	if (commandVector.empty()) {
+		return nullptr;
+	}
+
+	std::string opCommand = commandVector.at(0);
+
+	if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
 		return std::make_unique<ScriptsFullWriteAndReadCompare>(ssd);
 	}
 	else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
