@@ -6,6 +6,12 @@ BaseCommand::BaseCommand(NandData& storage, int lba)
 {
 }
 
+int
+BaseCommand::getLBA() const
+{
+	return lba;
+}
+
 // ReadCommand
 void
 ReadCommand::run(string& result)
@@ -60,6 +66,12 @@ WriteCommand::getCmdType() const
 	return CmdType::WRITE;
 }
 
+string
+WriteCommand::getValue() const
+{
+	return value;
+}
+
 // EraseCommand
 EraseCommand::EraseCommand(NandData& storage, int lba, int size)
 	: BaseCommand(storage, lba), size(size)
@@ -87,4 +99,10 @@ CmdType
 EraseCommand::getCmdType() const
 {
 	return CmdType::ERASE;
+}
+
+int
+EraseCommand::getSize() const
+{
+	return size;
 }

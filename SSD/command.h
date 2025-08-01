@@ -39,6 +39,7 @@ public:
 	};
 
 	BaseCommand(NandData& storage, int lba);
+	int getLBA() const;
 };
 
 // ReadCommand
@@ -64,6 +65,8 @@ public:
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
 
+	string getValue() const;
+
 private:
 	string value;
 };
@@ -77,6 +80,8 @@ public:
 	void run(string& result) override;
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
+
+	int getSize() const;
 
 private:
     int size;
