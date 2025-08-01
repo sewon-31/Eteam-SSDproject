@@ -26,7 +26,8 @@ SSD::run(vector<string> commandVector)
 		return;
 	}
 
-	CommandBuffer commandBuffer;
+	CommandBuffer cmdBuf;
+	cmdBuf.Init();
 
 	string result("");
 

@@ -1,16 +1,64 @@
 #include "command_buffer.h"
+#include "ssd_command_builder.h"
 
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include <iostream>
 #include <algorithm>
 #include <sstream>
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 CommandBuffer::CommandBuffer(const string& dirPath)
 	: bufferDirPath(dirPath)
+{
+}
+
+void
+CommandBuffer::Init()
+{
+	initDirectory();
+	updateFromDirectory();
+}
+
+const std::vector<std::shared_ptr<ICommand>>&
+CommandBuffer::getBuffer() const
+{
+	return buffer;
+}
+
+int
+CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
+{
+	buffer.push_back(command);
+	optimizeBuffer();
+
+	return buffer.size();
+}
+
+void
+CommandBuffer::flushBuffer()
+{
+	//ssd.getStorage().updateFromFile();
+
+	string result;
+	for (auto cmd : buffer) {
+		cmd->execute(result);
+	}
+
+	//ssd.getStorage().updateToFile();
+
+	buffer.clear();
+}
+
+bool
+CommandBuffer::optimizeBuffer()
+{
+	return true;
+}
+
+void
+CommandBuffer::initDirectory()
 {
 	// create buffer directory (if needed)
 	bool bufferDirExists = fs::exists(bufferDirPath) && fs::is_directory(bufferDirPath);
@@ -70,7 +118,7 @@ CommandBuffer::updateFromDirectory()
 
 			vector<string> commandVector;
 			std::stringstream ss(noPrefix);
-			
+
 			string token;
 			while (std::getline(ss, token, '_')) {
 				commandVector.push_back(token);
@@ -87,40 +135,4 @@ CommandBuffer::updateFromDirectory()
 			std::cout << "Weird file " << fileName << std::endl;
 		}
 	}
-}
-
-const std::vector<std::shared_ptr<ICommand>>&
-CommandBuffer::getBuffer() const
-{
-	return buffer;
-}
-
-int
-CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
-{
-	buffer.push_back(command);
-	optimizeBuffer();
-
-	return buffer.size();
-}
-
-void
-CommandBuffer::flushBuffer()
-{
-	//ssd.getStorage().updateFromFile();
-
-	string result;
-	for (auto cmd : buffer) {
-		cmd->execute(result);
-	}
-
-	//ssd.getStorage().updateToFile();
-
-	buffer.clear();
-}
-
-bool
-CommandBuffer::optimizeBuffer()
-{
-	return true;
 }

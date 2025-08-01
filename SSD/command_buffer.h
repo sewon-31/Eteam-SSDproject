@@ -1,6 +1,5 @@
 #pragma once
 #include "command.h"
-#include "ssd.h"
 
 #include <vector>
 #include <memory>
@@ -12,9 +11,10 @@ using std::string;
 class CommandBuffer
 {
 public:
-	CommandBuffer(const string& dirPath = "");
+	CommandBuffer(const string& dirPath = "../buffer/");
 
-	void updateFromDirectory();
+	void Init();
+
 	void updateToDirectory();
 
 	const vector<std::shared_ptr<ICommand>>& getBuffer() const;
@@ -26,6 +26,9 @@ public:
 	static constexpr const char* EMPTY = "empty";
 
 private:
+	void initDirectory();
+	void updateFromDirectory();
+
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;
