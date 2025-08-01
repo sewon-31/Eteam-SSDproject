@@ -9,6 +9,12 @@
 
 namespace fs = std::filesystem;
 
+CommandBuffer&
+CommandBuffer::getInstance(const std::string& dirPath) {
+	static CommandBuffer instance(dirPath);
+	return instance;
+}
+
 CommandBuffer::CommandBuffer(const string& dirPath)
 	: bufferDirPath(dirPath)
 {
