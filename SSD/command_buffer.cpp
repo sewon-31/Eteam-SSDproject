@@ -287,15 +287,7 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) {
     }
     std::cout << "\n";
 #endif
-#if 0
-    // step - 1
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        if (in.op[idx_cb] == "W" && in.data[idx_cb] == "0x00000000") {
-            in.op[idx_cb] = "E";
-            in.size[idx_cb] = 1;
-        }
-    }
-#endif
+
     // step - 2
     for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
         virtual_op[idx_iba] = OP_NULL;
@@ -366,16 +358,7 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) {
     }
     std::cout << "\n";
 #endif
-#if 0
-    //Check W
-    if (virtual_op[idx_iba] <= OP_W_MAX) {
-        out.op[newCMDCount] = "W";
-        out.lba[newCMDCount] = idx_iba;
-        out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-        out.size[newCMDCount] = 1;
-        newCMDCount++;
-    }
-#endif
+
     int hit = 0;
     for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
         if (in.op[idx_cb_in] == CmdType::WRITE && in.data[idx_cb_in] != "0x00000000") {
@@ -383,10 +366,6 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) {
             for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
                 if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
                     if (temp.size[idx_cb_out] == 1) {
-                        //temp.op[idx_cb_out] = "W";
-                        //temp.lba[idx_cb_out] = in.lba[idx_cb_in];
-                        //temp.size[idx_cb_out] = 1;
-                        //temp.data[idx_cb_out] = in.data[idx_cb_in];
                         hit = 1;
                     }
                 }
