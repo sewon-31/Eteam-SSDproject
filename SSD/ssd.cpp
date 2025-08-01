@@ -87,9 +87,3 @@ SSD::getStorage()
 {
 	return storage;
 }
-
-FileInterface&
-SSD::getOutputFile() 
-{
-	return outputFile;
-}
