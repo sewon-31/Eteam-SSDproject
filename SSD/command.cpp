@@ -61,7 +61,7 @@ WriteCommand::getCmdType() const
 }
 
 // EraseCommand
-EraseCommand::EraseCommand(NandData& storage, int lba, int end)
+EraseCommand::EraseCommand(NandData& storage, int lba, int size)
 	: BaseCommand(storage, lba), size(size)
 {
 }
