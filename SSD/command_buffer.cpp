@@ -74,7 +74,7 @@ CommandBuffer::optimizeBuffer()
         in.op[buf_idx] = cmd->getCmdType();
         in.lba[buf_idx] = cmd->getLBA();
 
-        std::cout << "optimizeBuffer : buffer_size " << buf_size << "\n";
+        std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
         if (type == CmdType::WRITE) {
             std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
             in.data[buf_idx] = wCmdPtr->getValue();
@@ -88,7 +88,7 @@ CommandBuffer::optimizeBuffer()
         }
     }
     std::cout << "\n";
-    int new_buf_size = reduceCMDBuffer(in, out, 5);
+    int new_buf_size = reduceCMDBuffer(in, out);
     if (new_buf_size < buf_size)
     {
         std::shared_ptr<SSDCommandBuilder> builder;
@@ -266,12 +266,13 @@ CommandBuffer::updateToDirectory()
 //#define PRINT_DEBUG 1
 
 int
-CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount) {
+CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) {
     int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
 
     const int OP_NULL = 9;
     const int OP_E = 7;
     const int OP_W_MAX = 5;
+    int cmdCount = 5;
 
     CMD_BUF temp;
     // 1. Replcae w iba "0x00000000" >  E iba
