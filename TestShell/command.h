@@ -6,7 +6,6 @@
 
 class Command {
 public:
-    virtual 
     virtual ~Command() = default;
     virtual bool execute(const std::vector<std::string>& args) = 0;
 

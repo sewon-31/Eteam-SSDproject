@@ -57,7 +57,7 @@ void Logger::zipOldLogFile() {
     }
 }
 
-void Logger::rotateLogIfFull(int size) {
+void Logger::rotateLogIfFull(size_t size) {
     if (!FileUtil::directoryExists(LOG_DIR)) return;
     if (!FileUtil::fileExists(LOG_FILE)) return;
     if (FileUtil::getFileSize(LOG_FILE) + size < MAX_LOG_SIZE) return;
