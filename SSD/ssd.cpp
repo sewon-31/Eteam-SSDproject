@@ -6,10 +6,9 @@
 #include <iostream>
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
-	: outputFile(outputPath)
+	: outputFile(outputPath),
+	storage(NandData::getInstance())
 {
-	// create storage
-	storage = NandData( nandPath );
 }
 
 void
@@ -19,15 +18,15 @@ SSD::run(vector<string> commandVector)
 		builder = std::make_shared<SSDCommandBuilder>();
 	}
 
+	CommandBuffer cmdBuf;
+	cmdBuf.Init();
+
 	// parse command
-	auto cmd = builder->createCommand(commandVector, storage);
+	auto cmd = builder->createCommand(commandVector);
 	if (cmd == nullptr) {
 		updateOutputFile("ERROR");
 		return;
 	}
-
-	CommandBuffer cmdBuf;
-	cmdBuf.Init();
 
 	string result("");
 
@@ -37,6 +36,8 @@ SSD::run(vector<string> commandVector)
 	//else {
 		// add to buffer
 	//}
+
+	cmdBuf.updateToDirectory();
 
 	if (!result.empty()) {
 		updateOutputFile(result);

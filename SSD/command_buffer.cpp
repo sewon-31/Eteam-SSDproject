@@ -39,15 +39,14 @@ CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
 void
 CommandBuffer::flushBuffer()
 {
-	//ssd.getStorage().updateFromFile();
+	NandData::getInstance().updateFromFile();
 
 	string result;
 	for (auto cmd : buffer) {
 		cmd->execute(result);
 	}
 
-	//ssd.getStorage().updateToFile();
-
+	NandData::getInstance().updateToFile();
 	buffer.clear();
 }
 
@@ -123,16 +122,77 @@ CommandBuffer::updateFromDirectory()
 			while (std::getline(ss, token, '_')) {
 				commandVector.push_back(token);
 			}
-			/*
-			auto cmd = builder.createCommand(commandVector, ssd->getStorage());
+
+			auto cmd = builder.createCommand(commandVector);
 			if (cmd == nullptr) {
 				std::cout << "Commmand not created - " << noPrefix << std::endl;
 			}
 			buffer.push_back(cmd);
-			*/
+
 		}
 		else {
 			std::cout << "Weird file " << fileName << std::endl;
+		}
+	}
+
+	// delete all the files
+	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
+		if (fs::is_regular_file(file.path())) {
+			fs::remove(file.path());
+		}
+	}
+}
+
+void
+CommandBuffer::updateToDirectory()
+{
+	if (buffer.size() > BUFFER_MAX) {
+		std::cout << "vector size error" << std::endl;
+	}
+
+	for (int i = 1; i <= BUFFER_MAX; ++i) {
+		string filePath = bufferDirPath + "/" + std::to_string(i) + "_";
+
+		auto cmd = buffer.at(i);
+		if (cmd == nullptr) {
+			filePath += EMPTY;
+			std::ofstream file(filePath);
+			if (!file) {
+#if _DEBUG
+				std::cout << "Failed to create " << filePath << std::endl;
+#endif
+			}
+			continue;
+		}
+		else {
+
+			// concat type, lba, value/size
+			auto type = cmd->getCmdType();
+			string lbaStr = std::to_string(cmd->getLBA());
+
+			if (type == CmdType::WRITE) {
+				filePath += "W_" + lbaStr + "_";
+
+				std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+				if (wCmdPtr) {
+					filePath += wCmdPtr->getValue();
+				}
+			}
+			if (type == CmdType::ERASE) {
+				filePath += "E_" + lbaStr + "_";
+				std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+				if (eCmdPtr) {
+					filePath += eCmdPtr->getSize();
+				}
+			}
+		}
+
+		// create file
+		std::ofstream file(filePath);
+		if (!file) {
+#if _DEBUG
+			std::cout << "Failed to create " << filePath << std::endl;
+#endif
 		}
 	}
 }

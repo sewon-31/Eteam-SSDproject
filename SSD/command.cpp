@@ -1,8 +1,8 @@
 #include "command.h"
 
 // BaseCommand
-BaseCommand::BaseCommand(NandData& storage, int lba)
-	: storage(storage), lba(lba)
+BaseCommand::BaseCommand(int lba)
+	: storage(NandData::getInstance()), lba(lba)
 {
 }
 
@@ -38,8 +38,8 @@ ReadCommand::getCmdType() const
 }
 
 // WriteCommand
-WriteCommand::WriteCommand(NandData& storage, int lba, const std::string& value)
-	: BaseCommand(storage, lba), value(value)
+WriteCommand::WriteCommand(int lba, const std::string& value)
+	: BaseCommand(lba), value(value)
 {
 }
 
@@ -70,11 +70,11 @@ string
 WriteCommand::getValue() const
 {
 	return value;
-}
+} 
 
 // EraseCommand
-EraseCommand::EraseCommand(NandData& storage, int lba, int size)
-	: BaseCommand(storage, lba), size(size)
+EraseCommand::EraseCommand(int lba, int size)
+	: BaseCommand(lba), size(size)
 {
 }
 

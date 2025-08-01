@@ -14,7 +14,7 @@ public:
         SIZE = 100
     };
 
-    NandData(const string& filePath = "");
+    static NandData& getInstance(const std::string& path = "../ssd_nand.txt");
 
     string read(int lba) const;
     void write(int lba, const string& value);
@@ -29,6 +29,10 @@ public:
     FileInterface& getNandFile();
 
 private:
+    NandData(const string& filePath);
+    NandData(const NandData&) = delete;
+    NandData& operator=(const NandData&) = delete;
+
     bool isInvalidLBA(int lba) const;
 
     string data[LBA::SIZE];

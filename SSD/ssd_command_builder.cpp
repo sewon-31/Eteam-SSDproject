@@ -82,7 +82,7 @@ SSDCommandBuilder::isValidCommand() const
 }
 
 std::shared_ptr<ICommand>
-SSDCommandBuilder::createCommand(vector<string> inputCommandVector, NandData& storage)
+SSDCommandBuilder::createCommand(vector<string> inputCommandVector)
 {
 	setCommandVector(inputCommandVector);
 
@@ -96,14 +96,14 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector, NandData& st
 	// create command
 	string opCommand = commandVector.at(OP);
 	if (opCommand == CMD_READ) {
-		return std::make_shared<ReadCommand>(storage, lba);
+		return std::make_shared<ReadCommand>(lba);
 	}
 	else if (opCommand == CMD_WRITE) {
-		return std::make_shared<WriteCommand>(storage, lba, commandVector.at(VAL));
+		return std::make_shared<WriteCommand>(lba, commandVector.at(VAL));
 	}
 	else if (opCommand == CMD_ERASE) {
 		int size = std::stoi(commandVector.at(SIZE));
-		return std::make_shared<EraseCommand>(storage, lba, size);
+		return std::make_shared<EraseCommand>(lba, size);
 	}
 	else {
 		return nullptr;

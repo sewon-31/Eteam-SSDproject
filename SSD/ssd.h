@@ -26,7 +26,7 @@ public:
 	NandData& getStorage();
 
 private:
-	NandData storage;
+	NandData& storage;
 	FileInterface outputFile;
 	std::shared_ptr<SSDCommandBuilder> builder;
 

@@ -22,6 +22,7 @@ interface ICommand
 	virtual void run(string& result) = 0;		// run whole process (including file read/write)
 	virtual void execute(string& result) = 0;	// execute core action
 	virtual CmdType getCmdType() const = 0;
+	virtual int getLBA() const = 0;
 };
 
 // BaseCommand (abstract class) for common data members
@@ -38,7 +39,7 @@ public:
 		ERASE = 2
 	};
 
-	BaseCommand(NandData& storage, int lba);
+	BaseCommand(int lba);
 	int getLBA() const;
 };
 
@@ -59,7 +60,7 @@ public:
 class WriteCommand : public BaseCommand
 {
 public:
-	WriteCommand(NandData& storage, int lba, const std::string& value);
+	WriteCommand(int lba, const std::string& value);
 
 	void run(string& result) override;
 	void execute(string& result) override;
@@ -75,7 +76,7 @@ private:
 class EraseCommand : public BaseCommand
 {
 public:
-    EraseCommand(NandData& storage, int lba, int size);
+    EraseCommand(int lba, int size);
 
 	void run(string& result) override;
 	void execute(string& result) override;

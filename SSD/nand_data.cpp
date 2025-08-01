@@ -1,8 +1,9 @@
 #include "nand_data.h"
 
-NandData::NandData(const string& filePath)
-	: file(filePath)
-{
+NandData& 
+NandData::getInstance(const std::string& path) {
+	static NandData instance(path);
+	return instance;
 }
 
 string
@@ -84,6 +85,11 @@ FileInterface&
 NandData::getNandFile() 
 {
 	return file;
+}
+
+NandData::NandData(const string& filePath)
+	: file(filePath)
+{
 }
 
 bool

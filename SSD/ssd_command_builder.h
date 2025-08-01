@@ -29,7 +29,7 @@ public:
 	virtual vector<string> getCommandVector() const;
 
 	virtual bool isValidCommand() const;
-	virtual std::shared_ptr<ICommand> createCommand(vector<string> commandVector, NandData& storage);
+	virtual std::shared_ptr<ICommand> createCommand(vector<string> commandVector);
 
 	static constexpr const char* CMD_READ = "R";
 	static constexpr const char* CMD_WRITE = "W";

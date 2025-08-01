@@ -13,6 +13,7 @@ public:
 	MOCK_METHOD(void, run, (string& result), (override));
 	MOCK_METHOD(void, execute, (string& result), (override));
 	MOCK_METHOD(CmdType, getCmdType, (), (const, override));
+	MOCK_METHOD(int, getLBA, (), (const, override));
 };
 
 class MockParser : public SSDCommandBuilder {
@@ -20,7 +21,7 @@ public:
 	MOCK_METHOD(void, setCommandVector, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
 	MOCK_METHOD(vector<string>, getCommandVector, (), (const, override));
-	MOCK_METHOD(std::shared_ptr<ICommand>, createCommand, (std::vector<std::string>, NandData&), (override));
+	MOCK_METHOD(std::shared_ptr<ICommand>, createCommand, (std::vector<std::string>), (override));
 };
 
 class SSDTestFixture : public Test
@@ -52,7 +53,7 @@ TEST_F(SSDTestFixture, RunExecutesCommand) {
 
 	std::vector<std::string> input = { "R", "0" };
 
-	EXPECT_CALL(*mockParser, createCommand(input, testing::_))
+	EXPECT_CALL(*mockParser, createCommand(input))
 		.WillOnce(Return(mockCmd));
 
 	EXPECT_CALL(*mockCmd, run)
