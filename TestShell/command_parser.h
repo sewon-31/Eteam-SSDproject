@@ -28,6 +28,8 @@ public:
 	static constexpr const char* CMD_SCRIPT2_NAME = "2_PartialLBAWrite";
 	static constexpr const char* CMD_SCRIPT3 = "3_";
 	static constexpr const char* CMD_SCRIPT3_NAME = "3_WriteReadAging";
+	static constexpr const char* CMD_SCRIPT4 = "4_";
+	static constexpr const char* CMD_SCRIPT4_NAME = "4_EraseAndWriteAging";
 
 private:
 	bool isValidValue(const string& valueStr) const;
