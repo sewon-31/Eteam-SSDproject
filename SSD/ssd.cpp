@@ -20,33 +20,31 @@ SSD::run(vector<string> commandVector)
 	}
 
 	cmdBuf.Init();
-
-	// parse command
-	auto cmd = builder->createCommand(commandVector);
-	if (cmd == nullptr) {
-		updateOutputFile("ERROR");
-		return;
-	}
-
 	string result("");
 
-	auto type = cmd->getCmdType();
-	//if (type == CmdType::READ || type == CmdType::FLUSH
-	//{
-	cmd->run(result);
-	//}
-	//else if(type==CmdType::WRITE || type ==CmdType::ERASE {
-		//cmdBuf.addCommand(cmd);
-	//}
+	// create command (validity check included)
+	auto cmd = builder->createCommand(commandVector);
+	if (cmd == nullptr) {
+		result = "ERROR";
+	}
+	else {
+		auto type = cmd->getCmdType();
+		//if (type == CmdType::READ || type == CmdType::FLUSH
+		//{
+		cmd->run(result);
+		//}
+		//else if(type==CmdType::WRITE || type ==CmdType::ERASE {
+			//cmdBuf.addCommand(cmd);
+		//}
+	}
 
 	cmdBuf.updateToDirectory();
-
 	if (!result.empty()) {
 		updateOutputFile(result);
 	}
 }
 
-bool 
+bool
 SSD::updateOutputFile(const string& result)
 {
 	outputFile.fileClear();
@@ -82,7 +80,7 @@ SSD::setBuilder(std::shared_ptr<SSDCommandBuilder> builder)
 	this->builder = builder;
 }
 
-NandData& 
+NandData&
 SSD::getStorage()
 {
 	return storage;
