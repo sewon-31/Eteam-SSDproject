@@ -58,7 +58,7 @@ string SSDDriver::read(int lba) {
 	string command = "ssd.exe R " + std::to_string(lba);
 	PRINT_LOG("send to SSD \"%s\"", command.c_str());
 	if (!runExe(command)) {
-		throw std::runtime_error("Failed to execute ssd.exe for read()");
+		throw std::runtime_error("Failed to execute ssd.exe for read()\n");
 	}
 
 	string content;
