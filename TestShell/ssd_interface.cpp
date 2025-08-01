@@ -1,4 +1,5 @@
 #include "ssd_interface.h"
+#include "file_util.h"
 #include <windows.h>
 #include <sstream>
 #include <iostream>
@@ -57,18 +58,11 @@ string SSDDriver::read(int lba) {
 		throw std::runtime_error("Failed to execute ssd.exe for read()");
 	}
 
-	std::ifstream file(SSD_READ_RESULT);
-	if (!file.is_open()) {
-		throw std::runtime_error("Failed to open result file: " + SSD_READ_RESULT);
-	}
-
 	string content;
-	if (!std::getline(file, content)) {
-		file.close();
+	if (!FileUtil::readLine(SSD_READ_RESULT, content)) {
 		throw std::runtime_error("Failed to read line from result file: " + SSD_READ_RESULT);
 	}
 
-	file.close();
 	return content;
 }
 
