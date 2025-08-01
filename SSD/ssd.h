@@ -37,8 +37,7 @@ public:
 
 private:
 	int reduceCMDBufferDisplay(TEST_CMD in);
-	int reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
-	int reduceCMDBufferNonSeqCmdMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
+	int reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
 
 	FileInterface outputFile;
 	FileInterface nandFile;

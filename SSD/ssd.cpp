@@ -139,18 +139,24 @@ SSD::reduceCMDBufferDisplay(TEST_CMD in) {
 }
 
 int
-SSD::reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
+SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
     int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
 
     const int OP_NULL = 9;
     const int OP_E = 7;
     const int OP_W_MAX = 5;
 
+    TEST_CMD temp;
     // 1. Replcae w iba "0x00000000" >  E iba
     // 2. make virtual data 
     // 3. Make CMD
         //3-1. Make new CMD E range check and W
-
+        // display
+    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
+        std::cout << in.op[idx_cb] << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#if 0
     // step - 1
     for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
         if (in.op[idx_cb] == "W" && in.data[idx_cb] == "0x00000000") {
@@ -158,7 +164,7 @@ SSD::reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
             in.size[idx_cb] = 1;
         }
     }
-
+#endif
     // step - 2
     for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
         virtual_op[idx_iba] = OP_NULL;
@@ -193,16 +199,17 @@ SSD::reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
 
     // step - 3-1
     for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        // Check E
-        if (virtual_op[idx_iba] == OP_E) {
+        // Check E and W
+        if (virtual_op[idx_iba] != OP_NULL) {
             if (continue_E_CMD == 0) {
-                out.op[newCMDCount] = "E";
-                out.lba[newCMDCount] = idx_iba;
-                out.size[newCMDCount] = 1;
+                temp.op[newCMDCount] = "E";
+                temp.lba[newCMDCount] = idx_iba;
+                temp.size[newCMDCount] = 1;
+                temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];;
                 continue_E_CMD = 1;
             }
             else {
-                out.size[newCMDCount]++;
+                temp.size[newCMDCount]++;
                 continue_E_CMD++;
                 if (continue_E_CMD == 10) {
                     continue_E_CMD = 0;
@@ -215,16 +222,80 @@ SSD::reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
             continue_E_CMD = 0;
             newCMDCount++;
         }
+    }
 
-        //Check W
-        if (virtual_op[idx_iba] <= OP_W_MAX) {
-            out.op[newCMDCount] = "W";
-            out.lba[newCMDCount] = idx_iba;
-            out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-            out.size[newCMDCount] = 1;
-            newCMDCount++;
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << temp.op[idx_cb] << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+
+#if 0
+    //Check W
+    if (virtual_op[idx_iba] <= OP_W_MAX) {
+        out.op[newCMDCount] = "W";
+        out.lba[newCMDCount] = idx_iba;
+        out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+        out.size[newCMDCount] = 1;
+        newCMDCount++;
+    }
+#endif
+    int hit = 0;
+    for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
+        if (in.op[idx_cb_in] == "W" && in.data[idx_cb_in] != "0x00000000") {
+            hit = 0;
+            for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
+                if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
+                    if (temp.size[idx_cb_out] == 1) {
+                        temp.op[idx_cb_out] = "W";
+                        temp.lba[idx_cb_out] = in.lba[idx_cb_in];
+                        temp.size[idx_cb_out] = 1;
+                        temp.data[idx_cb_out] = in.data[idx_cb_in];
+                        hit = 1;
+                    }
+                }
+            }
+            if (!hit) {
+                temp.op[newCMDCount] = "W";
+                temp.lba[newCMDCount] = in.lba[idx_cb_in];
+                temp.size[newCMDCount] = 1;
+                temp.data[newCMDCount] = in.data[idx_cb_in];
+                newCMDCount++;
+            }
         }
     }
+
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << temp.op[idx_cb] << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+
+    int idx = 0;
+    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
+        if (temp.op[idx_iba] == "E")
+        {
+            out.op[idx] = temp.op[idx_iba];
+            out.lba[idx] = temp.lba[idx_iba];
+            out.size[idx] = temp.size[idx_iba];
+            out.data[idx] = temp.data[idx_iba];
+            idx++;
+        }
+    }
+    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
+        if (temp.op[idx_iba] == "W")
+        {
+            out.op[idx] = temp.op[idx_iba];
+            out.lba[idx] = temp.lba[idx_iba];
+            out.size[idx] = temp.size[idx_iba];
+            out.data[idx] = temp.data[idx_iba];
+            idx++;
+        }
+    }
+
+    if (idx != newCMDCount)
+        std::cout << "Error idx " << idx << " " << newCMDCount << "\n";
+
     // display
     for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
         std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
@@ -235,117 +306,12 @@ SSD::reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
 }
 
 int
-SSD::reduceCMDBufferNonSeqCmdMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
-    // step - 3-2 Merge
-    int idx_cb = 0;
-
-    for (idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        if (idx_cb < cmdCount - 1) {
-            if (in.op[idx_cb] == "E" && in.op[idx_cb + 1] == "E") {
-                if (in.lba[idx_cb] + in.size[idx_cb] >= in.lba[idx_cb + 1]) {
-                    if (in.lba[idx_cb + 1] >= in.lba[idx_cb + 2] - 1) {
-                        //Fill left CMD (E(6)-E(5) -> E(10)-E(1))
-                        if (in.lba[idx_cb] + in.size[idx_cb] >= in.lba[idx_cb + 1]) {
-                            int sum_size = in.size[idx_cb] + in.size[idx_cb + 1];
-
-                            for (int idx = idx_cb; idx < cmdCount; idx++) {
-                                out.op[idx] = in.op[idx];
-                                out.lba[idx] = in.lba[idx];
-                                out.size[idx] = in.size[idx];
-                                out.data[idx] = in.data[idx];
-                            }
-                            in.size[idx_cb] = std::min(sum_size, 10);
-                            in.size[idx_cb + 1] = sum_size - in.size[idx_cb];
-
-                            return cmdCount;
-                        }
-                    }
-                }
-            }
-        }
-        if (idx_cb < cmdCount - 2) {
-            if (in.op[idx_cb] == "E" && in.op[idx_cb + 1] == "W" && in.op[idx_cb + 2] == "E") {
-                if (in.lba[idx_cb] + in.size[idx_cb] >= in.lba[idx_cb + 1]) {
-                    if (in.lba[idx_cb + 1] = in.lba[idx_cb + 2] - 1) {
-                        int sum_size = in.size[idx_cb] + in.size[idx_cb + 2] + 1;
-                        //Merge check (E-W-E -> E-W)
-                        if (in.size[idx_cb] + in.size[idx_cb + 2] + 1 <= 10) {
-                            out.op[idx_cb] = in.op[idx_cb];
-                            out.lba[idx_cb] = in.lba[idx_cb];
-                            out.size[idx_cb] = sum_size;
-                            out.data[idx_cb] = in.data[idx_cb];
-                            out.op[idx_cb + 1] = in.op[idx_cb + 1];
-                            out.lba[idx_cb + 1] = in.lba[idx_cb + 1];
-                            out.size[idx_cb + 1] = in.size[idx_cb + 1];
-                            out.data[idx_cb + 1] = in.data[idx_cb + 1];
-
-                            int newCMDCount = cmdCount - 1;
-                            for (int idx = idx_cb + 2; idx < newCMDCount; idx++) {
-                                out.op[idx] = in.op[idx + 1];
-                                out.lba[idx] = in.lba[idx + 1];
-                                out.size[idx] = in.size[idx + 1];
-                                out.data[idx] = in.data[idx + 1];
-                            }
-                            return newCMDCount;
-                        }
-                        //Fill left CMD (E(5)-W(1)-E(5) -> E(10)-W(1)-E(5))
-                        for (int idx = idx_cb; idx < cmdCount; idx++) {
-                            out.op[idx] = in.op[idx];
-                            out.lba[idx] = in.lba[idx];
-                            out.size[idx] = in.size[idx];
-                            out.data[idx] = in.data[idx];
-                        }
-
-                        out.size[idx_cb] = std::min(sum_size, 10);
-                        out.size[idx_cb + 2] = sum_size - out.size[idx_cb];
-                        out.lba[idx_cb + 2] = out.lba[idx_cb] + out.size[idx_cb];
-                        return cmdCount;
-                    }
-                }
-            }
-        }
-        int hit_EWNE = 0;
-        //Merge check (E-WxN-E -> E-WxN)
-        for (int pos = 3; pos < (cmdCount - idx_cb); pos++) {
-            if (in.size[idx_cb] + pos > 10) break;
-
-            if (in.op[idx_cb + pos] == "E") {
-                if (in.size[idx_cb] + pos + in.size[idx_cb + pos] <= 10) {
-
-                }
-            }
-        }
-
-        out.op[idx_cb] = in.op[idx_cb];
-        out.lba[idx_cb] = in.lba[idx_cb];
-        out.size[idx_cb] = in.size[idx_cb];
-        out.data[idx_cb] = in.data[idx_cb];
-    }
-
-    // display
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
-    }
-
-    return cmdCount;
-}
-
-int
 SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
-#if 0
-    return reduceCMDBufferSeqCMD(in, out);
-#else
+
     TEST_CMD step3_1;
 
-    int CMDCount = reduceCMDBufferFirstMerge(in, step3_1, 6);
-    int newCMDCount = reduceCMDBufferNonSeqCmdMerge(step3_1, out, CMDCount);
+    int newCMDCount = reduceCMDBufferMerge(in, out, 6);
 
-    while (newCMDCount != CMDCount) {
-        CMDCount = newCMDCount;
-        newCMDCount = reduceCMDBufferNonSeqCmdMerge(step3_1, out, CMDCount);
-    }
-    
     return newCMDCount;
-#endif
-   
+
 }
