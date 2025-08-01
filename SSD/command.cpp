@@ -18,7 +18,7 @@ ReadCommand::run(string& result)
 {
 	storage.clear();
 
-	// updateNandDataFromBuffer();
+	updateNandDataFromBuffer();
 	storage.updateFromFile();
 
 	execute(result);

@@ -54,6 +54,9 @@ public:
 	CmdType getCmdType() const override;
 
 	std::vector<std::shared_ptr<ICommand>> buffers;
+
+private:
+
 };
 
 // WriteCommand
