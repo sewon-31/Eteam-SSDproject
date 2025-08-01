@@ -89,30 +89,36 @@ CommandBuffer::optimizeBuffer()
     int buf_size = buffer.size();
     CMD_BUF in;
     CMD_BUF out;
+    int in_buf_idx = 0;
     //auto cmd = buffer.at(0);
 
     for (int buf_idx = 0; buf_idx < buf_size; buf_idx++) {
         auto cmd = buffer.at(buf_idx);
-        string lbaStr = std::to_string(cmd->getLBA());
+        //string lbaStr = std::to_string(cmd->getLBA());
         auto type = cmd->getCmdType();
 
-        in.op[buf_idx] = cmd->getCmdType();
-        in.lba[buf_idx] = cmd->getLBA();
 
         std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
         if (type == CmdType::WRITE) {
             std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
-            in.data[buf_idx] = wCmdPtr->getValue();
-            in.lba[buf_idx] = 1;
-            std::cout << "IN CMD -> WRITE" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
+            in.op[in_buf_idx] = cmd->getCmdType();
+            in.lba[in_buf_idx] = cmd->getLBA();
+            in.data[in_buf_idx] = wCmdPtr->getValue();
+            in.size[in_buf_idx] = 1;
+            std::cout << "IN CMD -> WRITE" << " " << in.lba[in_buf_idx] << " " << in.data[in_buf_idx] << "\n";
+            in_buf_idx++;
         }
         if (type == CmdType::ERASE) {
             std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
-            in.size[buf_idx] = eCmdPtr->getSize();
-            std::cout << "IN CMD -> ERASE" << " " << in.lba[buf_idx] << " " << in.size[buf_idx] << "\n";
+            in.op[in_buf_idx] = cmd->getCmdType();
+            in.lba[in_buf_idx] = cmd->getLBA();
+            in.size[in_buf_idx] = eCmdPtr->getSize();
+            std::cout << "IN CMD -> ERASE" << " " << in.lba[in_buf_idx] << " " << in.size[in_buf_idx] << "\n";
+            in_buf_idx++;
         }
     }
     std::cout << "\n";
+#if 1
     int new_buf_size = reduceCMDBuffer(in, out);
     if (new_buf_size < buf_size)
     {
@@ -139,6 +145,7 @@ CommandBuffer::optimizeBuffer()
             }
         }
     }
+#endif
     return true;
 }
 
