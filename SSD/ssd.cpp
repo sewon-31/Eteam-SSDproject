@@ -179,7 +179,6 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
                 else {
                     temp.op[newCMDCount] = "W";
                     temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-                    continue;
                 }
                 temp.lba[newCMDCount] = idx_iba;
                 temp.size[newCMDCount] = 1;
