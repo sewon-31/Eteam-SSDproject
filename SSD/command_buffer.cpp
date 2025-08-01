@@ -60,27 +60,61 @@ bool
 CommandBuffer::optimizeBuffer()
 {
     //std::cout << "optimizeBuffer\n";
-#if 0
+#if 1
     int buf_size = buffer.size();
-    auto cmd = buffer.at(0);
-    auto type = cmd->getCmdType();
-    string lbaStr = std::to_string(cmd->getLBA());
+    CMD_BUF in;
+    CMD_BUF out;
+    //auto cmd = buffer.at(0);
 
-    std::cout << "optimizeBuffer :" << buf_size << "\n";
+    for (int buf_idx = 0; buf_idx < buf_size; buf_idx++) {
+        auto cmd = buffer.at(buf_idx);
+        string lbaStr = std::to_string(cmd->getLBA());
+        auto type = cmd->getCmdType();
 
-    std::cout << "buf_size :" << buf_size << "\n";
+        in.op[buf_idx] = cmd->getCmdType();
+        in.lba[buf_idx] = cmd->getLBA();
 
-
-    if (type == CmdType::WRITE) {
-        std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
-
+        std::cout << "optimizeBuffer : buffer_size " << buf_size << "\n";
+        if (type == CmdType::WRITE) {
+            std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+            in.data[buf_idx] = wCmdPtr->getValue();
+            in.lba[buf_idx] = 1;
+            std::cout << "IN CMD -> WRITE" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
+        }
+        if (type == CmdType::ERASE) {
+            std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+            in.size[buf_idx] = eCmdPtr->getSize();
+            std::cout << "IN CMD -> ERASE" << " " << in.lba[buf_idx] << " " << in.size[buf_idx] << "\n";
+        }
     }
-    if (type == CmdType::ERASE) {
-        std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+    std::cout << "\n";
+    int new_buf_size = reduceCMDBuffer(in, out, 5);
+    if (new_buf_size < buf_size)
+    {
+        std::shared_ptr<SSDCommandBuilder> builder;
 
+        if (!builder) {
+            builder = std::make_shared<SSDCommandBuilder>();
+        }
+
+        buffer.clear();
+
+        for (int buf_idx = 0; buf_idx < new_buf_size; buf_idx++) {
+            if (out.op[buf_idx] == CmdType::WRITE) {
+                vector<string> commandVector = { "W" , std::to_string(out.lba[buf_idx])  , out.data[buf_idx] };
+                auto new_cmd = builder->createCommand(commandVector);
+                buffer.push_back(new_cmd);
+                std::cout << "OUT CMD -> WRITE" << " " << out.lba[buf_idx] << " " << out.data[buf_idx] << "\n";
+            }
+            else if (out.op[buf_idx] == CmdType::ERASE) {
+                vector<string> commandVector = { "E" , std::to_string(out.lba[buf_idx])  , std::to_string(out.size[buf_idx]) };
+                auto new_cmd = builder->createCommand(commandVector);
+                buffer.push_back(new_cmd);
+                std::cout << "OUT CMD -> ERASE" << " " << out.lba[buf_idx] << " " << out.size[buf_idx] << "\n";
+            }
+        }
     }
-    //cmd->getLBA
-        //cmd->getLBA
+
 #endif
     return true;
 }
@@ -227,4 +261,181 @@ CommandBuffer::updateToDirectory()
 #endif
         }
     }
+}
+
+//#define PRINT_DEBUG 1
+
+int
+CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount) {
+    int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
+
+    const int OP_NULL = 9;
+    const int OP_E = 7;
+    const int OP_W_MAX = 5;
+
+    CMD_BUF temp;
+    // 1. Replcae w iba "0x00000000" >  E iba
+    // 2. make virtual data 
+    // 3. Make CMD
+        //3-1. Make new CMD E range check and W
+        // display
+
+#ifdef PRINT_DEBUG
+    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
+        std::cout << static_cast<int>(in.op[idx_cb]) << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+#if 0
+    // step - 1
+    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
+        if (in.op[idx_cb] == "W" && in.data[idx_cb] == "0x00000000") {
+            in.op[idx_cb] = "E";
+            in.size[idx_cb] = 1;
+        }
+    }
+#endif
+    // step - 2
+    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
+        virtual_op[idx_iba] = OP_NULL;
+    }
+
+    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
+        if (in.op[idx_cb] == CmdType::WRITE) {
+            virtual_op[in.lba[idx_cb]] = idx_cb;
+        }
+        else if (in.op[idx_cb] == CmdType::ERASE) {
+            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++)
+                virtual_op[in.lba[idx_cb] + idx_size] = OP_E;
+        }
+    }
+    // display
+    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
+        if (virtual_op[idx_iba] == OP_NULL)
+            std::cout << "N" << " ";
+        else if (virtual_op[idx_iba] == OP_E)
+            std::cout << "E" << " ";
+        else
+            std::cout << "W" << " ";
+
+
+        if (idx_iba % 10 == 9)
+            std::cout << "\n";
+    }
+
+    // step - 3
+    int continue_E_CMD = 0;
+    int newCMDCount = 0;
+
+    // step - 3-1
+    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
+        // Check E and W
+        if (virtual_op[idx_iba] != OP_NULL) {
+            if (continue_E_CMD == 0) {
+                if (virtual_op[idx_iba] == OP_E)
+                    temp.op[newCMDCount] = CmdType::ERASE;
+                else {
+                    temp.op[newCMDCount] = CmdType::WRITE;
+                    temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                }
+                temp.lba[newCMDCount] = idx_iba;
+                temp.size[newCMDCount] = 1;
+                //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                continue_E_CMD = 1;
+            }
+            else {
+                temp.size[newCMDCount]++;
+                continue_E_CMD++;
+                if (continue_E_CMD == 10) {
+                    continue_E_CMD = 0;
+                    newCMDCount++;
+                }
+            }
+            continue;
+        }
+        else if (continue_E_CMD > 0) {
+            continue_E_CMD = 0;
+            newCMDCount++;
+        }
+    }
+#ifdef  PRINT_DEBUG
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+#if 0
+    //Check W
+    if (virtual_op[idx_iba] <= OP_W_MAX) {
+        out.op[newCMDCount] = "W";
+        out.lba[newCMDCount] = idx_iba;
+        out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+        out.size[newCMDCount] = 1;
+        newCMDCount++;
+    }
+#endif
+    int hit = 0;
+    for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
+        if (in.op[idx_cb_in] == CmdType::WRITE && in.data[idx_cb_in] != "0x00000000") {
+            hit = 0;
+            for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
+                if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
+                    if (temp.size[idx_cb_out] == 1) {
+                        //temp.op[idx_cb_out] = "W";
+                        //temp.lba[idx_cb_out] = in.lba[idx_cb_in];
+                        //temp.size[idx_cb_out] = 1;
+                        //temp.data[idx_cb_out] = in.data[idx_cb_in];
+                        hit = 1;
+                    }
+                }
+            }
+            if (!hit) {
+                temp.op[newCMDCount] = CmdType::WRITE;
+                temp.lba[newCMDCount] = in.lba[idx_cb_in];
+                temp.size[newCMDCount] = 1;
+                temp.data[newCMDCount] = in.data[idx_cb_in];
+                newCMDCount++;
+            }
+        }
+    }
+#ifdef  PRINT_DEBUG
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+    int idx = 0;
+    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
+        if (temp.op[idx_iba] == CmdType::ERASE)
+        {
+            out.op[idx] = temp.op[idx_iba];
+            out.lba[idx] = temp.lba[idx_iba];
+            out.size[idx] = temp.size[idx_iba];
+            out.data[idx] = temp.data[idx_iba];
+            idx++;
+        }
+    }
+    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
+        if (temp.op[idx_iba] == CmdType::WRITE)
+        {
+            out.op[idx] = temp.op[idx_iba];
+            out.lba[idx] = temp.lba[idx_iba];
+            out.size[idx] = temp.size[idx_iba];
+            out.data[idx] = temp.data[idx_iba];
+            idx++;
+        }
+    }
+#ifdef  PRINT_DEBUG
+    if (idx != newCMDCount)
+        std::cout << "Error idx " << idx << " " << newCMDCount << "\n";
+
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << static_cast<int>(out.op[idx_cb]) << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+    return newCMDCount;
 }

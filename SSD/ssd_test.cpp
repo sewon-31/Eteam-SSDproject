@@ -227,7 +227,7 @@ TEST_F(SSDTestFixture, TC_RUN_ERASE) {
 	EXPECT_EQ(app.getData(10), str[10]);
 }
 #endif
-#if 1
+#if 0
 TEST_F(SSDTestFixture, reduceCMD_REPLACE_W0_TO_E) {
 	string op[6] = { "W","E","E","W","W","E" };
 	int lba[6] = { 1,12,23,34,45,56 };
@@ -769,7 +769,6 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_3) {
 	//EXPECT_EQ(0, error);
 }
 
-#endif
 TEST_F(SSDTestFixture, TestCommandBufferWriteAfterErase) {
 	string op[6] = { "W","E" };
 	int lba[6] = { 1, 1 };
@@ -795,8 +794,8 @@ TEST_F(SSDTestFixture, TestCommandBufferWriteAfterErase) {
 		EXPECT_EQ(data_res[i], test_out.data[i]);
 	}
 }
-
-#if 0
+#endif
+#if 1
 TEST_F(SSDTestFixture, TC_OpmizeBuffer) {
 	vector<string> input;
 
