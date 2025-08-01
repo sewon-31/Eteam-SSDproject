@@ -137,9 +137,7 @@ EraseCommand::getSize() const
 void
 FlushCommand::run(string& result)
 {
-	/*
 	CommandBuffer::getInstance().flushBuffer();
-	*/
 }
 
 void
