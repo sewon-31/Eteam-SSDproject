@@ -5,6 +5,8 @@
 
 #include <memory>
 
+using std::string;
+
 class SSD
 {
 public:
@@ -19,14 +21,14 @@ public:
 	string getData(int lba) const;
 	void writeData(int lba, const string& value);
 	void clearData();
-	void setParser(std::shared_ptr<SSDCommandBuilder> parser);
+	void setBuilder(std::shared_ptr<SSDCommandBuilder> builder);
 	FileInterface& getOutputFile();
 	NandData& getStorage();
 
 private:
-	NandData storage;
+	NandData& storage;
 	FileInterface outputFile;
-	std::shared_ptr<SSDCommandBuilder> parser;
+	std::shared_ptr<SSDCommandBuilder> builder;
 
 	static const int nandFileSize = 1200;
 };

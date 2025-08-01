@@ -1,24 +1,28 @@
 #include "ssd.h"
 #include "file_interface.h"
+#include "command_buffer.h"
+
 #include <algorithm>
 #include <iostream>
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
-	: outputFile(outputPath)
+	: outputFile(outputPath),
+	storage(NandData::getInstance())
 {
-	// create storage
-	storage = NandData( nandPath );
 }
 
 void
 SSD::run(vector<string> commandVector)
 {
-	if (!parser) {
-		parser = std::make_shared<SSDCommandBuilder>();
+	if (!builder) {
+		builder = std::make_shared<SSDCommandBuilder>();
 	}
 
+	CommandBuffer cmdBuf;
+	cmdBuf.Init();
+
 	// parse command
-	auto cmd = parser->createCommand(commandVector, storage);
+	auto cmd = builder->createCommand(commandVector);
 	if (cmd == nullptr) {
 		updateOutputFile("ERROR");
 		return;
@@ -30,8 +34,22 @@ SSD::run(vector<string> commandVector)
 	cmd->run(result);
 	//}
 	//else {
-		// add to buffer
+		//int bufSize = cmdBuf.getBufferSize();
+
+		//if (bufSize == 0) {
+		//	cmdBuf.addCommand(cmd);
+		//}
+		//else if (bufSize == CommandBuffer::BUFFER_MAX) {
+		//	cmdBuf.flushBuffer();
+		//	cmdBuf.addCommand(cmd);
+		//}
+		//else {
+		//	cmdBuf.addCommand(cmd);
+		//	cmdBuf.optimizeBuffer();
+		//}
 	//}
+
+	cmdBuf.updateToDirectory();
 
 	if (!result.empty()) {
 		updateOutputFile(result);
@@ -69,9 +87,9 @@ SSD::clearData()
 }
 
 void
-SSD::setParser(std::shared_ptr<SSDCommandBuilder> parser)
+SSD::setBuilder(std::shared_ptr<SSDCommandBuilder> builder)
 {
-	this->parser = parser;
+	this->builder = builder;
 }
 
 NandData& 

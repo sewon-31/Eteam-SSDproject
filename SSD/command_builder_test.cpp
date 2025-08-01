@@ -5,7 +5,7 @@ using namespace testing;
 
 class SSDCommandParserTestFixture : public Test {
 public:
-	SSDCommandBuilder parser;
+	SSDCommandBuilder builder;
 
 	const string APP_NAME = "ssd";
 	const string INVALID_APP_NAME = "ssdr";
@@ -43,84 +43,84 @@ public:
 
 TEST_F(SSDCommandParserTestFixture, InvalidParameterCount1)
 {
-	parser.setCommandVector(vector<string>());
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector(vector<string>());
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_READ, VALID_LBA, VALID_VALUE, VALID_VALUE });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_READ, VALID_LBA, VALID_VALUE, VALID_VALUE });
+	EXPECT_FALSE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidOperationCommand)
 {
-	parser.setCommandVector({ CMD_INVALID, VALID_VALUE });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_INVALID, VALID_VALUE });
+	EXPECT_FALSE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
 {
-	parser.setCommandVector({ CMD_WRITE, VALID_LBA });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_WRITE, VALID_LBA });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_READ, VALID_LBA, VALID_VALUE });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_READ, VALID_LBA, VALID_VALUE });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_ERASE, VALID_LBA });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, VALID_LBA });
+	EXPECT_FALSE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidLBA)
 {
-	parser.setCommandVector({ CMD_READ, INVALID_LBA_NOT_A_NUMBER });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_READ, INVALID_LBA_NOT_A_NUMBER });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_READ, INVALID_LBA_OUT_OF_RANGE });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_READ, INVALID_LBA_OUT_OF_RANGE });
+	EXPECT_FALSE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidValue)
 {
-	parser.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE1 });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE1 });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE2 });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE2 });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE3 });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE3 });
+	EXPECT_FALSE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidSize)
 {
-	parser.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE1 });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE1 });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE2 });
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE2 });
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_ERASE, VALID_LBA, MIN_SIZE });
-	EXPECT_TRUE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, VALID_LBA, MIN_SIZE });
+	EXPECT_TRUE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, InvalidLBARange)
 {
-	parser.setCommandVector({ CMD_ERASE, "90", MAX_SIZE});
-	EXPECT_FALSE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, "90", MAX_SIZE});
+	EXPECT_FALSE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_ERASE, "89", MAX_SIZE});
-	EXPECT_TRUE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, "89", MAX_SIZE});
+	EXPECT_TRUE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_ERASE, "0", MIN_SIZE});
-	EXPECT_TRUE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, "0", MIN_SIZE});
+	EXPECT_TRUE(builder.isValidCommand());
 }
 
 TEST_F(SSDCommandParserTestFixture, ValidValue)
 {
-	parser.setCommandVector({ CMD_WRITE, VALID_LBA, VALID_VALUE });
-	EXPECT_TRUE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_WRITE, VALID_LBA, VALID_VALUE });
+	EXPECT_TRUE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_READ, VALID_LBA });
-	EXPECT_TRUE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_READ, VALID_LBA });
+	EXPECT_TRUE(builder.isValidCommand());
 
-	parser.setCommandVector({ CMD_ERASE, VALID_LBA, MAX_SIZE });
-	EXPECT_TRUE(parser.isValidCommand());
+	builder.setCommandVector({ CMD_ERASE, VALID_LBA, MAX_SIZE });
+	EXPECT_TRUE(builder.isValidCommand());
 }
