@@ -41,7 +41,6 @@ void
 WriteCommand::run(string& result)
 {
 	storage.clear();
-
 	storage.updateFromFile();
 
 	execute(result);
@@ -71,7 +70,6 @@ void
 EraseCommand::run(string& result)
 {
 	storage.clear();
-
 	storage.updateFromFile();
 
 	execute(result);

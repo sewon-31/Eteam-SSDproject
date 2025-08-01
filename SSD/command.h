@@ -19,8 +19,8 @@ enum class CmdType {
 interface ICommand
 {
 	virtual ~ICommand() = default;
-	virtual void run(string& result) = 0;
-	virtual void execute(string& result) = 0;
+	virtual void run(string& result) = 0;		// run whole process (including file read/write)
+	virtual void execute(string& result) = 0;	// execute core action
 	virtual CmdType getCmdType() const = 0;
 };
 
