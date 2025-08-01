@@ -11,7 +11,7 @@ using std::string;
 class CommandBuffer
 {
 public:
-	static CommandBuffer& getInstance(const string& dirPath = "../buffer/");
+	static CommandBuffer& getInstance(const string& dirPath = "../buffer");
 
 	void Init();
 	void updateToDirectory();

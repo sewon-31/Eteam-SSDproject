@@ -32,7 +32,7 @@ SSDCommandBuilder::isValidCommand() const
 		if (!isValidOp(opCommand)) {
 			return false;
 		}
-
+		
 		// for flush, just check parameter count and return
 		if (opCommand == CMD_FLUSH) {
 			if (commandVector.size() != MAX_ARG_LENGTH - 2) {
@@ -96,12 +96,16 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector)
 	if (!isValidCommand()) {
 		return nullptr;
 	}
+
+	string opCommand = commandVector.at(OP);
+	if (opCommand == CMD_FLUSH) {
+		return std::make_shared<FlushCommand>();
+	}
 	
 	// convert lba into int
 	int lba = std::stoi(commandVector.at(LBA));
 
 	// create command
-	string opCommand = commandVector.at(OP);
 	if (opCommand == CMD_READ) {
 		return std::make_shared<ReadCommand>(lba);
 	}
@@ -111,9 +115,6 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector)
 	else if (opCommand == CMD_ERASE) {
 		int size = std::stoi(commandVector.at(SIZE));
 		return std::make_shared<EraseCommand>(lba, size);
-	}
-	else if (opCommand == CMD_FLUSH) {
-		return std::make_shared<FlushCommand>();
 	}
 	else {
 		return nullptr;

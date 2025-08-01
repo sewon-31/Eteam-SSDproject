@@ -24,8 +24,9 @@ ReadCommand::run(string& result)
 		storage.updateFromFile();
 		execute(result);
 	}
-	
+#if _DEBUG
 	std::cout << result << std::endl; // for debug
+#endif
 }
 
 void

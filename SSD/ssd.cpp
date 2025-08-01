@@ -31,13 +31,13 @@ SSD::run(vector<string> commandVector)
 	cmdBuf.Init();
 
 	auto type = cmd->getCmdType();
-	//if (type == CmdType::READ || type == CmdType::FLUSH
-	//{
-	cmd->run(result);
-	//}
-	//else if(type==CmdType::WRITE || type ==CmdType::ERASE {
-		//cmdBuf.addCommand(cmd);
-	//}
+	if (type == CmdType::READ || type == CmdType::FLUSH)
+	{
+		cmd->run(result);
+	}
+	else if (type == CmdType::WRITE || type == CmdType::ERASE) {
+		cmdBuf.addCommand(cmd);
+	}
 
 	cmdBuf.updateToDirectory();
 
@@ -86,4 +86,17 @@ NandData&
 SSD::getStorage()
 {
 	return storage;
+}
+
+void
+SSD::clearBufferAndDirectory()
+{
+	cmdBuf.clearBuffer();
+	cmdBuf.updateToDirectory();
+}
+
+void
+SSD::clearBuffer()
+{
+	cmdBuf.clearBuffer();
 }
