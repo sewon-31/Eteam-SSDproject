@@ -23,6 +23,8 @@ public:
 	void clearData();
 	void setBuilder(std::shared_ptr<SSDCommandBuilder> builder);
 	NandData& getStorage();
+	void clearBufferAndDirectory();
+	void clearBuffer();
 
 private:
 	NandData& storage;
