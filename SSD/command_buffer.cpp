@@ -86,7 +86,65 @@ CommandBuffer::addCommandToBuffer(std::shared_ptr<ICommand> command)
 bool
 CommandBuffer::optimizeBuffer()
 {
-	return true;
+
+    //std::cout << "optimizeBuffer\n";
+#if 1
+    int buf_size = buffer.size();
+    CMD_BUF in;
+    CMD_BUF out;
+    //auto cmd = buffer.at(0);
+
+    for (int buf_idx = 0; buf_idx < buf_size; buf_idx++) {
+        auto cmd = buffer.at(buf_idx);
+        string lbaStr = std::to_string(cmd->getLBA());
+        auto type = cmd->getCmdType();
+
+        in.op[buf_idx] = cmd->getCmdType();
+        in.lba[buf_idx] = cmd->getLBA();
+
+        std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
+        if (type == CmdType::WRITE) {
+            std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+            in.data[buf_idx] = wCmdPtr->getValue();
+            in.lba[buf_idx] = 1;
+            std::cout << "IN CMD -> WRITE" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
+        }
+        if (type == CmdType::ERASE) {
+            std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+            in.size[buf_idx] = eCmdPtr->getSize();
+            std::cout << "IN CMD -> ERASE" << " " << in.lba[buf_idx] << " " << in.size[buf_idx] << "\n";
+        }
+    }
+    std::cout << "\n";
+    int new_buf_size = reduceCMDBuffer(in, out);
+    if (new_buf_size < buf_size)
+    {
+        std::shared_ptr<SSDCommandBuilder> builder;
+
+        if (!builder) {
+            builder = std::make_shared<SSDCommandBuilder>();
+        }
+
+        buffer.clear();
+
+        for (int buf_idx = 0; buf_idx < new_buf_size; buf_idx++) {
+            if (out.op[buf_idx] == CmdType::WRITE) {
+                vector<string> commandVector = { "W" , std::to_string(out.lba[buf_idx])  , out.data[buf_idx] };
+                auto new_cmd = builder->createCommand(commandVector);
+                buffer.push_back(new_cmd);
+                std::cout << "OUT CMD -> WRITE" << " " << out.lba[buf_idx] << " " << out.data[buf_idx] << "\n";
+            }
+            else if (out.op[buf_idx] == CmdType::ERASE) {
+                vector<string> commandVector = { "E" , std::to_string(out.lba[buf_idx])  , std::to_string(out.size[buf_idx]) };
+                auto new_cmd = builder->createCommand(commandVector);
+                buffer.push_back(new_cmd);
+                std::cout << "OUT CMD -> ERASE" << " " << out.lba[buf_idx] << " " << out.size[buf_idx] << "\n";
+            }
+        }
+    }
+
+#endif
+    return true;
 }
 
 void
