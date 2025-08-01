@@ -46,57 +46,50 @@ protected:
 };
 TEST_F(WriteTestFixture, TestBasicWrite) {	
 	EXPECT_CALL(mockSSD, write(VALID_LBA, value)).Times(1);
-
 	executeWrite(VALID_LBA, value);
-
 	EXPECT_EQ(WRITE_DONE, getLastLine(oss.str()));
 }
 
-#if 0
 TEST_F(WriteTestFixture, TestWriteInvalidLBAOverUpperBound) {
-	TestShell shell{ &mockSSD };
-	std::string value = "0x12345678";
 	EXPECT_CALL(mockSSD, write).Times(0);
-	shell.write(OVER_LBA, value);
+	executeWrite(OVER_LBA, value);
 }
 
 TEST_F(WriteTestFixture, TestWriteInvalidLBAUnderLowerBound) {
-	TestShell shell{ &mockSSD };
 	EXPECT_CALL(mockSSD, write).Times(0);
-	shell.write(UNDER_LBA, value);
+	executeWrite(UNDER_LBA, value);
 }
-
 TEST_F(WriteTestFixture, TestInvalidSSD) {
 	TestShell shell;
-	shell.write(VALID_LBA, value);
+	vector<string> commandVector = { "write", std::to_string(VALID_LBA), value};
 	EXPECT_CALL(mockSSD, write).Times(0);
+	shell.ExecuteCommand(commandVector);
 }
-#endif
 
 TEST_F(WriteTestFixture, TestFullWrite) {
 	for (int i = 0; i < 100; i++)
 		EXPECT_CALL(mockSSD, write(i, value)).Times(1);
-	
 	executeFullWrite(value);
 	EXPECT_EQ(FULL_WRITE_DONE, getLastLine(oss.str()));
 }
 
-#if 0
 TEST_F(WriteTestFixture, TestRealSSDWriteFail) {
 	if (isFileExists(SSD_EXE_FILE)) {
 		GTEST_SKIP() << SSD_EXE_FILE << " not found, skipping test.";
 	}
 	TestShell shell{ &realSSD };
-	shell.write(VALID_LBA, value);
-	EXPECT_EQ(WRITE_FAIL, oss.str());
+	vector<string> commandVector = { "write", std::to_string(VALID_LBA), value };
+	shell.ExecuteCommand(commandVector);
+	EXPECT_EQ(WRITE_FAIL, getLastLine(oss.str()));
 }
 
 TEST_F(WriteTestFixture, TestMockSSDDriverWrite) {
+	TestShell shell{ &mockSSDDriver };
+	vector<string> commandVector = { "write", std::to_string(VALID_LBA), value };
 	EXPECT_CALL(mockSSDDriver, runExe)
 		.WillRepeatedly(testing::Return(true));
-	TestShell shell{ &mockSSDDriver };
-	shell.write(VALID_LBA, value);
-	EXPECT_EQ(WRITE_DONE, oss.str());
+	shell.ExecuteCommand(commandVector);
+	EXPECT_EQ(WRITE_DONE, getLastLine(oss.str()));
 }
 
 TEST_F(WriteTestFixture, TestRealSSDWrite) {
@@ -104,8 +97,10 @@ TEST_F(WriteTestFixture, TestRealSSDWrite) {
 		GTEST_SKIP() << SSD_EXE_FILE << " not found, skipping test.";
 	}
 	TestShell shell{ &realSSD };
-	shell.write(VALID_LBA, value);
-	EXPECT_EQ(WRITE_DONE, oss.str());
+	vector<string> commandVector = { "write", std::to_string(VALID_LBA), value };
+	shell.ExecuteCommand(commandVector);
+	EXPECT_EQ(WRITE_DONE, getLastLine(oss.str()));
+
 	std::ifstream nand("../ssd_nand.txt");
 	ASSERT_TRUE(nand.is_open());
 	std::string line;
@@ -116,4 +111,3 @@ TEST_F(WriteTestFixture, TestRealSSDWrite) {
 	ASSERT_EQ(outputData.size(), 100);
 	EXPECT_EQ(outputData.at(VALID_LBA), value);
 }
-#endif

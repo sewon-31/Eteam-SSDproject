@@ -88,11 +88,9 @@ TEST_F(TestShellCommandOperatorFixture, TestScript1) {
 TEST_F(TestShellCommandOperatorFixture, TestScript2) {
 	vector<string> commandVector = { "2_" };
 
-	// Write expectations
 	EXPECT_CALL(mockSSD, write(_, _))
 		.WillRepeatedly(Return());
 
-	// Read expectations
 	EXPECT_CALL(mockSSD, read(_))
 		.WillRepeatedly(Return(testData));
 
