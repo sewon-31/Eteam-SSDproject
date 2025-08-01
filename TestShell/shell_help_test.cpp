@@ -31,12 +31,12 @@ TEST(ShellTest, TestPrintHelp) {
 		"\texit\n"
 		"\t\tExit the program.\n\n"
 		"Address / Value format:\n"
-		"\t<address> : Decimal integer (e.g., 16, 255)\n"
+		"\t<address> : Decimal integer (e.g. 16, 255)\n"
 		"\t<value>   : 32-bit hexadecimal number\n"
 		"\t\tMust start with '0x'\n"
 		"\t\tMust contain exactly 8 hex digits (0-9, A-F)\n"
 		"\t\tExample: 0x12345678, 0xDEADBEEF\n"
-		"\t<size>   : Decimal integer (e.g., 16, 255)\n\n";
+		"\t<size>   : Decimal integer (e.g. 16, 255)\n\n";
 
 
 	EXPECT_EQ(expect, oss.str());
