@@ -7,7 +7,6 @@ public:
 	int lba[6];
 	int size[6];
 	string data[6];
-
 };
 
 class SSD
@@ -38,8 +37,8 @@ public:
 
 private:
 	int reduceCMDBufferDisplay(TEST_CMD in);
-	int reduceCMDBufferSeqCMD(TEST_CMD in, TEST_CMD& out);
-	int reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out, int newCMDCount);
+	int reduceCMDBufferSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount);
+	int reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount);
 
 	FileInterface outputFile;
 	FileInterface nandFile;
