@@ -388,7 +388,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_NULL_CHECK) {
 	}
 	EXPECT_EQ(0, error);
 }
-#if 0
+#if 0 //Need debug
 TEST_F(SSDTestFixture, reduceCMD_TC1_ERS2_WR1_TO_ERS1_WR1) {
 	string op[6] = { "W","E","W","E","W","E" };
 	int lba[6] = { 1,10,15,16,45,56 };

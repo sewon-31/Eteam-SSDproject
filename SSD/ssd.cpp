@@ -139,7 +139,7 @@ SSD::reduceCMDBufferDisplay(TEST_CMD in) {
 }
 
 int
-SSD::reduceCMDBufferSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount) {
+SSD::reduceCMDBufferFirstMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
     int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
 
     const int OP_NULL = 9;
@@ -235,15 +235,12 @@ SSD::reduceCMDBufferSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount) {
 }
 
 int
-SSD::reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount) {
-
+SSD::reduceCMDBufferNonSeqCmdMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
     // step - 3-2 Merge
     int idx_cb = 0;
-    int newCMDCount;
 
     for (idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-#if 0
-        if (idx_cb < newCMDCount - 1) {
+        if (idx_cb < cmdCount - 1) {
             if (in.op[idx_cb] == "E" && in.op[idx_cb + 1] == "E") {
                 if (in.lba[idx_cb] + in.size[idx_cb] >= in.lba[idx_cb + 1]) {
                     if (in.lba[idx_cb + 1] >= in.lba[idx_cb + 2] - 1) {
@@ -251,7 +248,7 @@ SSD::reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount) {
                         if (in.lba[idx_cb] + in.size[idx_cb] >= in.lba[idx_cb + 1]) {
                             int sum_size = in.size[idx_cb] + in.size[idx_cb + 1];
 
-                            for (int idx = idx_cb; idx < newCMDCount; idx++) {
+                            for (int idx = idx_cb; idx < cmdCount; idx++) {
                                 out.op[idx] = in.op[idx];
                                 out.lba[idx] = in.lba[idx];
                                 out.size[idx] = in.size[idx];
@@ -260,13 +257,12 @@ SSD::reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount) {
                             in.size[idx_cb] = std::min(sum_size, 10);
                             in.size[idx_cb + 1] = sum_size - in.size[idx_cb];
 
-                            return newCMDCount;
+                            return cmdCount;
                         }
                     }
                 }
             }
         }
-#endif
         if (idx_cb < cmdCount - 2) {
             if (in.op[idx_cb] == "E" && in.op[idx_cb + 1] == "W" && in.op[idx_cb + 2] == "E") {
                 if (in.lba[idx_cb] + in.size[idx_cb] >= in.lba[idx_cb + 1]) {
@@ -282,7 +278,8 @@ SSD::reduceCMDBufferNonSeqCMD(TEST_CMD in, TEST_CMD& out, int cmdCount) {
                             out.lba[idx_cb + 1] = in.lba[idx_cb + 1];
                             out.size[idx_cb + 1] = in.size[idx_cb + 1];
                             out.data[idx_cb + 1] = in.data[idx_cb + 1];
-                            newCMDCount = cmdCount - 1;
+
+                            int newCMDCount = cmdCount - 1;
                             for (int idx = idx_cb + 2; idx < newCMDCount; idx++) {
                                 out.op[idx] = in.op[idx + 1];
                                 out.lba[idx] = in.lba[idx + 1];
@@ -340,12 +337,12 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
 #else
     TEST_CMD step3_1;
 
-    int CMDCount = reduceCMDBufferSeqCMD(in, step3_1, 6);
-    int newCMDCount = reduceCMDBufferNonSeqCMD(step3_1, out, CMDCount);
+    int CMDCount = reduceCMDBufferFirstMerge(in, step3_1, 6);
+    int newCMDCount = reduceCMDBufferNonSeqCmdMerge(step3_1, out, CMDCount);
 
     while (newCMDCount != CMDCount) {
         CMDCount = newCMDCount;
-        newCMDCount = reduceCMDBufferNonSeqCMD(step3_1, out, CMDCount);
+        newCMDCount = reduceCMDBufferNonSeqCmdMerge(step3_1, out, CMDCount);
     }
     
     return newCMDCount;
