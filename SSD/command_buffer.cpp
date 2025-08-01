@@ -86,9 +86,6 @@ CommandBuffer::addCommandToBuffer(std::shared_ptr<ICommand> command)
 bool
 CommandBuffer::optimizeBuffer()
 {
-
-    //std::cout << "optimizeBuffer\n";
-#if 1
     int buf_size = buffer.size();
     CMD_BUF in;
     CMD_BUF out;
@@ -142,8 +139,6 @@ CommandBuffer::optimizeBuffer()
             }
         }
     }
-
-#endif
     return true;
 }
 
