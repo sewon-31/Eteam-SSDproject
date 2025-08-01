@@ -156,7 +156,6 @@ TEST_F(SSDTestFixture, WriteText) {
 	EXPECT_EQ("0x00000000", app.getData(0));
 }
 
-/*
 TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	string str[100];
 	char buffer[16];
@@ -256,4 +255,4 @@ TEST_F(SSDTestFixture, TC_RUN_ERASE) {
 	EXPECT_EQ(app.getData(9), "0x00000000");
 	EXPECT_EQ(app.getData(10), str[10]);
 }
-*/
+

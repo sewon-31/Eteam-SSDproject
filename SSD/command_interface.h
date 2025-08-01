@@ -10,6 +10,7 @@ enum class CmdType {
 	READ = 0,
 	WRITE,
 	ERASE,
+	FLUSH
 };
 
 // ICommand (abstract class)
