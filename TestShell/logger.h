@@ -5,7 +5,7 @@ class Logger {
 public:
     static Logger& getInstance();
     void log(const char* funcName, const char* fmt, ...);
-
+    void setConsoleOutput(bool set);
 private:
     const std::string LOG_DIR = "../log";
     const std::string LOG_FILE = LOG_DIR + "/latest.log";
@@ -14,7 +14,8 @@ private:
 #else
     const int MAX_LOG_SIZE = 10 * 1024;//for test: 200B, real: 10KB
 #endif
-    Logger() = default;
+    bool isEnabledConsole;
+    Logger() :isEnabledConsole(false) {}
     std::string getCurrentTimestamp();
     std::string getLogMessage(const char* funcName, const char* fmt, va_list args);
     void writeToFile(const std::string& log_msg);

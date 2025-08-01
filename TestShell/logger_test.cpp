@@ -15,6 +15,12 @@ protected:
 		std::cout << output << std::endl;
 		return std::regex_search(output, logFormatRegex);
 	}
+	void SetUp() override {
+		logger.setConsoleOutput(true);
+	}
+	void TearDown() override {
+		logger.setConsoleOutput(false);
+	}
 };
 
 TEST_F(LoggerTest, TestLogInteger) {

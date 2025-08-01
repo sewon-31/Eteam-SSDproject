@@ -17,11 +17,15 @@ void Logger::log(const char* funcName, const char* fmt, ...) {
     va_start(args, fmt);
     std::string log_line = getLogMessage(funcName, fmt, args);
     va_end(args);
-#if _DEBUG
-    std::cout << log_line << std::endl;
-#endif
+    if(isEnabledConsole)
+        std::cout << log_line << std::endl;
     rotateLogIfFull(log_line.size());
     writeToFile(log_line);
+}
+
+void Logger::setConsoleOutput(bool set)
+{
+    isEnabledConsole = set;
 }
 
 std::string Logger::getLogMessage(const char* funcName, const char* fmt, va_list args) {
