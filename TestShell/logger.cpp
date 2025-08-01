@@ -20,7 +20,7 @@ void Logger::log(const char* funcName, const char* fmt, ...) {
 #if _DEBUG
     std::cout << log_line << std::endl;
 #endif
-    rotateIfNeeded(log_line.size());
+    rotateLogIfFull(log_line.size());
     writeToFile(log_line);
 }
 
@@ -45,49 +45,53 @@ void Logger::writeToFile(const std::string& log_msg) {
     FileUtil::writeLine(LOG_FILE, log_msg, true);
 }
 
-void Logger::zipLogFile() {
+void Logger::zipOldLogFile() {
     auto files = getLogFileList();
     if (files.empty()) return;
     auto oldFileName = LOG_DIR + "/" + files.at(0);
-
     const std::string oldExt = ".log";
     const std::string newExt = ".zip";
     std::string newFileName = oldFileName.substr(0, oldFileName.size() - oldExt.size()) + newExt;
-    std::rename(oldFileName.c_str(), newFileName.c_str());
+    if (std::rename(oldFileName.c_str(), newFileName.c_str()) != 0) {
+        std::cerr << "Failed to compress log file: " << oldFileName << "\n";
+    }
 }
 
-void Logger::rotateIfNeeded(int size) {
+void Logger::rotateLogIfFull(size_t size) {
     if (!FileUtil::directoryExists(LOG_DIR)) return;
     if (!FileUtil::fileExists(LOG_FILE)) return;
     if (FileUtil::getFileSize(LOG_FILE) + size < MAX_LOG_SIZE) return;
-    zipLogFile();
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::tm local_tm;
-    localtime_s(&local_tm, &t);
-
-    char timestamp[64];
-    std::strftime(timestamp, sizeof(timestamp), "until_%y%m%d_%Hh_%Mm_%Ss.log", &local_tm);
-
-    std::string rotatedFile = LOG_DIR + "/" + timestamp;
-    std::rename(LOG_FILE.c_str(), rotatedFile.c_str());
+    zipOldLogFile();
+    auto backupFile = getBackupLogFileName();
+    if (std::rename(LOG_FILE.c_str(), backupFile.c_str()) != 0) {
+        std::cerr << "Failed to rename log file for rotation\n";
+        return;
+    }
     FileUtil::clearFile(LOG_FILE);
 }
 
+std::string Logger::getBackupLogFileName()
+{
+    auto localTime = getLocalTime();
+    char timestamp[64];
+    std::strftime(timestamp, sizeof(timestamp), "until_%y%m%d_%Hh_%Mm_%Ss.log", &localTime);
+    return LOG_DIR + "/" + timestamp;
+}
+
 std::string Logger::getCurrentTimestamp() {
-    std::time_t now = std::time(nullptr);
-    std::tm localTime{};
-    localtime_s(&localTime, &now);
-
+    std::tm localTime = getLocalTime();
     char buf[20];
-    std::snprintf(buf, sizeof(buf), "[%02d.%02d.%02d %02d:%02d]",
-        localTime.tm_year % 100,
-        localTime.tm_mon + 1,
-        localTime.tm_mday,
-        localTime.tm_hour,
-        localTime.tm_min);
-
+    std::strftime(buf, sizeof(buf), "[%y.%m.%d %H:%M]", &localTime);
     return std::string(buf);
+}
+
+std::tm Logger::getLocalTime()
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm localTime;
+    localtime_s(&localTime, &t);
+    return localTime;
 }
 
 std::vector<std::string> Logger::getLogFileList() {

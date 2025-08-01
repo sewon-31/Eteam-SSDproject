@@ -18,7 +18,9 @@ private:
     std::string getCurrentTimestamp();
     std::string getLogMessage(const char* funcName, const char* fmt, va_list args);
     void writeToFile(const std::string& log_msg);
-    void rotateIfNeeded(int size);
+    void rotateLogIfFull(size_t size);
+    std::string getBackupLogFileName();
+    std::tm getLocalTime();
     std::vector<std::string> getLogFileList();
-    void zipLogFile();
+    void zipOldLogFile();
 };
