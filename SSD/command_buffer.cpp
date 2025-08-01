@@ -90,16 +90,16 @@ CommandBuffer::optimizeBuffer()
     CMD_BUF in;
     CMD_BUF out;
     int in_buf_idx = 0;
-    //auto cmd = buffer.at(0);
+
 
     for (int buf_idx = 0; buf_idx < buf_size; buf_idx++) {
         auto cmd = buffer.at(buf_idx);
         auto type = cmd->getCmdType();
 
-
         std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[buf_idx] << " " << in.data[buf_idx] << "\n";
         if (type == CmdType::WRITE) {
             std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+
             in.op[in_buf_idx] = cmd->getCmdType();
             in.lba[in_buf_idx] = cmd->getLBA();
             in.data[in_buf_idx] = wCmdPtr->getValue();
@@ -117,7 +117,7 @@ CommandBuffer::optimizeBuffer()
         }
     }
     std::cout << "\n";
-#if 1
+
     int new_buf_size = reduceCMDBuffer(in, out);
     if (new_buf_size < buf_size)
     {
@@ -144,7 +144,6 @@ CommandBuffer::optimizeBuffer()
             }
         }
     }
-#endif
     return true;
 }
 
