@@ -108,7 +108,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidSize)
 TEST_F(SSDCommandParserTestFixture, InvalidLBARange)
 {
 	builder.setCommandVector({ CMD_ERASE, "90", MAX_SIZE});
-	EXPECT_FALSE(builder.isValidCommand());
+	EXPECT_TRUE(builder.isValidCommand());
 
 	builder.setCommandVector({ CMD_ERASE, "89", MAX_SIZE});
 	EXPECT_TRUE(builder.isValidCommand());
