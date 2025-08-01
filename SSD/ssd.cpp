@@ -19,26 +19,28 @@ SSD::run(vector<string> commandVector)
 		builder = std::make_shared<SSDCommandBuilder>();
 	}
 
-	cmdBuf.Init();
 	string result("");
 
 	// create command (validity check included)
 	auto cmd = builder->createCommand(commandVector);
 	if (cmd == nullptr) {
-		result = "ERROR";
-	}
-	else {
-		auto type = cmd->getCmdType();
-		//if (type == CmdType::READ || type == CmdType::FLUSH
-		//{
-		cmd->run(result);
-		//}
-		//else if(type==CmdType::WRITE || type ==CmdType::ERASE {
-			//cmdBuf.addCommand(cmd);
-		//}
+		updateOutputFile("ERROR");
+		return;
 	}
 
+	cmdBuf.Init();
+
+	auto type = cmd->getCmdType();
+	//if (type == CmdType::READ || type == CmdType::FLUSH
+	//{
+	cmd->run(result);
+	//}
+	//else if(type==CmdType::WRITE || type ==CmdType::ERASE {
+		//cmdBuf.addCommand(cmd);
+	//}
+
 	cmdBuf.updateToDirectory();
+
 	if (!result.empty()) {
 		updateOutputFile(result);
 	}
