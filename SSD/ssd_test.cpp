@@ -588,8 +588,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS2_WR1) {
 	}
 	//EXPECT_EQ(0, error);
 }
-#endif
-#if 0
+
 TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE) {
 	string op[6] = { "E","W","W","E","E","E" };
 	int lba[6] = { 1, 2, 3, 4, 5, 6 };
@@ -609,7 +608,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE) {
 	}
 
 	int ret = app.reduceCMDBuffer(test_in, test_out);
-	EXPECT_EQ(2, ret);
+	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "W","E","E","W","E","E" };
 	int lba_res[6] = { 1,12,23,34,45,56 };
@@ -659,7 +658,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_2) {
 	}
 
 	int ret = app.reduceCMDBuffer(test_in, test_out);
-	EXPECT_EQ(2, ret);
+	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "W","E","E","W","E","E" };
 	int lba_res[6] = { 1,12,23,34,45,56 };
@@ -679,7 +678,8 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_2) {
 	}
 	//EXPECT_EQ(0, error);
 }
-
+#endif
+#if 1
 TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_3) {
 	string op[6] = { "E","W","W","E","W","E" };
 	int lba[6] = { 1, 2, 3, 4, 20, 26 };
