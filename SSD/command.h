@@ -1,29 +1,11 @@
 #pragma once
 #define interface struct
 
-#include "nand_data.h"
-#include "file_interface.h"
+#include "command_buffer.h"
 
-#include <string>
 #include <vector>
 
 using std::string;
-
-enum class CmdType {
-	READ = 0,
-	WRITE,
-	ERASE,
-};
-
-// ICommand (abstract class)
-interface ICommand
-{
-	virtual ~ICommand() = default;
-	virtual void run(string& result) = 0;		// run whole process (including file read/write)
-	virtual void execute(string& result) = 0;	// execute core action
-	virtual CmdType getCmdType() const = 0;
-	virtual int getLBA() const = 0;
-};
 
 // BaseCommand (abstract class) for common data members
 class BaseCommand : public ICommand
@@ -39,7 +21,7 @@ public:
 		ERASE = 2
 	};
 
-	BaseCommand(int lba);
+	BaseCommand(int lba = -1);
 	int getLBA() const;
 };
 
@@ -53,7 +35,9 @@ public:
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
 
-	std::vector<std::shared_ptr<ICommand>> buffers;
+private:
+	string fastReadFromBuffer();
+	string INVALID = "";
 };
 
 // WriteCommand
@@ -86,4 +70,15 @@ public:
 
 private:
     int size;
+};
+
+// FlushCommand
+class FlushCommand : public BaseCommand
+{
+public:
+	using BaseCommand::BaseCommand;
+
+	void run(string& result) override;
+	void execute(string& result) override;
+	CmdType getCmdType() const override;
 };

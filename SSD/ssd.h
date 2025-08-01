@@ -22,11 +22,11 @@ public:
 	void writeData(int lba, const string& value);
 	void clearData();
 	void setBuilder(std::shared_ptr<SSDCommandBuilder> builder);
-	FileInterface& getOutputFile();
 	NandData& getStorage();
 
 private:
 	NandData& storage;
+	CommandBuffer& cmdBuf;
 	FileInterface outputFile;
 	std::shared_ptr<SSDCommandBuilder> builder;
 

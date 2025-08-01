@@ -1,9 +1,11 @@
 #include "command.h"
 #include <iostream>
+#include "logger.h"
 
 bool ReadCommand::execute(const std::vector<std::string>& args)
 {
 	int lba = std::stoi(args.at(0));
+	PRINT_LOG("Executing write to LBA %d", lba);
 	std::cout << "Executing read from LBA " << lba << std::endl;
 	read(lba);
     return true;
@@ -22,7 +24,7 @@ void ReadCommand::ssdReadAndPrint(int addr)
 	std::string content = ssd->read(addr);
 	std::ostringstream oss;
 	oss << std::setw(2) << std::setfill('0') << addr;
-
+	PRINT_LOG((READ_HEADER + oss.str() + READ_MIDFIX + content).c_str());
 	std::cout << READ_HEADER << oss.str() << READ_MIDFIX << content << READ_FOOTER;
 }
 
@@ -30,6 +32,7 @@ bool WriteCommand::execute(const std::vector<std::string>& args)
 {
 	int lba = std::stoi(args.at(0));
 	std::string value = args.at(1);
+	PRINT_LOG("Executing write to LBA %d with value %s", lba, value);
 	std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
 	write(lba, value);
     return true;
@@ -42,15 +45,18 @@ void WriteCommand::write(int lba, std::string value)
 		return;
 	try {
 		ssd->write(lba, value);
+		PRINT_LOG("LBA [%d]: %#x  Done", lba, value);
 		std::cout << "[WRITE] Done" << std::endl;
 	}
 	catch (SSDExecutionException& e) {
+		PRINT_LOG("[WRITE] Fail. %s", e.what());
 		std::cout << "[WRITE] Fail" << std::endl;
 	}
 }
 
 bool FullReadCommand::execute(const std::vector<std::string>& args)
 {
+	PRINT_LOG("Executing fullread");
 	std::cout << "Executing fullread" << std::endl;
 	fullRead();
     return true;
@@ -64,6 +70,7 @@ void FullReadCommand::fullRead()
 		}
 	}
 	catch (std::exception e) {
+		PRINT_LOG("[WRITE] Fail. %s", e.what());
 		std::cout << string(e.what());
 	}
 }
@@ -71,6 +78,7 @@ void FullReadCommand::fullRead()
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
 {
 	std::string value = args.at(0);
+	PRINT_LOG("Executing fullwrite with value");
 	std::cout << "Executing fullwrite with value " << value << std::endl;
 	fullWrite(value);
     return true;
@@ -81,20 +89,24 @@ void FullWriteCommand::fullWrite(std::string value) {
 	try {
 		for (int i = 0; i < 100; i++)
 			ssd->write(i, value);
+		PRINT_LOG("[FULL_WRITE] Done");
 		std::cout << "[FULL_WRITE] Done" << std::endl;
 	}
 	catch (SSDExecutionException& e) {
+		PRINT_LOG("[FULL_WRITE] Fail. %s", e.what());
 		std::cout << "[FULL_WRITE] Fail" << std::endl;
 	}
 }
 
 bool ExitCommand::execute(const std::vector<std::string>& args)
 {
+	PRINT_LOG("bye bye");
     return false;
 }
 
 bool HelpCommand::execute(const std::vector<std::string>& args)
 {
+	PRINT_LOG("print help");
 	std::cout << "Team: Easiest\n";
 	std::cout << "Member: Sewon Joo, Dokyeong Kim, Nayoung Yoon, Seungah Lim, Jaeyeong Jeon, Insang Cho, Dooyeun Hwang\n\n";
 
@@ -142,6 +154,7 @@ bool EraseCommand::execute(const std::vector<std::string>& args)
 	int lba = std::stoi(args.at(0));
 	int size = std::stoi(args.at(1));
 	std::cout << "Executing erase" << std::endl;
+	PRINT_LOG("Executing erase");
 	erase(lba, size);
 	return true;
 }
@@ -163,16 +176,17 @@ void EraseCommand::erase(int lba, int size) {
 			size = 100 - lba;
 		}
 
-		parseSizeAndErase(size, lba);
-
+		parseSizeAndErase(lba, size);
+		PRINT_LOG("[ERASE] Done");
 		std::cout << "[ERASE] Done" << std::endl;
 	}
 	catch (SSDExecutionException& e) {
+		PRINT_LOG("[ERASE] Fail. %s", e.what());
 		std::cout << "[ERASE] Fail" << std::endl;
 	}
 }
 
-void EraseCommand::parseSizeAndErase(int size, int lba)
+void EraseCommand::parseSizeAndErase(int lba, int size)
 {
 	while (size > 0) {
 		if (size > 10) {
@@ -192,6 +206,7 @@ bool EraseRangeCommand::execute(const std::vector<std::string>& args)
 	int startLba = std::stoi(args.at(0));
 	int endLba = std::stoi(args.at(1));
 	std::cout << "Executing erase_range" << std::endl;
+	PRINT_LOG("Executing erase_range");
 	eraseRange(startLba, endLba);
 	return true;
 }
@@ -200,16 +215,19 @@ void EraseRangeCommand::eraseRange(int startLba, int endLba) {
 	if (startLba > endLba)
 		std::swap(startLba, endLba);
 	try {
-		erase(startLba, endLba - startLba + 1);
+		parseSizeAndErase(startLba, endLba - startLba + 1);
+		PRINT_LOG("[ERASE RANGE] Done");
 		std::cout << "[ERASE RANGE] Done" << std::endl;
 	}
 	catch (SSDExecutionException& e) {
+		PRINT_LOG("[ERASE RANGE] Fail. %s", e.what());
 		std::cout << "[ERASE RANGE] Fail" << std::endl;
 	}
 }
 
 bool FlushCommand::execute(const std::vector<std::string>& args)
 {
+	PRINT_LOG("Executing flush");
 	std::cout << "Executing flush" << std::endl;
 	flush();
 	return true;
@@ -218,10 +236,12 @@ bool FlushCommand::execute(const std::vector<std::string>& args)
 void FlushCommand::flush() {
 	try {
 		ssd->flush();
+		PRINT_LOG("[FLUSH] Done");
 		std::cout << "[FLUSH] Done" << std::endl;
 
 	}
 	catch (SSDExecutionException& e) {
+		PRINT_LOG("[FLUSH] Fail. %s", e.what());
 		std::cout << "[FLUSH] Fail" << std::endl;
 	}
 }

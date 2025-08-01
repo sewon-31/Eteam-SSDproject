@@ -25,9 +25,6 @@ public:
     //bool updateFromBuffer()
     bool updateToFile();
 
-    // for unit test
-    FileInterface& getNandFile();
-
 private:
     NandData(const string& filePath);
     NandData(const NandData&) = delete;

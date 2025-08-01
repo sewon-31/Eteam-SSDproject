@@ -13,6 +13,7 @@ public:
 	const string CMD_READ = "R";
 	const string CMD_WRITE = "W";
 	const string CMD_ERASE = "E";
+	const string CMD_FLUSH = "F";
 	const string CMD_INVALID = "D";
 
 	const string VALID_LBA = "3";
@@ -65,6 +66,9 @@ TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
 	EXPECT_FALSE(builder.isValidCommand());
 
 	builder.setCommandVector({ CMD_ERASE, VALID_LBA });
+	EXPECT_FALSE(builder.isValidCommand());
+
+	builder.setCommandVector({ CMD_FLUSH, VALID_LBA });
 	EXPECT_FALSE(builder.isValidCommand());
 }
 
