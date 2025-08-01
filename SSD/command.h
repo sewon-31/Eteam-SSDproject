@@ -37,7 +37,7 @@ public:
 
 private:
 	string fastReadFromBuffer();
-	string NOT_IN_BUFFER = "";
+	string INVALID = "";
 };
 
 // WriteCommand

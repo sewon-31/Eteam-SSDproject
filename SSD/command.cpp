@@ -20,7 +20,7 @@ ReadCommand::run(string& result)
 
 	string readData = fastReadFromBuffer();
 
-	if (readData == NOT_IN_BUFFER) {
+	if (readData == INVALID) {
 		storage.updateFromFile();
 		execute(result);
 	}
@@ -44,7 +44,7 @@ string ReadCommand::fastReadFromBuffer()
 {
 	std::vector<std::shared_ptr<ICommand>> buffers = CommandBuffer::getInstance().getBuffer();
 
-	string result = NOT_IN_BUFFER;
+	string result = INVALID;
 	for (auto command : buffers) {
 		
 		if (command->getCmdType() == CmdType::ERASE) {
