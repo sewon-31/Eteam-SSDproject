@@ -176,7 +176,7 @@ void EraseCommand::erase(int lba, int size) {
 			size = 100 - lba;
 		}
 
-		parseSizeAndErase(size, lba);
+		parseSizeAndErase(lba, size);
 		PRINT_LOG("[ERASE] Done");
 		std::cout << "[ERASE] Done" << std::endl;
 	}
@@ -186,7 +186,7 @@ void EraseCommand::erase(int lba, int size) {
 	}
 }
 
-void EraseCommand::parseSizeAndErase(int size, int lba)
+void EraseCommand::parseSizeAndErase(int lba, int size)
 {
 	while (size > 0) {
 		if (size > 10) {
@@ -215,7 +215,7 @@ void EraseRangeCommand::eraseRange(int startLba, int endLba) {
 	if (startLba > endLba)
 		std::swap(startLba, endLba);
 	try {
-		erase(startLba, endLba - startLba + 1);
+		parseSizeAndErase(startLba, endLba - startLba + 1);
 		PRINT_LOG("[ERASE RANGE] Done");
 		std::cout << "[ERASE RANGE] Done" << std::endl;
 	}
