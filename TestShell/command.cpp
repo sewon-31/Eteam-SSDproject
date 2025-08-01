@@ -41,7 +41,7 @@ bool WriteCommand::execute(const std::vector<std::string>& args)
 void WriteCommand::write(int lba, std::string value)
 {
 	if (ssd == nullptr) return;
-	if (lba >= 100 || lba < 0)
+	if (lba >= MAX_LBA || lba < 0)
 		return;
 	try {
 		ssd->write(lba, value);
@@ -87,7 +87,7 @@ bool FullWriteCommand::execute(const std::vector<std::string>& args)
 void FullWriteCommand::fullWrite(std::string value) {
 	if (ssd == nullptr) return;
 	try {
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < MAX_LBA; i++)
 			ssd->write(i, value);
 		PRINT_LOG("[FULL_WRITE] Done");
 		std::cout << "[FULL_WRITE] Done" << std::endl;
@@ -172,8 +172,8 @@ void EraseCommand::erase(int lba, int size) {
 				size = std::abs(size);
 			}
 		}
-		else if (size + lba > 100) {
-			size = 100 - lba;
+		else if (size + lba > MAX_LBA) {
+			size = MAX_LBA - lba;
 		}
 
 		parseSizeAndErase(lba, size);
