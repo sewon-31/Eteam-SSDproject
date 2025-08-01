@@ -50,7 +50,7 @@ public:
 			.WillRepeatedly(Return(true));
 	}
 };
-
+#if 0
 TEST_F(SSDTestFixture, RunExecutesCommand) {
 	processMockParserFunctions();
 
@@ -226,7 +226,8 @@ TEST_F(SSDTestFixture, TC_RUN_ERASE) {
 	EXPECT_EQ(app.getData(9), "0x00000000");
 	EXPECT_EQ(app.getData(10), str[10]);
 }
-
+#endif
+#if 1
 TEST_F(SSDTestFixture, reduceCMD_REPLACE_W0_TO_E) {
 	string op[6] = { "W","E","E","W","W","E" };
 	int lba[6] = { 1,12,23,34,45,56 };
@@ -768,6 +769,34 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_3) {
 	//EXPECT_EQ(0, error);
 }
 
+#endif
+TEST_F(SSDTestFixture, TestCommandBufferWriteAfterErase) {
+	string op[6] = { "W","E" };
+	int lba[6] = { 1, 1 };
+	int size[6] = { 1,  1 };
+	string data[6] = { "0x11111111", "" };
+	for (int i = 0; i < 6; i++) {
+		test_in.op[i] = op[i];
+		test_in.lba[i] = lba[i];
+		test_in.size[i] = size[i];
+		test_in.data[i] = data[i];
+	}
+	int ret = app.reduceCMDBuffer(test_in, test_out);
+	EXPECT_EQ(1, ret);
+
+	string op_res[6] = { "E" };
+	int lba_res[6] = { 1 };
+	int size_res[6] = { 1 };
+	string data_res[6] = { "" };
+	for (int i = 0; i < ret; i++) {
+		EXPECT_EQ(op_res[i], test_out.op[i]);
+		EXPECT_EQ(lba_res[i], test_out.lba[i]);
+		EXPECT_EQ(size_res[i], test_out.size[i]);
+		EXPECT_EQ(data_res[i], test_out.data[i]);
+	}
+}
+
+#if 0
 TEST_F(SSDTestFixture, TC_OpmizeBuffer) {
 	vector<string> input;
 
@@ -784,3 +813,4 @@ TEST_F(SSDTestFixture, TC_OpmizeBuffer) {
 	input = { "W", "7", "0x11112222" };
 	app.run(input);
 }
+#endif

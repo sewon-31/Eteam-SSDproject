@@ -188,7 +188,12 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
         // Check E and W
         if (virtual_op[idx_iba] != OP_NULL) {
             if (continue_E_CMD == 0) {
-                temp.op[newCMDCount] = "E";
+                if (virtual_op[idx_iba] == OP_E)
+                    temp.op[newCMDCount] = "E";
+                else {
+                    temp.op[newCMDCount] = "W";
+                    temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                }
                 temp.lba[newCMDCount] = idx_iba;
                 temp.size[newCMDCount] = 1;
                 //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
@@ -233,10 +238,10 @@ SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
             for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
                 if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
                     if (temp.size[idx_cb_out] == 1) {
-                        temp.op[idx_cb_out] = "W";
-                        temp.lba[idx_cb_out] = in.lba[idx_cb_in];
-                        temp.size[idx_cb_out] = 1;
-                        temp.data[idx_cb_out] = in.data[idx_cb_in];
+                        //temp.op[idx_cb_out] = "W";
+                        //temp.lba[idx_cb_out] = in.lba[idx_cb_in];
+                        //temp.size[idx_cb_out] = 1;
+                        //temp.data[idx_cb_out] = in.data[idx_cb_in];
                         hit = 1;
                     }
                 }
