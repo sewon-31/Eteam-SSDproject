@@ -20,7 +20,7 @@ ReadCommand::run(string& result)
 
 	string readData = fastReadFromBuffer();
 
-	if (readData == "") {
+	if (readData == NOT_IN_BUFFER) {
 		storage.updateFromFile();
 		execute(result);
 	}
@@ -44,12 +44,16 @@ string ReadCommand::fastReadFromBuffer()
 {
 	std::vector<std::shared_ptr<ICommand>> buffers = CommandBuffer::getInstance().getBuffer();
 
-	string result = "";
+	string result = NOT_IN_BUFFER;
 	for (auto command : buffers) {
 		
 		if (command->getCmdType() == CmdType::ERASE) {
 			std::shared_ptr<EraseCommand> erase = std::dynamic_pointer_cast<EraseCommand>(command);
-			if(erase->isInRange(lba)) result = ICommand::ERASE_DATA;
+
+			int startLBA = erase->getLBA();
+			int endLBA = startLBA + erase->getSize() - 1;
+
+			if (lba >= startLBA && lba <= endLBA) result = ERASE_DATA;
 		}
 		if (command->getCmdType() == CmdType::WRITE) {
 			std::shared_ptr<WriteCommand> write = std::dynamic_pointer_cast<WriteCommand>(command);
@@ -127,13 +131,4 @@ int
 EraseCommand::getSize() const
 {
 	return size;
-}
-
-bool EraseCommand::isInRange(int lba)
-{
-	int startLBA = getLBA();
-	int endLBA = startLBA + getSize() - 1;
-
-	if (lba >= startLBA && lba <= endLBA) return true;
-	return false;
 }
