@@ -1,11 +1,16 @@
 #pragma once
 #include <string>
 #include <vector>
+
+#define PRINT_LOG(fmt, ...) \
+    Logger::getInstance().log(Logger::extractClassAndFunc(__FUNCSIG__).c_str(), fmt, ##__VA_ARGS__)
+
 class Logger {
 public:
     static Logger& getInstance();
+    static std::string extractClassAndFunc(const char* funcSig);
     void log(const char* funcName, const char* fmt, ...);
-    void setConsoleOutput(bool set);
+    void setConsoleOutput(bool set);     
 private:
     const std::string LOG_DIR = "../log";
     const std::string LOG_FILE = LOG_DIR + "/latest.log";
