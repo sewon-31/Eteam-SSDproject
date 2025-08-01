@@ -132,3 +132,21 @@ EraseCommand::getSize() const
 {
 	return size;
 }
+
+// FlushCommand
+void
+FlushCommand::run(string& result)
+{
+	CommandBuffer::getInstance().flushBuffer();
+}
+
+void
+FlushCommand::execute(string& result)
+{
+}
+
+CmdType
+FlushCommand::getCmdType() const
+{
+	return CmdType::FLUSH;
+}

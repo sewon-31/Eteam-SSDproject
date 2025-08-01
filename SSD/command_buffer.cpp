@@ -39,13 +39,28 @@ CommandBuffer::getBuffer() const
 	return buffer;
 }
 
-int
+void
 CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
 {
-	buffer.push_back(command);
-	optimizeBuffer();
+	int bufSize = buffer.size();
 
-	return buffer.size();
+	if (bufSize == 0) {
+		addCommandToBuffer(command);
+	}
+	else if (bufSize == CommandBuffer::BUFFER_MAX) {
+		flushBuffer();
+		addCommandToBuffer(command);;
+	}
+	else {
+		addCommandToBuffer(command);
+		optimizeBuffer();
+	}
+}
+
+void
+CommandBuffer::clearBuffer()
+{
+	buffer.clear();
 }
 
 void
@@ -59,7 +74,13 @@ CommandBuffer::flushBuffer()
 	}
 
 	NandData::getInstance().updateToFile();
-	buffer.clear();
+	clearBuffer();
+}
+
+void
+CommandBuffer::addCommandToBuffer(std::shared_ptr<ICommand> command)
+{
+	buffer.push_back(command);
 }
 
 bool
@@ -199,7 +220,7 @@ CommandBuffer::updateToDirectory()
 		}
 	}
 
-	for (int i = buffer.size()+1; i <= BUFFER_MAX; ++i) {
+	for (int i = buffer.size() + 1; i <= BUFFER_MAX; ++i) {
 		string filePath = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
 
 		// create file

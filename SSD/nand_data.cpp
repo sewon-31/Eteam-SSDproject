@@ -81,12 +81,6 @@ NandData::updateToFile()
 	return ret;
 }
 
-FileInterface&
-NandData::getNandFile() 
-{
-	return file;
-}
-
 NandData::NandData(const string& filePath)
 	: file(filePath)
 {

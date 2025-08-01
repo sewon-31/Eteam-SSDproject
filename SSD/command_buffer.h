@@ -18,8 +18,10 @@ public:
 
 	int getBufferSize() const;
 	const vector<std::shared_ptr<ICommand>>& getBuffer() const;
-	int addCommand(std::shared_ptr<ICommand> command);
+	
+	void addCommand(std::shared_ptr<ICommand> command);
 
+	void clearBuffer();
 	void flushBuffer();
 	bool optimizeBuffer();
 
@@ -29,6 +31,9 @@ public:
 private:
 	CommandBuffer(const string& dirPath);
 	CommandBuffer(const CommandBuffer&) = delete;
+
+	void addCommandToBuffer(std::shared_ptr<ICommand> command);
+
 	void initDirectory();
 	void updateFromDirectory();
 

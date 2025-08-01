@@ -21,7 +21,7 @@ public:
 		ERASE = 2
 	};
 
-	BaseCommand(int lba);
+	BaseCommand(int lba = -1);
 	int getLBA() const;
 };
 
@@ -70,4 +70,15 @@ public:
 
 private:
     int size;
+};
+
+// FlushCommand
+class FlushCommand : public BaseCommand
+{
+public:
+	using BaseCommand::BaseCommand;
+
+	void run(string& result) override;
+	void execute(string& result) override;
+	CmdType getCmdType() const override;
 };
