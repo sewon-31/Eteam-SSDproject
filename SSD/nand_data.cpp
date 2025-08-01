@@ -43,6 +43,8 @@ NandData::updateFromFile()
 	file.fileOpen();
 
 	if (file.checkSize() != 1200) {
+		clear();
+		file.fileClose();
 		return false;
 	}
 
