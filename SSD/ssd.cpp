@@ -6,113 +6,99 @@
 #include <iostream>
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
-	: outputFile(outputPath),
-	storage(NandData::getInstance()),
-	cmdBuf(CommandBuffer::getInstance())
+    : outputFile(outputPath),
+    storage(NandData::getInstance()),
+    cmdBuf(CommandBuffer::getInstance())
 {
 }
 
 void
 SSD::run(vector<string> commandVector)
 {
-	if (!builder) {
-		builder = std::make_shared<SSDCommandBuilder>();
-	}
+    if (!builder) {
+        builder = std::make_shared<SSDCommandBuilder>();
+    }
 
-	string result("");
+    string result("");
 
-	// create command (validity check included)
-	auto cmd = builder->createCommand(commandVector);
-	if (cmd == nullptr) {
-		updateOutputFile("ERROR");
-		return;
-	}
+    // create command (validity check included)
+    auto cmd = builder->createCommand(commandVector);
+    if (cmd == nullptr) {
+        updateOutputFile("ERROR");
+        return;
+    }
 
-	cmdBuf.Init();
+    cmdBuf.Init();
 
-	auto type = cmd->getCmdType();
-	if (type == CmdType::READ || type == CmdType::FLUSH)
-	{
-		cmd->run(result);
-	}
-	else if (type == CmdType::WRITE || type == CmdType::ERASE) {
-		cmdBuf.addCommand(cmd);
-	}
+    auto type = cmd->getCmdType();
+    if (type == CmdType::READ || type == CmdType::FLUSH)
+    {
+        cmd->run(result);
+    }
+    else if (type == CmdType::WRITE || type == CmdType::ERASE) {
+        cmdBuf.addCommand(cmd);
+    }
 
-        //if (bufSize == 0) {
-        //	cmdBuf.addCommand(cmd);
-        //}
-        //else if (bufSize == CommandBuffer::BUFFER_MAX) {
-        //	cmdBuf.flushBuffer();
-        //	cmdBuf.addCommand(cmd);
-        //}
-        //else {
-        //	cmdBuf.addCommand(cmd);
-        //	cmdBuf.optimizeBuffer();
-        //}
-    //}
-#endif
-	cmdBuf.updateToDirectory();
+    cmdBuf.updateToDirectory();
 
-	if (!result.empty()) {
-		updateOutputFile(result);
-	}
+    if (!result.empty()) {
+        updateOutputFile(result);
+    }
 }
 
 bool
 SSD::updateOutputFile(const string& result)
 {
-	outputFile.fileClear();
-	outputFile.fileOpen();
+    outputFile.fileClear();
+    outputFile.fileOpen();
 
-	bool ret = outputFile.fileWriteOneline(result);
+    bool ret = outputFile.fileWriteOneline(result);
 
-	outputFile.fileClose();
-	return ret;
+    outputFile.fileClose();
+    return ret;
 }
 
 string
 SSD::getData(int lba) const
 {
-	return storage.read(lba);
+    return storage.read(lba);
 }
 
 void
 SSD::writeData(int lba, const string& value)
 {
-	storage.write(lba, value);
+    storage.write(lba, value);
 }
 
 void
 SSD::clearData()
 {
-	storage.clear();
+    storage.clear();
 }
 
 void
 SSD::setBuilder(std::shared_ptr<SSDCommandBuilder> builder)
 {
-	this->builder = builder;
+    this->builder = builder;
 }
 
 NandData&
 SSD::getStorage()
 {
-	return storage;
+    return storage;
 }
 
 void
 SSD::clearBufferAndDirectory()
 {
-	cmdBuf.clearBuffer();
-	cmdBuf.updateToDirectory();
+    cmdBuf.clearBuffer();
+    cmdBuf.updateToDirectory();
 }
 
 void
 SSD::clearBuffer()
 {
-	cmdBuf.clearBuffer();
-	return outputFile;
+    cmdBuf.clearBuffer();
 }
 
 int

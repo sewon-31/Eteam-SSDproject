@@ -31,8 +31,10 @@ public:
 	void clearData();
 	void setBuilder(std::shared_ptr<SSDCommandBuilder> builder);
 	NandData& getStorage();
-	int reduceCMDBuffer(TEST_CMD in, TEST_CMD& out);
+	void clearBufferAndDirectory();
+	void clearBuffer();
 
+	int reduceCMDBuffer(TEST_CMD in, TEST_CMD& out);
 private:
 	int reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
 

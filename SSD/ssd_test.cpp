@@ -41,14 +41,12 @@ public:
 	std::shared_ptr<MockBuilder> mockBuilder;
 
 	SSD app;
-	FileInterface& nandFile = app.getStorage().getNandFile();
-	FileInterface& outputFile = app.getOutputFile();
-	TEST_CMD test_in;
-	TEST_CMD test_out;
-	TEST_CMD test_res;
 
 	FileInterface nandFile{ "../ssd_nand.txt" };
 	FileInterface outputFile{ "../ssd_output.txt" };
+	TEST_CMD test_in;
+	TEST_CMD test_out;
+	TEST_CMD test_res;
 
 	void processMockBuilderFunctions()
 	{
@@ -58,8 +56,8 @@ public:
 	}
 };
 
-TEST_F(SSDTestFixture, RunExecutesCommand) {
-	processMockParserFunctions();
+TEST_F(SSDTestFixture, RunCommandTest1) {
+	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "R", "0" };
 
@@ -262,6 +260,7 @@ TEST_F(SSDTestFixture, TC_ERASE) {
 
 	app.run({ "E", "0", "10" });
 	app.clearBuffer();	// in real case, it would be re-created
+
 	string actual;
 
 	app.run({ "R", "9" });
@@ -652,5 +651,4 @@ TEST_F(SSDTestFixture, TestCommandBufferWriteAfterErase) {
 		EXPECT_EQ(data_res[i], test_out.data[i]);
 	}
 }
-#endif
 
