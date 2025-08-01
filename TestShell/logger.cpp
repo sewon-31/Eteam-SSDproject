@@ -6,6 +6,7 @@
 #include <iomanip> 
 #include <chrono>
 #include <io.h>
+#include <regex>
 
 Logger& Logger::getInstance() {
     static Logger instance;
@@ -26,6 +27,25 @@ void Logger::log(const char* funcName, const char* fmt, ...) {
 void Logger::setConsoleOutput(bool set)
 {
     isEnabledConsole = set;
+}
+
+std::string Logger::extractClassAndFunc(const char* funcSig) {
+    std::string sig(funcSig); 
+    static const std::regex re("::");
+
+    size_t parenPos = sig.rfind('(');
+    if (parenPos == std::string::npos)
+        return "";
+
+    std::string noParams = sig.substr(0, parenPos);
+
+    size_t lastSpace = noParams.rfind(' ');
+    if (lastSpace == std::string::npos)
+        return noParams + "()";
+
+    std::string funcName = noParams.substr(lastSpace + 1);
+    funcName = std::regex_replace(funcName, re, ".");
+    return funcName + "()";
 }
 
 std::string Logger::getLogMessage(const char* funcName, const char* fmt, va_list args) {
