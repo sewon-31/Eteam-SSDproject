@@ -16,27 +16,27 @@ CommandBuffer::getInstance(const std::string& dirPath) {
 }
 
 CommandBuffer::CommandBuffer(const string& dirPath)
-	: bufferDirPath(dirPath)
+    : bufferDirPath(dirPath)
 {
 }
 
 void
 CommandBuffer::Init()
 {
-	initDirectory();
-	updateFromDirectory();
+    initDirectory();
+    updateFromDirectory();
 }
 
 int
 CommandBuffer::getBufferSize() const
 {
-	return buffer.size();
+    return buffer.size();
 }
 
 const std::vector<std::shared_ptr<ICommand>>&
 CommandBuffer::getBuffer() const
 {
-	return buffer;
+    return buffer;
 }
 
 void
@@ -66,12 +66,12 @@ CommandBuffer::clearBuffer()
 void
 CommandBuffer::flushBuffer()
 {
-	NandData::getInstance().updateFromFile();
+    NandData::getInstance().updateFromFile();
 
-	string result;
-	for (auto cmd : buffer) {
-		cmd->execute(result);
-	}
+    string result;
+    for (auto cmd : buffer) {
+        cmd->execute(result);
+    }
 
 	NandData::getInstance().updateToFile();
 	clearBuffer();
@@ -92,88 +92,88 @@ CommandBuffer::optimizeBuffer()
 void
 CommandBuffer::initDirectory()
 {
-	// create buffer directory (if needed)
-	bool bufferDirExists = fs::exists(bufferDirPath) && fs::is_directory(bufferDirPath);
+    // create buffer directory (if needed)
+    bool bufferDirExists = fs::exists(bufferDirPath) && fs::is_directory(bufferDirPath);
 
-	if (!bufferDirExists) {
-		if (fs::create_directory(bufferDirPath)) {
-			for (int i = 1; i <= BUFFER_MAX; ++i) {
-				string filePath = bufferDirPath + "/" + std::to_string(i) + "_empty";
-				std::ofstream file(filePath);
+    if (!bufferDirExists) {
+        if (fs::create_directory(bufferDirPath)) {
+            for (int i = 1; i <= BUFFER_MAX; ++i) {
+                string filePath = bufferDirPath + "/" + std::to_string(i) + "_empty";
+                std::ofstream file(filePath);
 
-				if (!file) {
+                if (!file) {
 #if _DEBUG
-					std::cerr << "Failed to create " << filePath << std::endl;
+                    std::cerr << "Failed to create " << filePath << std::endl;
 #endif
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }
 
 void
 CommandBuffer::updateFromDirectory()
 {
-	// read file names from directory
-	vector<string> fileNames;
+    // read file names from directory
+    vector<string> fileNames;
 
-	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
-		if (fs::is_regular_file(file.path())) {
-			fileNames.push_back(file.path().filename().string());
-		}
-	}
+    for (const auto& file : fs::directory_iterator(bufferDirPath)) {
+        if (fs::is_regular_file(file.path())) {
+            fileNames.push_back(file.path().filename().string());
+        }
+    }
 
 #if _DEBUG
-	if (fileNames.size() != BUFFER_MAX) {
-		std::cout << "Why not 5 files?\n";
-	}
+    if (fileNames.size() != BUFFER_MAX) {
+        std::cout << "Why not 5 files?\n";
+    }
 #endif
 
-	// sort filenames
-	std::sort(fileNames.begin(), fileNames.end());
+    // sort filenames
+    std::sort(fileNames.begin(), fileNames.end());
 
-	SSDCommandBuilder builder;
+    SSDCommandBuilder builder;
 
-	auto startsWith = [](const string& str, const string& prefix) -> bool {
-		return str.compare(0, prefix.size(), prefix) == 0;
-		};
+    auto startsWith = [](const string& str, const string& prefix) -> bool {
+        return str.compare(0, prefix.size(), prefix) == 0;
+        };
 
-	int fileNum = 1;
-	for (const auto& fileName : std::as_const(fileNames)) {
-		string prefix = std::to_string(fileNum++) + "_";
-		if (startsWith(fileName, prefix)) {
-			string noPrefix = fileName.substr(prefix.length());
+    int fileNum = 1;
+    for (const auto& fileName : std::as_const(fileNames)) {
+        string prefix = std::to_string(fileNum++) + "_";
+        if (startsWith(fileName, prefix)) {
+            string noPrefix = fileName.substr(prefix.length());
 
-			if (noPrefix == EMPTY) {
-				break;
-			}
+            if (noPrefix == EMPTY) {
+                break;
+            }
 
-			vector<string> commandVector;
-			std::stringstream ss(noPrefix);
+            vector<string> commandVector;
+            std::stringstream ss(noPrefix);
 
-			string token;
-			while (std::getline(ss, token, '_')) {
-				commandVector.push_back(token);
-			}
+            string token;
+            while (std::getline(ss, token, '_')) {
+                commandVector.push_back(token);
+            }
 
-			auto cmd = builder.createCommand(commandVector);
-			if (cmd == nullptr) {
-				std::cout << "Commmand not created - " << noPrefix << std::endl;
-			}
-			buffer.push_back(cmd);
+            auto cmd = builder.createCommand(commandVector);
+            if (cmd == nullptr) {
+                std::cout << "Commmand not created - " << noPrefix << std::endl;
+            }
+            buffer.push_back(cmd);
 
-		}
-		else {
-			std::cout << "Weird file " << fileName << std::endl;
-		}
-	}
+        }
+        else {
+            std::cout << "Weird file " << fileName << std::endl;
+        }
+    }
 
-	// delete all the files
-	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
-		if (fs::is_regular_file(file.path())) {
-			fs::remove(file.path());
-		}
-	}
+    // delete all the files
+    for (const auto& file : fs::directory_iterator(bufferDirPath)) {
+        if (fs::is_regular_file(file.path())) {
+            fs::remove(file.path());
+        }
+    }
 }
 
 void
@@ -241,4 +241,160 @@ CommandBuffer::updateToDirectory()
 #endif
 		}
 	}
+}
+
+int
+CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) 
+{
+    int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
+
+    const int OP_NULL = 9;
+    const int OP_E = 7;
+    const int OP_W_MAX = 5;
+    int cmdCount = 5;
+
+    CMD_BUF temp;
+    // 1. Replcae w iba "0x00000000" >  E iba
+    // 2. make virtual data 
+    // 3. Make CMD
+        //3-1. Make new CMD E range check and W
+        // display
+
+#ifdef PRINT_DEBUG
+    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
+        std::cout << static_cast<int>(in.op[idx_cb]) << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+
+    // step - 2
+    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
+        virtual_op[idx_iba] = OP_NULL;
+    }
+
+    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
+        if (in.op[idx_cb] == CmdType::WRITE) {
+            virtual_op[in.lba[idx_cb]] = idx_cb;
+        }
+        else if (in.op[idx_cb] == CmdType::ERASE) {
+            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++)
+                virtual_op[in.lba[idx_cb] + idx_size] = OP_E;
+        }
+    }
+    // display
+    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
+        if (virtual_op[idx_iba] == OP_NULL)
+            std::cout << "N" << " ";
+        else if (virtual_op[idx_iba] == OP_E)
+            std::cout << "E" << " ";
+        else
+            std::cout << "W" << " ";
+
+
+        if (idx_iba % 10 == 9)
+            std::cout << "\n";
+    }
+
+    // step - 3
+    int continue_E_CMD = 0;
+    int newCMDCount = 0;
+
+    // step - 3-1
+    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
+        // Check E and W
+        if (virtual_op[idx_iba] != OP_NULL) {
+            if (continue_E_CMD == 0) {
+                if (virtual_op[idx_iba] == OP_E)
+                    temp.op[newCMDCount] = CmdType::ERASE;
+                else {
+                    temp.op[newCMDCount] = CmdType::WRITE;
+                    temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                }
+                temp.lba[newCMDCount] = idx_iba;
+                temp.size[newCMDCount] = 1;
+                //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                continue_E_CMD = 1;
+            }
+            else {
+                temp.size[newCMDCount]++;
+                continue_E_CMD++;
+                if (continue_E_CMD == 10) {
+                    continue_E_CMD = 0;
+                    newCMDCount++;
+                }
+            }
+            continue;
+        }
+        else if (continue_E_CMD > 0) {
+            continue_E_CMD = 0;
+            newCMDCount++;
+        }
+    }
+#ifdef  PRINT_DEBUG
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+
+    int hit = 0;
+    for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
+        if (in.op[idx_cb_in] == CmdType::WRITE && in.data[idx_cb_in] != "0x00000000") {
+            hit = 0;
+            for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
+                if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
+                    if (temp.size[idx_cb_out] == 1) {
+                        hit = 1;
+                    }
+                }
+            }
+            if (!hit) {
+                temp.op[newCMDCount] = CmdType::WRITE;
+                temp.lba[newCMDCount] = in.lba[idx_cb_in];
+                temp.size[newCMDCount] = 1;
+                temp.data[newCMDCount] = in.data[idx_cb_in];
+                newCMDCount++;
+            }
+        }
+    }
+#ifdef  PRINT_DEBUG
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+    int idx = 0;
+    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
+        if (temp.op[idx_iba] == CmdType::ERASE)
+        {
+            out.op[idx] = temp.op[idx_iba];
+            out.lba[idx] = temp.lba[idx_iba];
+            out.size[idx] = temp.size[idx_iba];
+            out.data[idx] = temp.data[idx_iba];
+            idx++;
+        }
+    }
+    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
+        if (temp.op[idx_iba] == CmdType::WRITE)
+        {
+            out.op[idx] = temp.op[idx_iba];
+            out.lba[idx] = temp.lba[idx_iba];
+            out.size[idx] = temp.size[idx_iba];
+            out.data[idx] = temp.data[idx_iba];
+            idx++;
+        }
+    }
+#ifdef  PRINT_DEBUG
+    if (idx != newCMDCount)
+        std::cout << "Error idx " << idx << " " << newCMDCount << "\n";
+
+    // display
+    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
+        std::cout << static_cast<int>(out.op[idx_cb]) << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
+    }
+    std::cout << "\n";
+#endif
+    return newCMDCount;
 }

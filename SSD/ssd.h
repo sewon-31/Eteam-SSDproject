@@ -7,6 +7,14 @@
 
 using std::string;
 
+class TEST_CMD {
+public:
+	string op[6];
+	int lba[6];
+	int size[6];
+	string data[6];
+};
+
 class SSD
 {
 public:
@@ -26,7 +34,10 @@ public:
 	void clearBufferAndDirectory();
 	void clearBuffer();
 
+	int reduceCMDBuffer(TEST_CMD in, TEST_CMD& out);
 private:
+	int reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
+
 	NandData& storage;
 	CommandBuffer& cmdBuf;
 	FileInterface outputFile;
