@@ -41,7 +41,7 @@ bool WriteCommand::execute(const std::vector<std::string>& args)
 void WriteCommand::write(int lba, std::string value)
 {
 	if (ssd == nullptr) return;
-	if (lba >= MAX_LBA || lba < 0)
+	if (lba > MAX_LBA || lba < MIN_LBA)
 		return;
 	try {
 		ssd->write(lba, value);
@@ -65,7 +65,7 @@ bool FullReadCommand::execute(const std::vector<std::string>& args)
 void FullReadCommand::fullRead()
 {
 	try {
-		for (int addr = 0; addr < MAX_LBA; addr++) {
+		for (int addr = MIN_LBA; addr <= MAX_LBA; addr++) {
 			ssdReadAndPrint(addr);
 		}
 	}
@@ -87,7 +87,7 @@ bool FullWriteCommand::execute(const std::vector<std::string>& args)
 void FullWriteCommand::fullWrite(std::string value) {
 	if (ssd == nullptr) return;
 	try {
-		for (int i = 0; i < MAX_LBA; i++)
+		for (int i = MIN_LBA; i <= MAX_LBA; i++)
 			ssd->write(i, value);
 		PRINT_LOG("[FULL_WRITE] Done");
 		std::cout << "[FULL_WRITE] Done" << std::endl;
@@ -172,8 +172,8 @@ void EraseCommand::erase(int lba, int size) {
 				size = std::abs(size);
 			}
 		}
-		else if (size + lba > MAX_LBA) {
-			size = MAX_LBA - lba;
+		else if (size + lba > 100) {
+			size = 100 - lba;
 		}
 
 		parseSizeAndErase(lba, size);
@@ -189,10 +189,10 @@ void EraseCommand::erase(int lba, int size) {
 void EraseCommand::parseSizeAndErase(int lba, int size)
 {
 	while (size > 0) {
-		if (size > 10) {
-			ssd->erase(lba, 10);
-			lba = lba + 10;
-			size = size - 10;
+		if (size > MAX_ERASE_SIZE) {
+			ssd->erase(lba, MAX_ERASE_SIZE);
+			lba = lba + MAX_ERASE_SIZE;
+			size = size - MAX_ERASE_SIZE;
 		}
 		else {
 			ssd->erase(lba, size);

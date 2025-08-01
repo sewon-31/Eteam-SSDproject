@@ -9,7 +9,9 @@ public:
     virtual ~Command() = default;
     virtual bool execute(const std::vector<std::string>& args) = 0;
 
-    const static int MAX_LBA = 100;
+    const static int MAX_LBA = 99;
+    const static int MIN_LBA = 0;
+    const static int NUM_OF_LBA = 100;
 };
 
 // concreate commands
@@ -80,6 +82,7 @@ public:
 protected:
     const int ARG_IDX_LBA = 0;
     const int ARG_IDX_SIZE = 1;
+    const int MAX_ERASE_SIZE = 10;
 
     void erase(int lba, int size);
     void parseSizeAndErase(int lba, int size);
