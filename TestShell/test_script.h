@@ -47,3 +47,9 @@ public:
 	ScriptsWriteReadAging(SSDInterface* device) : ScriptsCommand(device) {}
 	bool run() override;
 };
+
+class ScriptsEraseAndWriteAging : public ScriptsCommand {
+public:
+	ScriptsEraseAndWriteAging(SSDInterface* device) : ScriptsCommand(device) {}
+	bool run() override;
+};

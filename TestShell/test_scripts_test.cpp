@@ -12,11 +12,13 @@ public:
 		if (scriptName == "FullWriteAndReadCompare") script = new ScriptsFullWriteAndReadCompare(&mockSSD);
 		if (scriptName == "PartialLBAWrite") script = new ScriptsPartialLBAWrite(&mockSSD);
 		if (scriptName == "WriteReadAging") script = new ScriptsWriteReadAging(&mockSSD);
+		if (scriptName == "EraseAndWriteAging") script = new ScriptsEraseAndWriteAging(&mockSSD);
 
 	}
 	NiceMock<MockSSD> mockSSD;
 	string invalidData = "0xFFFFFFFF";
 	string testData = "0x00012345";
+	string erasedData = "0x00000000";
 
 	ScriptsCommand* script;
 };
@@ -74,6 +76,29 @@ TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
 	EXPECT_CALL(mockSSD, read(99))
 		.Times(200)
 		.WillRepeatedly(Return(val99));
+
+	EXPECT_TRUE(script->run());
+}
+
+TEST_F(TestScriptsFixture, EraseAndWriteAgingSuccess) {
+	makeTests("EraseAndWriteAging");
+
+	std::string writeValue = "0x00001111";
+	std::string overWriteValue = "0x00009999";
+
+	const int LOOP = 30;
+	const int TOTAL_SSD_CALL_IN_LOOP = 48;
+	const int TOTAL_READ = 3;
+
+	EXPECT_CALL(mockSSD, erase(_, 3))
+		.Times(1 + TOTAL_SSD_CALL_IN_LOOP * LOOP);
+	EXPECT_CALL(mockSSD, write(_, writeValue))
+		.Times(TOTAL_SSD_CALL_IN_LOOP * LOOP);
+	EXPECT_CALL(mockSSD, write(_, overWriteValue))
+		.Times(TOTAL_SSD_CALL_IN_LOOP * LOOP);
+	EXPECT_CALL(mockSSD, read(_))
+		.Times(TOTAL_SSD_CALL_IN_LOOP * TOTAL_READ * LOOP)
+		.WillRepeatedly(Return(erasedData));
 
 	EXPECT_TRUE(script->run());
 }

@@ -45,6 +45,9 @@ std::unique_ptr<Command> CommandFactory::createCommand(const std::vector<std::st
 	else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
 		return std::make_unique<ScriptsWriteReadAging>(ssd);
 	}
+	else if (opCommand == CommandParser::CMD_SCRIPT4 || opCommand == CommandParser::CMD_SCRIPT4_NAME) {
+		return std::make_unique<ScriptsWriteReadAging>(ssd);
+	}
 
 	return nullptr;
 }
