@@ -36,7 +36,7 @@ public:
 	CmdType getCmdType() const override;
 
 private:
-	string updateNandDataFromBuffer();
+	string fastReadFromBuffer();
 };
 
 // WriteCommand
@@ -66,6 +66,7 @@ public:
 	CmdType getCmdType() const override;
 
 	int getSize() const;
+	bool isInRange(int lba);
 
 private:
     int size;

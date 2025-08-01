@@ -18,13 +18,14 @@ ReadCommand::run(string& result)
 {
 	storage.clear();
 
-	string readData = updateNandDataFromBuffer();
+	string readData = fastReadFromBuffer();
+
 	if (readData == "") {
 		storage.updateFromFile();
 		execute(result);
 	}
 	
-	std::cout << result << std::endl;
+	std::cout << result << std::endl; // for debug
 }
 
 void
@@ -39,13 +40,21 @@ ReadCommand::getCmdType() const
 	return CmdType::READ;
 }
 
-string ReadCommand::updateNandDataFromBuffer()
+string ReadCommand::fastReadFromBuffer()
 {
 	std::vector<std::shared_ptr<ICommand>> buffers = CommandBuffer::getInstance().getBuffer();
 
 	string result = "";
 	for (auto command : buffers) {
-		if (command->getCmdType() == CmdType::ERASE) result = "0x00000000";
+		
+		if (command->getCmdType() == CmdType::ERASE) {
+			std::shared_ptr<EraseCommand> erase = std::dynamic_pointer_cast<EraseCommand>(command);
+			if(erase->isInRange(lba)) result = ICommand::ERASE_DATA;
+		}
+		if (command->getCmdType() == CmdType::WRITE) {
+			std::shared_ptr<WriteCommand> write = std::dynamic_pointer_cast<WriteCommand>(command);
+			if (write->getLBA() == lba) result = write->getValue();
+		}
 	}
 	return result;
 }
@@ -118,4 +127,13 @@ int
 EraseCommand::getSize() const
 {
 	return size;
+}
+
+bool EraseCommand::isInRange(int lba)
+{
+	int startLBA = getLBA();
+	int endLBA = startLBA + getSize() - 1;
+
+	if (lba >= startLBA && lba <= endLBA) return true;
+	return false;
 }
