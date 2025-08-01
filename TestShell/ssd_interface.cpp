@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include "logger.h"
 
 bool SSDDriver::runExe(const string& command) {
 	STARTUPINFOA si = { sizeof(si) };
@@ -47,6 +48,7 @@ bool SSDDriver::runExe(const string& command) {
 
 void SSDDriver::write(int lba, string value) {
 	string command = "ssd.exe W " + std::to_string(lba) + " " + value;
+	PRINT_LOG("send to SSD \"%s\"", command.c_str());
 	if (!runExe(command)) {
 		throw SSDExecutionException("Execution failed: " + command);
 	}
@@ -54,6 +56,7 @@ void SSDDriver::write(int lba, string value) {
 
 string SSDDriver::read(int lba) {
 	string command = "ssd.exe R " + std::to_string(lba);
+	PRINT_LOG("send to SSD \"%s\"", command.c_str());
 	if (!runExe(command)) {
 		throw std::runtime_error("Failed to execute ssd.exe for read()");
 	}
@@ -68,6 +71,7 @@ string SSDDriver::read(int lba) {
 
 void SSDDriver::erase(int lba, int size) {
 	string command = "ssd.exe E " + std::to_string(lba) + " " + std::to_string(size);
+	PRINT_LOG("send to SSD \"%s\"", command.c_str());
 	if (!runExe(command)) {
 		throw SSDExecutionException("Execution failed: " + command);
 	}
@@ -75,6 +79,7 @@ void SSDDriver::erase(int lba, int size) {
 
 void SSDDriver::flush() {
 	string command = "ssd.exe F";
+	PRINT_LOG("send to SSD \"%s\"", command.c_str());
 	if (!runExe(command)) {
 		throw SSDExecutionException("Execution failed: " + command);
 	}
