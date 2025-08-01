@@ -94,7 +94,6 @@ CommandBuffer::optimizeBuffer()
 
     for (int buf_idx = 0; buf_idx < buf_size; buf_idx++) {
         auto cmd = buffer.at(buf_idx);
-        //string lbaStr = std::to_string(cmd->getLBA());
         auto type = cmd->getCmdType();
 
 
