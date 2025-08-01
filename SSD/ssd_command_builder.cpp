@@ -148,7 +148,7 @@ SSDCommandBuilder::isValidLBA(int lba, int size) const
 		return lba >= NandData::LBA::MIN && lba <= NandData::LBA::MAX;
 	}
 
-	return lba + size <= NandData::LBA::MAX;
+	return lba + size <= NandData::LBA::MAX + 1;
 }
 
 bool
