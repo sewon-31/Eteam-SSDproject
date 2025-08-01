@@ -1,5 +1,5 @@
 #pragma once
-#include "command.h"
+#include "command_interface.h"
 
 #include <vector>
 #include <memory>

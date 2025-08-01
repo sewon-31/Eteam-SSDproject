@@ -18,10 +18,12 @@ ReadCommand::run(string& result)
 {
 	storage.clear();
 
-	updateNandDataFromBuffer();
-	storage.updateFromFile();
-
-	execute(result);
+	string readData = updateNandDataFromBuffer();
+	if (readData == "") {
+		storage.updateFromFile();
+		execute(result);
+	}
+	
 	std::cout << result << std::endl;
 }
 
@@ -35,6 +37,17 @@ CmdType
 ReadCommand::getCmdType() const
 {
 	return CmdType::READ;
+}
+
+string ReadCommand::updateNandDataFromBuffer()
+{
+	std::vector<std::shared_ptr<ICommand>> buffers = CommandBuffer::getInstance().getBuffer();
+
+	string result = "";
+	for (auto command : buffers) {
+		if (command->getCmdType() == CmdType::ERASE) result = "0x00000000";
+	}
+	return result;
 }
 
 // WriteCommand
