@@ -25,6 +25,8 @@ private:
     const string READ_MIDFIX = " : ";
     const string READ_FOOTER = "\n";
 
+    const int ARG_IDX_LBA = 0;
+
     void read(int lba);
 };
 
@@ -34,6 +36,8 @@ public:
     bool execute(const std::vector<std::string>& args) override;
 private:
     SSDInterface* ssd;
+    const int ARG_IDX_LBA = 0;
+    const int ARG_IDX_VALUE = 1;
 
     void write(int lba, std::string value);
 };
@@ -53,6 +57,7 @@ public:
     bool execute(const std::vector<std::string>& args) override;
 private:
     SSDInterface* ssd;
+    const int ARG_IDX_VALUE = 0;
 
     void fullWrite(std::string value);
 };
@@ -73,6 +78,9 @@ public:
     bool execute(const std::vector<std::string>& args) override;
 
 protected:
+    const int ARG_IDX_LBA = 0;
+    const int ARG_IDX_SIZE = 1;
+
     void erase(int lba, int size);
     void parseSizeAndErase(int lba, int size);
 
@@ -86,6 +94,9 @@ public:
     bool execute(const std::vector<std::string>& args) override;
 
 private:
+    const int ARG_IDX_START_LBA = 0;
+    const int ARG_IDX_END_LBA = 1;
+
     void eraseRange(int startLba, int endLba);
 };
 
@@ -98,5 +109,4 @@ private:
     SSDInterface* ssd;
 
     void flush();
-
 };

@@ -4,8 +4,8 @@
 
 bool ReadCommand::execute(const std::vector<std::string>& args)
 {
-	int lba = std::stoi(args.at(0));
-	PRINT_LOG("Executing write to LBA %d", lba);
+	int lba = std::stoi(args.at(ARG_IDX_LBA));
+	PRINT_LOG("Executing read to LBA %d", lba);
 	std::cout << "Executing read from LBA " << lba << std::endl;
 	read(lba);
     return true;
@@ -30,8 +30,8 @@ void ReadCommand::ssdReadAndPrint(int addr)
 
 bool WriteCommand::execute(const std::vector<std::string>& args)
 {
-	int lba = std::stoi(args.at(0));
-	std::string value = args.at(1);
+	int lba = std::stoi(args.at(ARG_IDX_LBA));
+	std::string value = args.at(ARG_IDX_VALUE);
 	PRINT_LOG("Executing write to LBA %d with value %s", lba, value);
 	std::cout << "Executing write to LBA " << lba << " with value " << value << std::endl;
 	write(lba, value);
@@ -77,7 +77,7 @@ void FullReadCommand::fullRead()
 
 bool FullWriteCommand::execute(const std::vector<std::string>& args)
 {
-	std::string value = args.at(0);
+	std::string value = args.at(ARG_IDX_VALUE);
 	PRINT_LOG("Executing fullwrite with value");
 	std::cout << "Executing fullwrite with value " << value << std::endl;
 	fullWrite(value);
@@ -151,8 +151,8 @@ bool HelpCommand::execute(const std::vector<std::string>& args)
 
 bool EraseCommand::execute(const std::vector<std::string>& args)
 {
-	int lba = std::stoi(args.at(0));
-	int size = std::stoi(args.at(1));
+	int lba = std::stoi(args.at(ARG_IDX_LBA));
+	int size = std::stoi(args.at(ARG_IDX_SIZE));
 	std::cout << "Executing erase" << std::endl;
 	PRINT_LOG("Executing erase");
 	erase(lba, size);
@@ -203,8 +203,8 @@ void EraseCommand::parseSizeAndErase(int lba, int size)
 
 bool EraseRangeCommand::execute(const std::vector<std::string>& args)
 {
-	int startLba = std::stoi(args.at(0));
-	int endLba = std::stoi(args.at(1));
+	int startLba = std::stoi(args.at(ARG_IDX_START_LBA));
+	int endLba = std::stoi(args.at(ARG_IDX_END_LBA));
 	std::cout << "Executing erase_range" << std::endl;
 	PRINT_LOG("Executing erase_range");
 	eraseRange(startLba, endLba);
