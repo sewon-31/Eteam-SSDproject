@@ -68,7 +68,7 @@ CommandBuffer::optimizeBuffer()
 
 	std::cout << "buf_size" << buf_size << "\n";
 
-
+#if 0
 	if (type == CmdType::WRITE) {
 		std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
 
@@ -79,6 +79,7 @@ CommandBuffer::optimizeBuffer()
 	}
 	//cmd->getLBA
 		//cmd->getLBA
+#endif
 	return true;
 }
 
