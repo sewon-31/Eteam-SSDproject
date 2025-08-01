@@ -102,8 +102,8 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector, NandData& st
 		return std::make_shared<WriteCommand>(storage, lba, commandVector.at(VAL));
 	}
 	else if (opCommand == CMD_ERASE) {
-		int end = lba + std::stoi(commandVector.at(SIZE)) - 1;
-		return std::make_shared<EraseCommand>(storage, lba, end);
+		int size = std::stoi(commandVector.at(SIZE));
+		return std::make_shared<EraseCommand>(storage, lba, size);
 	}
 	else {
 		return nullptr;

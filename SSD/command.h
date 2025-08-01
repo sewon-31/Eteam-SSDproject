@@ -72,12 +72,12 @@ private:
 class EraseCommand : public BaseCommand
 {
 public:
-    EraseCommand(NandData& storage, int lba, int end);
+    EraseCommand(NandData& storage, int lba, int size);
 
 	void run(string& result) override;
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
 
 private:
-    int end;
+    int size;
 };
