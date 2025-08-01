@@ -113,7 +113,7 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector)
 		return std::make_shared<EraseCommand>(lba, size);
 	}
 	else if (opCommand == CMD_FLUSH) {
-		return std::make_shared<FlushCommand>(-1);	// put garbage value to lba
+		return std::make_shared<FlushCommand>();
 	}
 	else {
 		return nullptr;

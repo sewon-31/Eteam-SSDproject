@@ -21,7 +21,7 @@ public:
 		ERASE = 2
 	};
 
-	BaseCommand(int lba);
+	BaseCommand(int lba = -1);
 	int getLBA() const;
 };
 
