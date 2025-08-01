@@ -163,11 +163,27 @@ void EraseCommand::erase(int lba, int size) {
 			size = 100 - lba;
 		}
 
-		ssd->erase(lba, size);
+		parseSizeAndErase(size, lba);
+
 		std::cout << "[ERASE] Done" << std::endl;
 	}
 	catch (SSDExecutionException& e) {
 		std::cout << "[ERASE] Fail" << std::endl;
+	}
+}
+
+void EraseCommand::parseSizeAndErase(int size, int lba)
+{
+	while (size > 0) {
+		if (size > 10) {
+			ssd->erase(lba, 10);
+			lba = lba + 10;
+			size = size - 10;
+		}
+		else {
+			ssd->erase(lba, size);
+			size = 0;
+		}
 	}
 }
 
