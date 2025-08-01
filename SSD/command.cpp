@@ -18,9 +18,9 @@ ReadCommand::run(string& result)
 {
 	storage.clear();
 
-	string readData = fastReadFromBuffer();
+	result = fastReadFromBuffer();
 
-	if (readData == INVALID) {
+	if (result == INVALID) {
 		storage.updateFromFile();
 		execute(result);
 	}
