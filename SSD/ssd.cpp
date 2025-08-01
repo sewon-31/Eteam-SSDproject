@@ -7,7 +7,8 @@
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
 	: outputFile(outputPath),
-	storage(NandData::getInstance())
+	storage(NandData::getInstance()),
+	cmdBuf(CommandBuffer::getInstance())
 {
 }
 
@@ -18,43 +19,25 @@ SSD::run(vector<string> commandVector)
 		builder = std::make_shared<SSDCommandBuilder>();
 	}
 
-	CommandBuffer cmdBuf;
-	cmdBuf.Init();
+	string result("");
 
-	// parse command
+	// create command (validity check included)
 	auto cmd = builder->createCommand(commandVector);
 	if (cmd == nullptr) {
 		updateOutputFile("ERROR");
 		return;
 	}
 
-	string result("");
-#if 1
-	if (cmd->getCmdType() == CmdType::READ) {
-	    cmd->run(result);
-	}
-	else {
-		int bufSize = cmdBuf.getBufferSize();
+	cmdBuf.Init();
 
-		if (bufSize == 0) {
-			cmdBuf.addCommand(cmd);
-		}
-		else if (bufSize == CommandBuffer::BUFFER_MAX) {
-			cmdBuf.flushBuffer();
-			cmdBuf.addCommand(cmd);
-		}
-		else {
-			cmdBuf.addCommand(cmd);
-			cmdBuf.optimizeBuffer();
-		}
+	auto type = cmd->getCmdType();
+	if (type == CmdType::READ || type == CmdType::FLUSH)
+	{
+		cmd->run(result);
 	}
-#else
-
-    //if (cmd->getCmdType() == CmdType::READ) {
-    cmd->run(result);
-    //}
-    //else {
-        //int bufSize = cmdBuf.getBufferSize();
+	else if (type == CmdType::WRITE || type == CmdType::ERASE) {
+		cmdBuf.addCommand(cmd);
+	}
 
         //if (bufSize == 0) {
         //	cmdBuf.addCommand(cmd);
@@ -76,7 +59,7 @@ SSD::run(vector<string> commandVector)
 	}
 }
 
-bool 
+bool
 SSD::updateOutputFile(const string& result)
 {
 	outputFile.fileClear();
@@ -112,15 +95,23 @@ SSD::setBuilder(std::shared_ptr<SSDCommandBuilder> builder)
 	this->builder = builder;
 }
 
-NandData& 
+NandData&
 SSD::getStorage()
 {
 	return storage;
 }
 
-FileInterface&
-SSD::getOutputFile() 
+void
+SSD::clearBufferAndDirectory()
 {
+	cmdBuf.clearBuffer();
+	cmdBuf.updateToDirectory();
+}
+
+void
+SSD::clearBuffer()
+{
+	cmdBuf.clearBuffer();
 	return outputFile;
 }
 
@@ -301,5 +292,4 @@ SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
     int newCMDCount = reduceCMDBufferMerge(in, out, 6);
 
     return newCMDCount;
-
 }

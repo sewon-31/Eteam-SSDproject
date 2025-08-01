@@ -9,6 +9,12 @@
 
 namespace fs = std::filesystem;
 
+CommandBuffer&
+CommandBuffer::getInstance(const std::string& dirPath) {
+	static CommandBuffer instance(dirPath);
+	return instance;
+}
+
 CommandBuffer::CommandBuffer(const string& dirPath)
     : bufferDirPath(dirPath)
 {
@@ -33,13 +39,28 @@ CommandBuffer::getBuffer() const
     return buffer;
 }
 
-int
+void
 CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
 {
-    buffer.push_back(command);
-    optimizeBuffer();
+	int bufSize = buffer.size();
 
-    return buffer.size();
+	if (bufSize == 0) {
+		addCommandToBuffer(command);
+	}
+	else if (bufSize == CommandBuffer::BUFFER_MAX) {
+		flushBuffer();
+		addCommandToBuffer(command);;
+	}
+	else {
+		addCommandToBuffer(command);
+		optimizeBuffer();
+	}
+}
+
+void
+CommandBuffer::clearBuffer()
+{
+	buffer.clear();
 }
 
 void
@@ -52,8 +73,14 @@ CommandBuffer::flushBuffer()
         cmd->execute(result);
     }
 
-    NandData::getInstance().updateToFile();
-    buffer.clear();
+	NandData::getInstance().updateToFile();
+	clearBuffer();
+}
+
+void
+CommandBuffer::addCommandToBuffer(std::shared_ptr<ICommand> command)
+{
+	buffer.push_back(command);
 }
 
 bool
@@ -209,61 +236,59 @@ CommandBuffer::updateFromDirectory()
 void
 CommandBuffer::updateToDirectory()
 {
-    if (buffer.size() > BUFFER_MAX) {
-        std::cout << "vector size error" << std::endl;
-    }
-    if (buffer.size() > 0) {
-        for (int i = 1; i <= buffer.size(); ++i) {
-            string filePath = bufferDirPath + "/" + std::to_string(i) + "_";
-            auto cmd = buffer.at(i - 1);
-            if (cmd == nullptr) {
-                filePath += EMPTY;
-            }
-            else {
-                // concat type, lba, value/size
-                auto type = cmd->getCmdType();
-                string lbaStr = std::to_string(cmd->getLBA());
+	// delete all the files
+	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
+		if (fs::is_regular_file(file.path())) {
+			fs::remove(file.path());
+		}
+	}
 
-                if (type == CmdType::WRITE) {
-                    filePath += "W_" + lbaStr + "_";
+	if (buffer.size() > BUFFER_MAX) {
+		std::cout << "vector size error" << std::endl;
+	}
 
-                    std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
-                    if (wCmdPtr) {
-                        filePath += wCmdPtr->getValue();
-                    }
-                }
-                if (type == CmdType::ERASE) {
-                    filePath += "E_" + lbaStr + "_";
-                    std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
-                    if (eCmdPtr) {
-                        filePath += eCmdPtr->getSize();
-                    }
-                }
-            }
+	// create cmd file
+	if (buffer.size() > 0) {
+		for (int i = 1; i <= buffer.size(); ++i) {
+			string filePath = bufferDirPath + "/" + std::to_string(i) + "_";
+			auto cmd = buffer.at(i - 1);
+			if (cmd == nullptr) {
+				filePath += EMPTY;
+			}
+			else {
+				// concat type, lba, value/size
+				auto type = cmd->getCmdType();
+				string lbaStr = std::to_string(cmd->getLBA());
 
-            // create file
-            std::ofstream file(filePath);
-            if (!file) {
+				if (type == CmdType::WRITE) {
+					filePath += "W_" + lbaStr + "_";
+
+					std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+					if (wCmdPtr) {
+						filePath += wCmdPtr->getValue();
+					}
+				}
+				if (type == CmdType::ERASE) {
+					filePath += "E_" + lbaStr + "_";
+					std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+					if (eCmdPtr) {
+						filePath += std::to_string(eCmdPtr->getSize());
+					}
+				}
+			}
+
+			// create file
+			std::ofstream file(filePath);
+			if (!file) {
 #if _DEBUG
-                std::cout << "Failed to create " << filePath << std::endl;
+				std::cout << "Failed to create " << filePath << std::endl;
 #endif
-            }
-        }
-    }
-    for (int i = buffer.size() + 1; i <= BUFFER_MAX; ++i) {
-        string filePath = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
+			}
+		}
+	}
 
-        // create file
-        std::ofstream file(filePath);
-        if (!file) {
-#if _DEBUG
-            std::cout << "Failed to create " << filePath << std::endl;
-#endif
-        }
-    }
-}
-
-//#define PRINT_DEBUG 1
+	for (int i = buffer.size() + 1; i <= BUFFER_MAX; ++i) {
+		string filePath = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
 
 int
 CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) {

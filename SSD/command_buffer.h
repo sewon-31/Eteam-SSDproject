@@ -1,5 +1,5 @@
 #pragma once
-#include "command.h"
+#include "command_interface.h"
 
 #include <vector>
 #include <memory>
@@ -20,15 +20,17 @@ public:
 class CommandBuffer
 {
 public:
-	CommandBuffer(const string& dirPath = "../buffer/");
+	static CommandBuffer& getInstance(const string& dirPath = "../buffer");
 
 	void Init();
 	void updateToDirectory();
 
 	int getBufferSize() const;
 	const vector<std::shared_ptr<ICommand>>& getBuffer() const;
-	int addCommand(std::shared_ptr<ICommand> command);
+	
+	void addCommand(std::shared_ptr<ICommand> command);
 
+	void clearBuffer();
 	void flushBuffer();
 	bool optimizeBuffer();
 
@@ -36,6 +38,11 @@ public:
 	static constexpr const char* EMPTY = "empty";
 
 private:
+	CommandBuffer(const string& dirPath);
+	CommandBuffer(const CommandBuffer&) = delete;
+
+	void addCommandToBuffer(std::shared_ptr<ICommand> command);
+
 	void initDirectory();
 	void updateFromDirectory();
 	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out);

@@ -60,26 +60,15 @@ void TestShell::runScript(std::string filename)
     fileUtil.readAllLines(filename, commandList);
 
     for (auto opCommand : commandList) {
-        Command* command;
         vector<string> commandVector = { opCommand };
 
         string log = opCommand + "   ___   Run ... ";
         cout << log;
         PRINT_LOG(log.c_str());
 
-        if (opCommand == CommandParser::CMD_SCRIPT1 || opCommand == CommandParser::CMD_SCRIPT1_NAME) {
-            command = new ScriptsFullWriteAndReadCompare(ssd);
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT2 || opCommand == CommandParser::CMD_SCRIPT2_NAME) {
-            command = new ScriptsPartialLBAWrite(ssd);
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT3 || opCommand == CommandParser::CMD_SCRIPT3_NAME) {
-            command = new ScriptsWriteReadAging(ssd);
-        }
-        else if (opCommand == CommandParser::CMD_SCRIPT4 || opCommand == CommandParser::CMD_SCRIPT4_NAME) {
-            command = new ScriptsEraseAndWriteAging(ssd);
-        }
-        else {
+        std::unique_ptr<Command> command = CommandFactory::createScriptCommand(commandVector, ssd);
+
+       if(command == nullptr) {
             cout << FAIL;
             break;
         }

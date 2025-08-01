@@ -74,11 +74,10 @@ public:
 
 protected:
     void erase(int lba, int size);
+    void parseSizeAndErase(int lba, int size);
 
 private:
     SSDInterface* ssd;
-
-    void parseSizeAndErase(int size, int lba);
 };
 
 class EraseRangeCommand : public EraseCommand {

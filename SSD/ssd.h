@@ -30,7 +30,6 @@ public:
 	void writeData(int lba, const string& value);
 	void clearData();
 	void setBuilder(std::shared_ptr<SSDCommandBuilder> builder);
-	FileInterface& getOutputFile();
 	NandData& getStorage();
 	int reduceCMDBuffer(TEST_CMD in, TEST_CMD& out);
 
@@ -38,6 +37,7 @@ private:
 	int reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
 
 	NandData& storage;
+	CommandBuffer& cmdBuf;
 	FileInterface outputFile;
 	std::shared_ptr<SSDCommandBuilder> builder;
 
