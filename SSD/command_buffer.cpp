@@ -8,6 +8,7 @@
 #include <sstream>
 
 namespace fs = std::filesystem;
+#define PRINT_DEBUG
 
 CommandBuffer&
 CommandBuffer::getInstance(const std::string& dirPath) {
@@ -362,23 +363,34 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out)
         // Check E and W
         if (virtual_op[idx_iba] != OP_NULL) {
             if (continue_E_CMD == 0) {
-                if (virtual_op[idx_iba] == OP_E)
+                temp.lba[newCMDCount] = idx_iba;
+                temp.size[newCMDCount] = 1;
+
+                if (virtual_op[idx_iba] == OP_E){
                     temp.op[newCMDCount] = CmdType::ERASE;
+                    continue_E_CMD = 1;
+                }
                 else {
                     temp.op[newCMDCount] = CmdType::WRITE;
                     temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                    newCMDCount++;
                 }
-                temp.lba[newCMDCount] = idx_iba;
-                temp.size[newCMDCount] = 1;
-                //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-                continue_E_CMD = 1;
             }
             else {
-                temp.size[newCMDCount]++;
-                continue_E_CMD++;
-                if (continue_E_CMD == 10) {
-                    continue_E_CMD = 0;
+                if (virtual_op[idx_iba] == OP_E) {
+                    temp.size[newCMDCount]++;
+                    continue_E_CMD++;
+                    if (continue_E_CMD == 10) {
+                        continue_E_CMD = 0;
+                        newCMDCount++;
+                    }
+                }
+                else {
                     newCMDCount++;
+                    temp.op[newCMDCount] = CmdType::WRITE;
+                    temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
+                    newCMDCount++;
+                    continue_E_CMD = 0;
                 }
             }
             continue;
@@ -390,12 +402,13 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out)
     }
 #ifdef  PRINT_DEBUG
     // display
+    std::cout << "after merge erase" << std::endl;
     for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
         std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
     }
     std::cout << "\n";
 #endif
-
+#if 0
     int hit = 0;
     for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
         if (in.op[idx_cb_in] == CmdType::WRITE && in.data[idx_cb_in] != "0x00000000") {
@@ -406,8 +419,14 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out)
                         hit = 1;
                     }
                 }
+                else if ((temp.lba[idx_cb_out] <= in.lba[idx_cb_in]) 
+                    && (temp.lba[idx_cb_out] + temp.size[idx_cb_out] > in.lba[idx_cb_in])) {
+
+                    if ((virtual_op[temp.lba[idx_cb_out]] != OP_E) && (virtual_op[temp.lba[idx_cb_out]] != OP_NULL))
+                    hit = 1;
+                }
             }
-            if (!hit) {
+            if (hit) {
                 temp.op[newCMDCount] = CmdType::WRITE;
                 temp.lba[newCMDCount] = in.lba[idx_cb_in];
                 temp.size[newCMDCount] = 1;
@@ -416,6 +435,7 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out)
             }
         }
     }
+#endif
 #ifdef  PRINT_DEBUG
     // display
     for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
@@ -423,6 +443,7 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out)
     }
     std::cout << "\n";
 #endif
+
     int idx = 0;
     for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
         if (temp.op[idx_iba] == CmdType::ERASE)
