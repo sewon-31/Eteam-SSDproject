@@ -16,6 +16,7 @@ public:
 	void Init();
 	void updateToDirectory();
 
+	int getBufferSize() const;
 	const vector<std::shared_ptr<ICommand>>& getBuffer() const;
 	int addCommand(std::shared_ptr<ICommand> command);
 

@@ -34,7 +34,19 @@ SSD::run(vector<string> commandVector)
 	cmd->run(result);
 	//}
 	//else {
-		// add to buffer
+		//int bufSize = cmdBuf.getBufferSize();
+
+		//if (bufSize == 0) {
+		//	cmdBuf.addCommand(cmd);
+		//}
+		//else if (bufSize == CommandBuffer::BUFFER_MAX) {
+		//	cmdBuf.flushBuffer();
+		//	cmdBuf.addCommand(cmd);
+		//}
+		//else {
+		//	cmdBuf.addCommand(cmd);
+		//	cmdBuf.optimizeBuffer();
+		//}
 	//}
 
 	cmdBuf.updateToDirectory();

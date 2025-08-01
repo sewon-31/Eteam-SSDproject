@@ -21,6 +21,12 @@ CommandBuffer::Init()
 	updateFromDirectory();
 }
 
+int
+CommandBuffer::getBufferSize() const
+{
+	return buffer.size();
+}
+
 const std::vector<std::shared_ptr<ICommand>>&
 CommandBuffer::getBuffer() const
 {
@@ -150,22 +156,13 @@ CommandBuffer::updateToDirectory()
 		std::cout << "vector size error" << std::endl;
 	}
 
-	for (int i = 1; i <= BUFFER_MAX; ++i) {
+	for (int i = 1; i <= buffer.size(); ++i) {
 		string filePath = bufferDirPath + "/" + std::to_string(i) + "_";
-
 		auto cmd = buffer.at(i);
 		if (cmd == nullptr) {
 			filePath += EMPTY;
-			std::ofstream file(filePath);
-			if (!file) {
-#if _DEBUG
-				std::cout << "Failed to create " << filePath << std::endl;
-#endif
-			}
-			continue;
 		}
 		else {
-
 			// concat type, lba, value/size
 			auto type = cmd->getCmdType();
 			string lbaStr = std::to_string(cmd->getLBA());
@@ -186,6 +183,18 @@ CommandBuffer::updateToDirectory()
 				}
 			}
 		}
+
+		// create file
+		std::ofstream file(filePath);
+		if (!file) {
+#if _DEBUG
+			std::cout << "Failed to create " << filePath << std::endl;
+#endif
+		}
+	}
+
+	for (int i = buffer.size()+1; i <= BUFFER_MAX; ++i) {
+		string filePath = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
 
 		// create file
 		std::ofstream file(filePath);
