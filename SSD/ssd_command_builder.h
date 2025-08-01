@@ -34,8 +34,10 @@ public:
 	static constexpr const char* CMD_READ = "R";
 	static constexpr const char* CMD_WRITE = "W";
 	static constexpr const char* CMD_ERASE = "E";
+	static constexpr const char* CMD_FLUSH = "F";
 
 private:
+	bool isValidOp(const string& opStr) const;
 	bool isValidValue(const string& valueStr) const;
 	bool isValidLBA(int lba, int size = 0) const;
 	bool isValidSize(int size) const;

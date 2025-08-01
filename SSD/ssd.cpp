@@ -30,23 +30,13 @@ SSD::run(vector<string> commandVector)
 
 	string result("");
 
-	//if (cmd->getCmdType() == CmdType::READ) {
+	auto type = cmd->getCmdType();
+	//if (type == CmdType::READ || type == CmdType::FLUSH
+	//{
 	cmd->run(result);
 	//}
-	//else {
-		//int bufSize = cmdBuf.getBufferSize();
-
-		//if (bufSize == 0) {
-		//	cmdBuf.addCommand(cmd);
-		//}
-		//else if (bufSize == CommandBuffer::BUFFER_MAX) {
-		//	cmdBuf.flushBuffer();
-		//	cmdBuf.addCommand(cmd);
-		//}
-		//else {
-		//	cmdBuf.addCommand(cmd);
-		//	cmdBuf.optimizeBuffer();
-		//}
+	//else if(type==CmdType::WRITE || type ==CmdType::ERASE {
+		//cmdBuf.addCommand(cmd);
 	//}
 
 	cmdBuf.updateToDirectory();

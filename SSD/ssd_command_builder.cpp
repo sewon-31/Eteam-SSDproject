@@ -1,7 +1,6 @@
 #include "ssd_command_builder.h"
 
 #include <sstream>
-#include <iostream>
 #include <regex>
 
 using std::istringstream;
@@ -23,15 +22,23 @@ SSDCommandBuilder::isValidCommand() const
 {
 	try {
 		// check parameter count
-		if (commandVector.size() < MAX_ARG_LENGTH - 1
+		if (commandVector.size() < MAX_ARG_LENGTH - 2
 			|| commandVector.size() > MAX_ARG_LENGTH) {
 			return false;
 		}
 
 		// check operation command
 		string opCommand = commandVector.at(OP);
-		if (opCommand != CMD_READ && opCommand != CMD_WRITE && opCommand != CMD_ERASE) {
+		if (!isValidOp(opCommand)) {
 			return false;
+		}
+
+		// for flush, just check parameter count and return
+		if (opCommand == CMD_FLUSH) {
+			if (commandVector.size() != MAX_ARG_LENGTH - 2) {
+				return false;
+			}
+			return true;
 		}
 
 		// check parameter count for each operation case
@@ -105,9 +112,25 @@ SSDCommandBuilder::createCommand(vector<string> inputCommandVector)
 		int size = std::stoi(commandVector.at(SIZE));
 		return std::make_shared<EraseCommand>(lba, size);
 	}
+	else if (opCommand == CMD_FLUSH) {
+		return std::make_shared<FlushCommand>(-1);	// put garbage value to lba
+	}
 	else {
 		return nullptr;
 	}
+}
+
+bool
+SSDCommandBuilder::isValidOp(const string& opStr) const
+{
+	if (opStr == CMD_READ 
+		|| opStr == CMD_WRITE 
+		|| opStr == CMD_ERASE
+		|| opStr == CMD_FLUSH ) {
+		return true;
+	}
+
+	return false;
 }
 
 bool

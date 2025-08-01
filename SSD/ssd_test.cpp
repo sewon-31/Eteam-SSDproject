@@ -16,7 +16,7 @@ public:
 	MOCK_METHOD(int, getLBA, (), (const, override));
 };
 
-class MockParser : public SSDCommandBuilder {
+class MockBuilder : public SSDCommandBuilder {
 public:
 	MOCK_METHOD(void, setCommandVector, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
@@ -29,33 +29,36 @@ class SSDTestFixture : public Test
 protected:
 	void SetUp() override {
 		mockCmd = std::make_shared<MockCommand>();
-		mockParser = std::make_shared<MockParser>();
+		mockBuilder = std::make_shared<MockBuilder>();
 	}
 
 public:
 	std::shared_ptr<MockCommand> mockCmd;
-	std::shared_ptr<MockParser> mockParser;
+	std::shared_ptr<MockBuilder> mockBuilder;
 
 	SSD app;
 	FileInterface& nandFile = app.getStorage().getNandFile();
 	FileInterface& outputFile = app.getOutputFile();
 
-	void processMockParserFunctions()
+	void processMockBuilderFunctions()
 	{
-		app.setBuilder(mockParser);
-		EXPECT_CALL(*mockParser, isValidCommand)
+		app.setBuilder(mockBuilder);
+		EXPECT_CALL(*mockBuilder, isValidCommand)
 			.WillRepeatedly(Return(true));
 	}
 };
 
 TEST_F(SSDTestFixture, RunExecutesCommand) {
-	processMockParserFunctions();
+	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "R", "0" };
 
-	EXPECT_CALL(*mockParser, createCommand(input))
+	EXPECT_CALL(*mockBuilder, createCommand(input))
 		.WillOnce(Return(mockCmd));
 
+	EXPECT_CALL(*mockCmd, getCmdType)
+		.WillOnce(Return(CmdType::READ));
+		
 	EXPECT_CALL(*mockCmd, run)
 		.Times(1);
 
@@ -63,12 +66,12 @@ TEST_F(SSDTestFixture, RunExecutesCommand) {
 }
 
 TEST_F(SSDTestFixture, GetInvalidCommandTest) {
-	processMockParserFunctions();
+	processMockBuilderFunctions();
 
-	EXPECT_CALL(*mockParser, isValidCommand)
+	EXPECT_CALL(*mockBuilder, isValidCommand)
 		.WillRepeatedly(Return(false));
 
-	EXPECT_CALL(*mockParser, createCommand)
+	EXPECT_CALL(*mockBuilder, createCommand)
 		.Times(1);
 
 	EXPECT_CALL(*mockCmd, execute)
@@ -80,7 +83,7 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 // cannot run GetCommandTest anymore
 TEST_F(SSDTestFixture, DISABLED_GetCommandTest) {
 	vector<string> input = { "R", "0" };
-	EXPECT_CALL(*mockParser, getCommandVector())
+	EXPECT_CALL(*mockBuilder, getCommandVector())
 		.WillRepeatedly(Return(input));
 
 	app.run(input);
@@ -91,7 +94,7 @@ TEST_F(SSDTestFixture, DISABLED_GetCommandTest) {
 
 // cannot run ReadTest anymore
 TEST_F(SSDTestFixture, DISABLED_ReadTest) {
-	processMockParserFunctions();
+	processMockBuilderFunctions();
 
 	vector<string> input = { "R", "0" };
 	app.run(input);
@@ -111,10 +114,10 @@ TEST_F(SSDTestFixture, DISABLED_ReadTest) {
 
 // cannot run WriteText anymore
 TEST_F(SSDTestFixture, DISABLED_WriteText) {
-	processMockParserFunctions();
+	processMockBuilderFunctions();
 
 	vector<string> input = { "W", "0", "0x11112222" };
-	EXPECT_CALL(*mockParser, getCommandVector())
+	EXPECT_CALL(*mockBuilder, getCommandVector())
 		.WillRepeatedly(Return(input));
 
 	app.run(input);

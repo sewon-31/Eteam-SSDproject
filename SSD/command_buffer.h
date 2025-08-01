@@ -18,8 +18,10 @@ public:
 
 	int getBufferSize() const;
 	const vector<std::shared_ptr<ICommand>>& getBuffer() const;
-	int addCommand(std::shared_ptr<ICommand> command);
+	
+	void addCommand(std::shared_ptr<ICommand> command);
 
+	void clearBuffer();
 	void flushBuffer();
 	bool optimizeBuffer();
 
@@ -27,6 +29,8 @@ public:
 	static constexpr const char* EMPTY = "empty";
 
 private:
+	void addCommandToBuffer(std::shared_ptr<ICommand> command);
+
 	void initDirectory();
 	void updateFromDirectory();
 

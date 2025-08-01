@@ -9,10 +9,13 @@
 
 using std::string;
 
+class CommandBuffer;
+
 enum class CmdType {
 	READ = 0,
 	WRITE,
 	ERASE,
+	FLUSH
 };
 
 // ICommand (abstract class)
@@ -52,8 +55,6 @@ public:
 	void run(string& result) override;
 	void execute(string& result) override;
 	CmdType getCmdType() const override;
-
-	std::vector<std::shared_ptr<ICommand>> buffers;
 };
 
 // WriteCommand
@@ -86,4 +87,15 @@ public:
 
 private:
     int size;
+};
+
+// FlushCommand
+class FlushCommand : public BaseCommand
+{
+public:
+	using BaseCommand::BaseCommand;
+
+	void run(string& result) override;
+	void execute(string& result) override;
+	CmdType getCmdType() const override;
 };
