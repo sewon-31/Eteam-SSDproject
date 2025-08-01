@@ -23,14 +23,14 @@ CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
 void
 CommandBuffer::flushBuffer()
 {
-	ssd.getStorage().updateFromFile();
+	//ssd.getStorage().updateFromFile();
 
 	string result;
 	for (auto cmd : buffer) {
 		cmd->execute(result);
 	}
 
-	ssd.getStorage().updateToFile();
+	//ssd.getStorage().updateToFile();
 
 	buffer.clear();
 }

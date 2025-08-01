@@ -48,6 +48,9 @@
     <ClCompile Include="nand_data.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="command_buffer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd_command_builder.h">
@@ -63,6 +66,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="nand_data.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="command_buffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

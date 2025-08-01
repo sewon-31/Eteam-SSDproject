@@ -22,7 +22,6 @@ public:
 private:
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	FileInterface file;
-	SSD& ssd;
 
 	bool optimizeBuffer();
 };
