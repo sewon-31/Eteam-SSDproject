@@ -1,9 +1,11 @@
+#pragma once
 #include "ssd_command_builder.h"
-#include "file_interface.h"
 #include "nand_data.h"
 #include "command.h"
-
+#include "command_buffer.h"
 #include <memory>
+#include <string>
+#include <vector>
 
 using std::string;
 
@@ -35,13 +37,14 @@ public:
 	void clearBuffer();
 
 	int reduceCMDBufferTest(TEST_CMD in, TEST_CMD& out);
+
 private:
 	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount);
 
 	NandData& storage;
 	CommandBuffer& cmdBuf;
-	FileInterface outputFile;
 	std::shared_ptr<SSDCommandBuilder> builder;
+	string outputPath;
 
 	static const int nandFileSize = 1200;
 };
