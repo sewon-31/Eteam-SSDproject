@@ -14,7 +14,6 @@ public:
 	int lba[6];
 	int size[6];
 	string data[6];
-
 };
 
 class CommandBuffer

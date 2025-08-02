@@ -305,7 +305,7 @@ TEST_F(SSDTestFixture, reduceCMD_REPLACE_W0_TO_E) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(6, ret);
 
 	string op_res[6] = { "E", "E", "E", "E", "W", "W" };
@@ -345,7 +345,7 @@ TEST_F(SSDTestFixture, reduceCMD_MERCE_SEQ_CMD) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(5, ret);
 
 	string op_res[6] = { "E","E","E","W","W" };
@@ -385,7 +385,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS_RANGE_OVER) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(6, ret);
 
 	string op_res[6] = { "E", "E", "E", "E", "W", "W" };
@@ -424,7 +424,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_NULL_CHECK) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "E", "W"};
@@ -463,7 +463,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS2_WR1_TO_ERS1_WR1) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(5, ret);
 
 	string op_res[6] = { "E", "E", "E", "W", "W" };
@@ -502,7 +502,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS3_WR2) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(5, ret);
 
 	string op_res[6] = { "E", "E", "E", "W", "W" };
@@ -542,7 +542,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS2_WR2) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "E", "E", "W", "W" };
@@ -582,7 +582,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_ERS4_WR2_TO_ERS2_WR1) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "E", "E", "W", "W" };
@@ -611,7 +611,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "E", "W", "W" };
@@ -655,7 +655,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_2) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "E", "E", "W", "W" };
@@ -695,7 +695,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_EWNE_3) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(5, ret);
 
 	string op_res[6] = { "E", "E", "W", "W", "W" };
@@ -724,7 +724,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_00) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "E", "E", "W" };
@@ -753,7 +753,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_01) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "E", "W", "W" };
@@ -782,7 +782,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_02) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "E", "E", "W", "W" };
@@ -811,7 +811,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_03) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "E", "E", "W", "W" };
@@ -840,7 +840,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_04) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "E", "E" };
@@ -869,7 +869,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_05) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "E", "E", "W" };
@@ -898,7 +898,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_06) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(4, ret);
 
 	string op_res[6] = { "E", "E", "W", "W" };
@@ -927,7 +927,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_07) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "E", "E", "W" };
@@ -956,7 +956,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_08) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(3, ret);
 
 	string op_res[6] = { "E", "E", "W" };
@@ -985,7 +985,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_09) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "E", "W" };
@@ -1014,7 +1014,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_10) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "E", "W" };
@@ -1043,7 +1043,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_11) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "E", "W" };
@@ -1072,7 +1072,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_12) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "E", "W" };
@@ -1101,7 +1101,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_13) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(1, ret);
 
 	string op_res[6] = { "E" };
@@ -1130,7 +1130,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_BUGCASE2) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(2, ret);
 
 	string op_res[6] = { "W", "W" };
@@ -1159,7 +1159,7 @@ TEST_F(SSDTestFixture, reduceCMD_TC1_BUGCASE) {
 		test_in.data[i] = data[i];
 	}
 
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(1, ret);
 
 	string op_res[6] = { "E" };
@@ -1186,7 +1186,7 @@ TEST_F(SSDTestFixture, TestCommandBufferWriteAfterErase) {
 		test_in.size[i] = size[i];
 		test_in.data[i] = data[i];
 	}
-	int ret = app.reduceCMDBuffer(test_in, test_out);
+	int ret = app.reduceCMDBufferTest(test_in, test_out);
 	EXPECT_EQ(1, ret);
 
 	string op_res[6] = { "E" };
