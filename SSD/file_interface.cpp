@@ -84,7 +84,16 @@ int
 FileInterface::checkSize() 
 {
 	std::ofstream file(fileName, std::ios::app);
-	if (!file.is_open()) return 0;
+
+	if (file.is_open())
+		file.close();
+
+	file.open(fileName, std::ios::in | std::ios::out);
+
+	if (!file.is_open()) {
+		std::ofstream(fileName).close();
+		file.open(fileName, std::ios::in | std::ios::out);
+	}
 	
 	file.seekp(0, std::ios::end);
 	int size = static_cast<int>(file.tellp());

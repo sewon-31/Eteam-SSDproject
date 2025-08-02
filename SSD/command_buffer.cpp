@@ -16,27 +16,27 @@ CommandBuffer::getInstance(const std::string& dirPath) {
 }
 
 CommandBuffer::CommandBuffer(const string& dirPath)
-    : bufferDirPath(dirPath)
+	: bufferDirPath(dirPath)
 {
 }
 
 void
 CommandBuffer::Init()
 {
-    initDirectory();
-    updateFromDirectory();
+	initDirectory();
+	updateFromDirectory();
 }
 
 int
 CommandBuffer::getBufferSize() const
 {
-    return buffer.size();
+	return buffer.size();
 }
 
 const std::vector<std::shared_ptr<ICommand>>&
 CommandBuffer::getBuffer() const
 {
-    return buffer;
+	return buffer;
 }
 
 void
@@ -66,12 +66,12 @@ CommandBuffer::clearBuffer()
 void
 CommandBuffer::flushBuffer()
 {
-    NandData::getInstance().updateFromFile();
+	NandData::getInstance().updateFromFile();
 
-    string result;
-    for (auto cmd : buffer) {
-        cmd->execute(result);
-    }
+	string result;
+	for (auto cmd : buffer) {
+		cmd->execute(result);
+	}
 
 	NandData::getInstance().updateToFile();
 	clearBuffer();
@@ -86,94 +86,159 @@ CommandBuffer::addCommandToBuffer(std::shared_ptr<ICommand> command)
 bool
 CommandBuffer::optimizeBuffer()
 {
+	int bufSize = static_cast<int>(buffer.size());
+	CMD_BUF in;
+	CMD_BUF out;
+	int inBufIdx = 0;
+
+	for (int bufIdx = 0; bufIdx < bufSize; bufIdx++) {
+		auto cmd = buffer.at(bufIdx);
+		auto type = cmd->getCmdType();
+#ifdef PRINT_DEBUG_CMDB
+		std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
+#endif
+		if (type == CmdType::WRITE) {
+			std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+
+			in.op[inBufIdx] = cmd->getCmdType();
+			in.lba[inBufIdx] = cmd->getLBA();
+			in.data[inBufIdx] = wCmdPtr->getValue();
+			in.size[inBufIdx] = 1;
+#ifdef PRINT_DEBUG_CMDB
+			std::cout << "IN CMD -> WRITE" << " " << in.lba[inBufIdx] << " " << in.data[inBufIdx] << "\n";
+#endif
+			inBufIdx++;
+		}
+		if (type == CmdType::ERASE) {
+			std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+			in.op[inBufIdx] = cmd->getCmdType();
+			in.lba[inBufIdx] = cmd->getLBA();
+			in.size[inBufIdx] = eCmdPtr->getSize();
+#ifdef PRINT_DEBUG_CMDB
+			std::cout << "IN CMD -> ERASE" << " " << in.lba[inBufIdx] << " " << in.size[inBufIdx] << "\n";
+#endif
+			inBufIdx++;
+		}
+	}
+
+	int new_buf_size = reduceCMDBuffer(in, out, inBufIdx);
+	if (new_buf_size < bufSize)
+	{
+		std::shared_ptr<SSDCommandBuilder> builder;
+
+		if (!builder) {
+			builder = std::make_shared<SSDCommandBuilder>();
+		}
+
+		buffer.clear();
+
+		for (int bufIdx = 0; bufIdx < new_buf_size; bufIdx++) {
+			if (out.op[bufIdx] == CmdType::WRITE) {
+				vector<string> commandVector = { "W" , std::to_string(out.lba[bufIdx])  , out.data[bufIdx] };
+				auto newCmd = builder->createCommand(commandVector);
+				buffer.push_back(newCmd);
+#ifdef PRINT_DEBUG_CMDB
+				std::cout << "OUT CMD -> WRITE" << " " << out.lba[bufIdx] << " " << out.data[bufIdx] << "\n";
+#endif
+			}
+			else if (out.op[bufIdx] == CmdType::ERASE) {
+				vector<string> commandVector = { "E" , std::to_string(out.lba[bufIdx])  , std::to_string(out.size[bufIdx]) };
+				auto newCmd = builder->createCommand(commandVector);
+				buffer.push_back(newCmd);
+#ifdef PRINT_DEBUG_CMDB
+				std::cout << "OUT CMD -> ERASE" << " " << out.lba[bufIdx] << " " << out.size[bufIdx] << "\n";
+#endif
+			}
+		}
+	}
 	return true;
 }
 
 void
 CommandBuffer::initDirectory()
 {
-    // create buffer directory (if needed)
-    bool bufferDirExists = fs::exists(bufferDirPath) && fs::is_directory(bufferDirPath);
+	// create buffer directory (if needed)
+	bool bufferDirExists = fs::exists(bufferDirPath) && fs::is_directory(bufferDirPath);
 
-    if (!bufferDirExists) {
-        if (fs::create_directory(bufferDirPath)) {
-            for (int i = 1; i <= BUFFER_MAX; ++i) {
-                string filePath = bufferDirPath + "/" + std::to_string(i) + "_empty";
-                std::ofstream file(filePath);
+	if (!bufferDirExists) {
+		if (fs::create_directory(bufferDirPath)) {
+			for (int i = 1; i <= BUFFER_MAX; ++i) {
+				string filePath = bufferDirPath + "/" + std::to_string(i) + "_empty";
+				std::ofstream file(filePath);
 
-                if (!file) {
+				if (!file) {
 #if _DEBUG
-                    std::cerr << "Failed to create " << filePath << std::endl;
+					std::cerr << "Failed to create " << filePath << std::endl;
 #endif
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 }
 
 void
 CommandBuffer::updateFromDirectory()
 {
-    // read file names from directory
-    vector<string> fileNames;
+	// read file names from directory
+	vector<string> fileNames;
 
-    for (const auto& file : fs::directory_iterator(bufferDirPath)) {
-        if (fs::is_regular_file(file.path())) {
-            fileNames.push_back(file.path().filename().string());
-        }
-    }
+	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
+		if (fs::is_regular_file(file.path())) {
+			fileNames.push_back(file.path().filename().string());
+		}
+	}
 
 #if _DEBUG
-    if (fileNames.size() != BUFFER_MAX) {
-        std::cout << "Why not 5 files?\n";
-    }
+	if (fileNames.size() != BUFFER_MAX) {
+		std::cout << "Why not 5 files?\n";
+	}
 #endif
 
-    // sort filenames
-    std::sort(fileNames.begin(), fileNames.end());
+	// sort filenames
+	std::sort(fileNames.begin(), fileNames.end());
 
-    SSDCommandBuilder builder;
+	SSDCommandBuilder builder;
 
-    auto startsWith = [](const string& str, const string& prefix) -> bool {
-        return str.compare(0, prefix.size(), prefix) == 0;
-        };
+	auto startsWith = [](const string& str, const string& prefix) -> bool {
+		return str.compare(0, prefix.size(), prefix) == 0;
+		};
 
-    int fileNum = 1;
-    for (const auto& fileName : std::as_const(fileNames)) {
-        string prefix = std::to_string(fileNum++) + "_";
-        if (startsWith(fileName, prefix)) {
-            string noPrefix = fileName.substr(prefix.length());
+	int fileNum = 1;
+	for (const auto& fileName : std::as_const(fileNames)) {
+		string prefix = std::to_string(fileNum++) + "_";
+		if (startsWith(fileName, prefix)) {
+			string noPrefix = fileName.substr(prefix.length());
 
-            if (noPrefix == EMPTY) {
-                break;
-            }
+			if (noPrefix == EMPTY) {
+				break;
+			}
 
-            vector<string> commandVector;
-            std::stringstream ss(noPrefix);
+			vector<string> commandVector;
+			std::stringstream ss(noPrefix);
 
-            string token;
-            while (std::getline(ss, token, '_')) {
-                commandVector.push_back(token);
-            }
+			string token;
+			while (std::getline(ss, token, '_')) {
+				commandVector.push_back(token);
+			}
 
-            auto cmd = builder.createCommand(commandVector);
-            if (cmd == nullptr) {
-                std::cout << "Commmand not created - " << noPrefix << std::endl;
-            }
-            buffer.push_back(cmd);
+			auto cmd = builder.createCommand(commandVector);
+			if (cmd == nullptr) {
+				std::cout << "Commmand not created - " << noPrefix << std::endl;
+			}
+			buffer.push_back(cmd);
 
-        }
-        else {
-            std::cout << "Weird file " << fileName << std::endl;
-        }
-    }
+		}
+		else {
+			std::cout << "Weird file " << fileName << std::endl;
+		}
+	}
 
-    // delete all the files
-    for (const auto& file : fs::directory_iterator(bufferDirPath)) {
-        if (fs::is_regular_file(file.path())) {
-            fs::remove(file.path());
-        }
-    }
+	// delete all the files
+	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
+		if (fs::is_regular_file(file.path())) {
+			fs::remove(file.path());
+		}
+	}
 }
 
 void
@@ -244,157 +309,129 @@ CommandBuffer::updateToDirectory()
 }
 
 int
-CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out) 
+CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount)
 {
-    int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
+	const int BUF_MAX = 100;
+	const int OP_NULL = 9;
+	const int OP_E = 7;
+	const int OP_W_MAX = 5;
 
-    const int OP_NULL = 9;
-    const int OP_E = 7;
-    const int OP_W_MAX = 5;
-    int cmdCount = 5;
+	// Step 1: Replace "W" commands with data "0x00000000" by "E" commands size=1
+	for (int i = 0; i < cmdCount; i++) {
+		if (in.op[i] == CmdType::WRITE && in.data[i] == "0x00000000") {
+			in.op[i] = CmdType::ERASE;
+			in.size[i] = 1;
+			in.data[i] = "";
+		}
+	}
 
-    CMD_BUF temp;
-    // 1. Replcae w iba "0x00000000" >  E iba
-    // 2. make virtual data 
-    // 3. Make CMD
-        //3-1. Make new CMD E range check and W
-        // display
+	// Step 2: Build virtualMap array
+	int virtualMap[BUF_MAX];
+	for (int i = 0; i < BUF_MAX; i++) {
+		virtualMap[i] = OP_NULL;
+	}
 
-#ifdef PRINT_DEBUG
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        std::cout << static_cast<int>(in.op[idx_cb]) << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
+	for (int i = 0; i < cmdCount; i++) {
+		if (in.op[i] == CmdType::WRITE) {
+			if (in.lba[i] < BUF_MAX)
+				virtualMap[in.lba[i]] = i;
+		}
+		else if (in.op[i] == CmdType::ERASE) {
+			for (int s = 0; s < in.size[i]; s++) {
+				int curLba = in.lba[i] + s;
+				if (curLba < BUF_MAX)
+					virtualMap[curLba] = OP_E;
+			}
+		}
+	}
+#ifdef _DEBUG
+	for (int idxLba = 0; idxLba < 100; idxLba++) {
+		if (virtualMap[idxLba] == OP_NULL)
+			std::cout << "." << " ";
+		else if (virtualMap[idxLba] == OP_E)
+			std::cout << "E" << " ";
+		else
+			std::cout << "W" << " ";
+
+		if (idxLba % 10 == 9)
+			std::cout << "\n";
+	}
 #endif
 
-    // step - 2
-    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        virtual_op[idx_iba] = OP_NULL;
-    }
+	// Step 3: Construct new commands (ERS_CMD and WR_CMD)
+	CMD_BUF ERS_CMD, WR_CMD;
+	int continueErsCMD = 0;
+	int ersCmdConunt = 0;
+	int wrCmdConunt = 0;
 
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        if (in.op[idx_cb] == CmdType::WRITE) {
-            virtual_op[in.lba[idx_cb]] = idx_cb;
-        }
-        else if (in.op[idx_cb] == CmdType::ERASE) {
-            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++)
-                virtual_op[in.lba[idx_cb] + idx_size] = OP_E;
-        }
-    }
-    // display
-    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        if (virtual_op[idx_iba] == OP_NULL)
-            std::cout << "N" << " ";
-        else if (virtual_op[idx_iba] == OP_E)
-            std::cout << "E" << " ";
-        else
-            std::cout << "W" << " ";
+	for (int idx_lba = 0; idx_lba < 100; idx_lba++) {
+		int vmp = virtualMap[idx_lba];
 
+		// Check E and W
+		if (vmp != OP_NULL) {
+			if (continueErsCMD == 0) {  // First erase range
+				if (vmp == OP_E) {  // First erase range + Construct new ERS commands 
+					ERS_CMD.op[ersCmdConunt] = CmdType::ERASE;
+					ERS_CMD.lba[ersCmdConunt] = idx_lba;
+					ERS_CMD.size[ersCmdConunt] = 1;
+					continueErsCMD = 1;
+				}
+				else {              // First erase range and WR command
+					WR_CMD.op[wrCmdConunt] = CmdType::WRITE;
+					WR_CMD.lba[wrCmdConunt] = idx_lba;
+					WR_CMD.size[wrCmdConunt] = 1;
+					WR_CMD.data[wrCmdConunt] = in.data[vmp];
+					wrCmdConunt++;
+				}
+			}
+			else {      // Erase range loop
+				ERS_CMD.size[ersCmdConunt]++;
+				continueErsCMD++;
+				if (vmp <= OP_W_MAX) {  // Construct new WR commands 
+					WR_CMD.op[wrCmdConunt] = CmdType::WRITE;
+					WR_CMD.lba[wrCmdConunt] = idx_lba;
+					WR_CMD.size[wrCmdConunt] = 1;
+					WR_CMD.data[wrCmdConunt] = in.data[vmp];
+					wrCmdConunt++;
+				}
 
-        if (idx_iba % 10 == 9)
-            std::cout << "\n";
-    }
+				// Check if erase range ends
+				bool erase_end = false;
+				if (continueErsCMD == 10)
+					erase_end = true;
+				else if (idx_lba == BUF_MAX - 1)
+					erase_end = true;
+				else if (virtualMap[idx_lba + 1] == OP_NULL)
+					erase_end = true;
 
-    // step - 3
-    int continue_E_CMD = 0;
-    int newCMDCount = 0;
+				if (erase_end) {
+					ersCmdConunt++;
+					continueErsCMD = 0;
+				}
+			}
+		}
+		else if (continueErsCMD > 0) {
+			continueErsCMD = 0;
+			ersCmdConunt++;
+		}
+	}
 
-    // step - 3-1
-    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        // Check E and W
-        if (virtual_op[idx_iba] != OP_NULL) {
-            if (continue_E_CMD == 0) {
-                if (virtual_op[idx_iba] == OP_E)
-                    temp.op[newCMDCount] = CmdType::ERASE;
-                else {
-                    temp.op[newCMDCount] = CmdType::WRITE;
-                    temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-                }
-                temp.lba[newCMDCount] = idx_iba;
-                temp.size[newCMDCount] = 1;
-                //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-                continue_E_CMD = 1;
-            }
-            else {
-                temp.size[newCMDCount]++;
-                continue_E_CMD++;
-                if (continue_E_CMD == 10) {
-                    continue_E_CMD = 0;
-                    newCMDCount++;
-                }
-            }
-            continue;
-        }
-        else if (continue_E_CMD > 0) {
-            continue_E_CMD = 0;
-            newCMDCount++;
-        }
-    }
-#ifdef  PRINT_DEBUG
-    // display
-    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
-#endif
+	// Step 3: Combine ERS_CMD and WR_CMD to out
+	int outCmdCount = 0;
+	for (int idx_lba = 0; idx_lba < ersCmdConunt; idx_lba++) {
+		out.op[outCmdCount] = ERS_CMD.op[idx_lba];
+		out.lba[outCmdCount] = ERS_CMD.lba[idx_lba];
+		out.size[outCmdCount] = ERS_CMD.size[idx_lba];
+		out.data[outCmdCount] = ERS_CMD.data[idx_lba];
+		outCmdCount++;
+	}
+	for (int idx_lba = 0; idx_lba < wrCmdConunt; idx_lba++) {
+		out.op[outCmdCount] = WR_CMD.op[idx_lba];
+		out.lba[outCmdCount] = WR_CMD.lba[idx_lba];
+		out.size[outCmdCount] = WR_CMD.size[idx_lba];
+		out.data[outCmdCount] = WR_CMD.data[idx_lba];
+		outCmdCount++;
+	}
 
-    int hit = 0;
-    for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
-        if (in.op[idx_cb_in] == CmdType::WRITE && in.data[idx_cb_in] != "0x00000000") {
-            hit = 0;
-            for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
-                if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
-                    if (temp.size[idx_cb_out] == 1) {
-                        hit = 1;
-                    }
-                }
-            }
-            if (!hit) {
-                temp.op[newCMDCount] = CmdType::WRITE;
-                temp.lba[newCMDCount] = in.lba[idx_cb_in];
-                temp.size[newCMDCount] = 1;
-                temp.data[newCMDCount] = in.data[idx_cb_in];
-                newCMDCount++;
-            }
-        }
-    }
-#ifdef  PRINT_DEBUG
-    // display
-    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << static_cast<int>(temp.op[idx_cb]) << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
-#endif
-    int idx = 0;
-    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
-        if (temp.op[idx_iba] == CmdType::ERASE)
-        {
-            out.op[idx] = temp.op[idx_iba];
-            out.lba[idx] = temp.lba[idx_iba];
-            out.size[idx] = temp.size[idx_iba];
-            out.data[idx] = temp.data[idx_iba];
-            idx++;
-        }
-    }
-    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
-        if (temp.op[idx_iba] == CmdType::WRITE)
-        {
-            out.op[idx] = temp.op[idx_iba];
-            out.lba[idx] = temp.lba[idx_iba];
-            out.size[idx] = temp.size[idx_iba];
-            out.data[idx] = temp.data[idx_iba];
-            idx++;
-        }
-    }
-#ifdef  PRINT_DEBUG
-    if (idx != newCMDCount)
-        std::cout << "Error idx " << idx << " " << newCMDCount << "\n";
-
-    // display
-    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << static_cast<int>(out.op[idx_cb]) << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
-#endif
-    return newCMDCount;
+	return outCmdCount;
 }

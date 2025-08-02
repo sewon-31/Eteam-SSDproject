@@ -34,9 +34,9 @@ public:
 	void clearBufferAndDirectory();
 	void clearBuffer();
 
-	int reduceCMDBuffer(TEST_CMD in, TEST_CMD& out);
+	int reduceCMDBufferTest(TEST_CMD in, TEST_CMD& out);
 private:
-	int reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount);
+	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount);
 
 	NandData& storage;
 	CommandBuffer& cmdBuf;

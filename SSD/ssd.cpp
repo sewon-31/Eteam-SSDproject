@@ -6,276 +6,289 @@
 #include <iostream>
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
-    : outputFile(outputPath),
-    storage(NandData::getInstance()),
-    cmdBuf(CommandBuffer::getInstance())
+	: outputFile(outputPath),
+	storage(NandData::getInstance()),
+	cmdBuf(CommandBuffer::getInstance())
 {
 }
 
 void
 SSD::run(vector<string> commandVector)
 {
-    if (!builder) {
-        builder = std::make_shared<SSDCommandBuilder>();
-    }
+	if (!builder) {
+		builder = std::make_shared<SSDCommandBuilder>();
+	}
 
-    string result("");
+	string result("");
 
-    // create command (validity check included)
-    auto cmd = builder->createCommand(commandVector);
-    if (cmd == nullptr) {
-        updateOutputFile("ERROR");
-        return;
-    }
+	// create command (validity check included)
+	auto cmd = builder->createCommand(commandVector);
+	if (cmd == nullptr) {
+		updateOutputFile("ERROR");
+		return;
+	}
 
-    cmdBuf.Init();
+	cmdBuf.Init();
 
-    auto type = cmd->getCmdType();
-    if (type == CmdType::READ || type == CmdType::FLUSH)
-    {
-        cmd->run(result);
-    }
-    else if (type == CmdType::WRITE || type == CmdType::ERASE) {
-        cmdBuf.addCommand(cmd);
-    }
+	auto type = cmd->getCmdType();
+	if (type == CmdType::READ || type == CmdType::FLUSH)
+	{
+		cmd->run(result);
+	}
+	else if (type == CmdType::WRITE || type == CmdType::ERASE) {
+		cmdBuf.addCommand(cmd);
+	}
 
-    cmdBuf.updateToDirectory();
+	cmdBuf.updateToDirectory();
 
-    if (!result.empty()) {
-        updateOutputFile(result);
-    }
+	if (!result.empty()) {
+		updateOutputFile(result);
+	}
 }
 
 bool
 SSD::updateOutputFile(const string& result)
 {
-    outputFile.fileClear();
-    outputFile.fileOpen();
+	outputFile.fileClear();
+	outputFile.fileOpen();
 
-    bool ret = outputFile.fileWriteOneline(result);
+	bool ret = outputFile.fileWriteOneline(result);
 
-    outputFile.fileClose();
-    return ret;
+	outputFile.fileClose();
+	return ret;
 }
 
 string
 SSD::getData(int lba) const
 {
-    return storage.read(lba);
+	return storage.read(lba);
 }
 
 void
 SSD::writeData(int lba, const string& value)
 {
-    storage.write(lba, value);
+	storage.write(lba, value);
 }
 
 void
 SSD::clearData()
 {
-    storage.clear();
+	storage.clear();
 }
 
 void
 SSD::setBuilder(std::shared_ptr<SSDCommandBuilder> builder)
 {
-    this->builder = builder;
+	this->builder = builder;
 }
 
 NandData&
 SSD::getStorage()
 {
-    return storage;
+	return storage;
 }
 
 void
 SSD::clearBufferAndDirectory()
 {
-    cmdBuf.clearBuffer();
-    cmdBuf.updateToDirectory();
+	cmdBuf.clearBuffer();
+	cmdBuf.updateToDirectory();
 }
 
 void
 SSD::clearBuffer()
 {
-    cmdBuf.clearBuffer();
+	cmdBuf.clearBuffer();
 }
+#if _DEBUG
+#define PRINT_DEBUG_SSD_CMDB 1
+#endif
 
 int
-SSD::reduceCMDBufferMerge(TEST_CMD in, TEST_CMD& out, int cmdCount) {
-    int virtual_op[100];	// 9 == NULL, 7 = E, 0-5 = W 
+SSD::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount)
+{
+	const int BUF_MAX = 100;
+	const int OP_NULL = 9;
+	const int OP_E = 7;
+	const int OP_W_MAX = 5;
 
-    const int OP_NULL = 9;
-    const int OP_E = 7;
-    const int OP_W_MAX = 5;
+	// Step 1: Replace "W" commands with data "0x00000000" by "E" commands size=1
+	for (int i = 0; i < cmdCount; i++) {
+		if (in.op[i] == CmdType::WRITE && in.data[i] == "0x00000000") {
+			in.op[i] = CmdType::ERASE;
+			in.size[i] = 1;
+			in.data[i] = "";
+		}
+	}
 
-    TEST_CMD temp;
-    // 1. Replcae w iba "0x00000000" >  E iba
-    // 2. make virtual data 
-    // 3. Make CMD
-        //3-1. Make new CMD E range check and W
-        // display
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        std::cout << in.op[idx_cb] << " " << in.lba[idx_cb] << " " << in.data[idx_cb] << " " << in.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
-#if 0
-    // step - 1
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        if (in.op[idx_cb] == "W" && in.data[idx_cb] == "0x00000000") {
-            in.op[idx_cb] = "E";
-            in.size[idx_cb] = 1;
-        }
-    }
+	// Step 2: Build virtualMap array
+	int virtualMap[BUF_MAX];
+	for (int i = 0; i < BUF_MAX; i++) {
+		virtualMap[i] = OP_NULL;
+	}
+
+	for (int i = 0; i < cmdCount; i++) {
+		if (in.op[i] == CmdType::WRITE) {
+			if (in.lba[i] < BUF_MAX)
+				virtualMap[in.lba[i]] = i;
+		}
+		else if (in.op[i] == CmdType::ERASE) {
+			for (int s = 0; s < in.size[i]; s++) {
+				int curLba = in.lba[i] + s;
+				if (curLba < BUF_MAX)
+					virtualMap[curLba] = OP_E;
+			}
+		}
+	}
+#ifdef _DEBUG
+	for (int idxLba = 0; idxLba < 100; idxLba++) {
+		if (virtualMap[idxLba] == OP_NULL)
+			std::cout << "." << " ";
+		else if (virtualMap[idxLba] == OP_E)
+			std::cout << "E" << " ";
+		else
+			std::cout << "W" << " ";
+
+		if (idxLba % 10 == 9)
+			std::cout << "\n";
+	}
 #endif
-    // step - 2
-    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        virtual_op[idx_iba] = OP_NULL;
-    }
 
-    for (int idx_cb = 0; idx_cb < cmdCount; idx_cb++) {
-        if (in.op[idx_cb] == "W") {
-            virtual_op[in.lba[idx_cb]] = idx_cb;
-        }
-        else if (in.op[idx_cb] == "E") {
-            for (int idx_size = 0; idx_size < in.size[idx_cb]; idx_size++)
-                virtual_op[in.lba[idx_cb] + idx_size] = OP_E;
-        }
-    }
-    // display
-    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        if (virtual_op[idx_iba] == OP_NULL)
-            std::cout << "N" << " ";
-        else if (virtual_op[idx_iba] == OP_E)
-            std::cout << "E" << " ";
-        else
-            std::cout << "W" << " ";
+	// Step 3: Construct new commands (ERS_CMD and WR_CMD)
+	CMD_BUF ERS_CMD, WR_CMD;
+	int continueErsCMD = 0;
+	int ersCmdConunt = 0;
+	int wrCmdConunt = 0;
 
+	for (int idx_lba = 0; idx_lba < 100; idx_lba++) {
+		int vmp = virtualMap[idx_lba];
 
-        if (idx_iba % 10 == 9)
-            std::cout << "\n";
-    }
+		// Check E and W
+		if (vmp != OP_NULL) {
+			if (continueErsCMD == 0) {  // First erase range
+				if (vmp == OP_E) {  // First erase range + Construct new ERS commands 
+					ERS_CMD.op[ersCmdConunt] = CmdType::ERASE;
+					ERS_CMD.lba[ersCmdConunt] = idx_lba;
+					ERS_CMD.size[ersCmdConunt] = 1;
+					continueErsCMD = 1;
+				}
+				else {              // First erase range and WR command
+					WR_CMD.op[wrCmdConunt] = CmdType::WRITE;
+					WR_CMD.lba[wrCmdConunt] = idx_lba;
+					WR_CMD.size[wrCmdConunt] = 1;
+					WR_CMD.data[wrCmdConunt] = in.data[vmp];
+					wrCmdConunt++;
+				}
+			}
+			else {      // Erase range loop
+				ERS_CMD.size[ersCmdConunt]++;
+				continueErsCMD++;
+				if (vmp <= OP_W_MAX) {  // Construct new WR commands 
+					WR_CMD.op[wrCmdConunt] = CmdType::WRITE;
+					WR_CMD.lba[wrCmdConunt] = idx_lba;
+					WR_CMD.size[wrCmdConunt] = 1;
+					WR_CMD.data[wrCmdConunt] = in.data[vmp];
+					wrCmdConunt++;
+				}
 
-    // step - 3
-    int continue_E_CMD = 0;
-    int newCMDCount = 0;
+				// Check if erase range ends
+				bool erase_end = false;
+				if (continueErsCMD == 10)
+					erase_end = true;
+				else if (idx_lba == BUF_MAX - 1)
+					erase_end = true;
+				else if (virtualMap[idx_lba + 1] == OP_NULL)
+					erase_end = true;
 
-    // step - 3-1
-    for (int idx_iba = 0; idx_iba < 100; idx_iba++) {
-        // Check E and W
-        if (virtual_op[idx_iba] != OP_NULL) {
-            if (continue_E_CMD == 0) {
-                if (virtual_op[idx_iba] == OP_E)
-                    temp.op[newCMDCount] = "E";
-                else {
-                    temp.op[newCMDCount] = "W";
-                    temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-                }
-                temp.lba[newCMDCount] = idx_iba;
-                temp.size[newCMDCount] = 1;
-                //temp.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-                continue_E_CMD = 1;
-            }
-            else {
-                temp.size[newCMDCount]++;
-                continue_E_CMD++;
-                if (continue_E_CMD == 10) {
-                    continue_E_CMD = 0;
-                    newCMDCount++;
-                }
-            }
-            continue;
-        }
-        else if (continue_E_CMD > 0) {
-            continue_E_CMD = 0;
-            newCMDCount++;
-        }
-    }
+				if (erase_end) {
+					ersCmdConunt++;
+					continueErsCMD = 0;
+				}
+			}
+		}
+		else if (continueErsCMD > 0) {
+			continueErsCMD = 0;
+			ersCmdConunt++;
+		}
+	}
 
-    // display
-    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << temp.op[idx_cb] << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
+	// Step 3: Combine ERS_CMD and WR_CMD to out
+	int outCmdCount = 0;
+	for (int idx_lba = 0; idx_lba < ersCmdConunt; idx_lba++) {
+		out.op[outCmdCount] = ERS_CMD.op[idx_lba];
+		out.lba[outCmdCount] = ERS_CMD.lba[idx_lba];
+		out.size[outCmdCount] = ERS_CMD.size[idx_lba];
+		out.data[outCmdCount] = ERS_CMD.data[idx_lba];
+		outCmdCount++;
+	}
+	for (int idx_lba = 0; idx_lba < wrCmdConunt; idx_lba++) {
+		out.op[outCmdCount] = WR_CMD.op[idx_lba];
+		out.lba[outCmdCount] = WR_CMD.lba[idx_lba];
+		out.size[outCmdCount] = WR_CMD.size[idx_lba];
+		out.data[outCmdCount] = WR_CMD.data[idx_lba];
+		outCmdCount++;
+	}
 
-#if 0
-    //Check W
-    if (virtual_op[idx_iba] <= OP_W_MAX) {
-        out.op[newCMDCount] = "W";
-        out.lba[newCMDCount] = idx_iba;
-        out.data[newCMDCount] = in.data[virtual_op[idx_iba]];
-        out.size[newCMDCount] = 1;
-        newCMDCount++;
-    }
-#endif
-    int hit = 0;
-    for (int idx_cb_in = 0; idx_cb_in < cmdCount; idx_cb_in++) {
-        if (in.op[idx_cb_in] == "W" && in.data[idx_cb_in] != "0x00000000") {
-            hit = 0;
-            for (int idx_cb_out = 0; idx_cb_out < newCMDCount; idx_cb_out++) {
-                if (temp.lba[idx_cb_out] == in.lba[idx_cb_in]) {
-                    if (temp.size[idx_cb_out] == 1) {
-                        //temp.op[idx_cb_out] = "W";
-                        //temp.lba[idx_cb_out] = in.lba[idx_cb_in];
-                        //temp.size[idx_cb_out] = 1;
-                        //temp.data[idx_cb_out] = in.data[idx_cb_in];
-                        hit = 1;
-                    }
-                }
-            }
-            if (!hit) {
-                temp.op[newCMDCount] = "W";
-                temp.lba[newCMDCount] = in.lba[idx_cb_in];
-                temp.size[newCMDCount] = 1;
-                temp.data[newCMDCount] = in.data[idx_cb_in];
-                newCMDCount++;
-            }
-        }
-    }
-
-    // display
-    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << temp.op[idx_cb] << " " << temp.lba[idx_cb] << " " << temp.data[idx_cb] << " " << temp.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
-
-    int idx = 0;
-    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
-        if (temp.op[idx_iba] == "E")
-        {
-            out.op[idx] = temp.op[idx_iba];
-            out.lba[idx] = temp.lba[idx_iba];
-            out.size[idx] = temp.size[idx_iba];
-            out.data[idx] = temp.data[idx_iba];
-            idx++;
-        }
-    }
-    for (int idx_iba = 0; idx_iba < newCMDCount; idx_iba++) {
-        if (temp.op[idx_iba] == "W")
-        {
-            out.op[idx] = temp.op[idx_iba];
-            out.lba[idx] = temp.lba[idx_iba];
-            out.size[idx] = temp.size[idx_iba];
-            out.data[idx] = temp.data[idx_iba];
-            idx++;
-        }
-    }
-
-    if (idx != newCMDCount)
-        std::cout << "Error idx " << idx << " " << newCMDCount << "\n";
-
-    // display
-    for (int idx_cb = 0; idx_cb < newCMDCount; idx_cb++) {
-        std::cout << out.op[idx_cb] << " " << out.lba[idx_cb] << " " << out.data[idx_cb] << " " << out.size[idx_cb] << "\n";
-    }
-    std::cout << "\n";
-
-    return newCMDCount;
+	return outCmdCount;
 }
 
-int
-SSD::reduceCMDBuffer(TEST_CMD in, TEST_CMD& out) {
-    int newCMDCount = reduceCMDBufferMerge(in, out, 6);
 
-    return newCMDCount;
+int
+SSD::reduceCMDBufferTest(TEST_CMD in, TEST_CMD& out) {
+	CMD_BUF conv_in, conv_out;
+
+	for (int i = 0; i < 6; i++) {
+		if (in.op[i] == "E")
+			conv_in.op[i] = CmdType::ERASE;
+		else if (in.op[i] == "W")
+			conv_in.op[i] = CmdType::WRITE;
+		else
+			conv_in.op[i] = CmdType::FLUSH;
+
+		conv_in.lba[i] = in.lba[i];
+		conv_in.size[i] = in.size[i];
+		conv_in.data[i] = in.data[i];
+	}
+#ifdef PRINT_DEBUG_SSD_CMDB
+	std::cout << "=== Input Commands ===\n";
+	for (int i = 0; i < 6; i++) {
+		if (in.op[i] != "W" && in.op[i] != "E")    break;
+
+		std::cout << "[" << i << "] "
+			<< "OP: " << in.op[i]
+			<< ", LBA: " << in.lba[i]
+			<< ", DATA: " << (in.op[i] == "W" ? in.data[i] : "-")
+			<< ", SIZE: " << in.size[i]
+			<< "\n";
+	}
+	std::cout << "=======================\n\n";
+#endif
+
+	int newCMDCount = reduceCMDBuffer(conv_in, conv_out, 6);
+
+	for (int i = 0; i < newCMDCount; i++) {
+		if (conv_out.op[i] == CmdType::ERASE)
+			out.op[i] = "E";
+		else if (conv_out.op[i] == CmdType::WRITE)
+			out.op[i] = "W";
+		else
+			out.op[i] = "N";
+
+		out.lba[i] = conv_out.lba[i];
+		out.size[i] = conv_out.size[i];
+		out.data[i] = conv_out.data[i];
+	}
+#ifdef PRINT_DEBUG_SSD_CMDB
+	std::cout << "=== Optimized Command Output ===\n";
+	for (int i = 0; i < newCMDCount; i++) {
+		std::cout << "[" << i << "] "
+			<< "OP: " << out.op[i]
+			<< ", LBA: " << out.lba[i]
+			<< ", DATA: " << (out.op[i] == "W" ? out.data[i] : "-")
+			<< ", SIZE: " << out.size[i]
+			<< "\n";
+	}
+	std::cout << "================================\n\n";
+#endif
+	return newCMDCount;
 }
