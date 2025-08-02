@@ -22,7 +22,6 @@ public:
     void clear();
 
     bool updateFromFile();
-    //bool updateFromBuffer()
     bool updateToFile();
 
 private:
@@ -33,5 +32,5 @@ private:
     bool isInvalidLBA(int lba) const;
 
     string data[LBA::SIZE];
-    FileInterface file;
+    string filePath;
 };
