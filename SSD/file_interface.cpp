@@ -1,102 +1,99 @@
 #include "file_interface.h"
+#include <fstream>
 
-FileInterface::FileInterface(const std::string& file) 
-{ 
-	fileName = file;
-	readPoint = 0;
+namespace fs = std::filesystem;
+
+bool FileInterface::readLine(const std::string& filePath, std::string& lineOut) {
+	std::ifstream ifs(filePath);
+	return ifs && static_cast<bool>(std::getline(ifs, lineOut));
 }
 
-bool 
-FileInterface::fileOpen() 
-{
-	if (file.is_open())
-		file.close();
+bool FileInterface::readAllLines(const std::string& filePath, std::vector<std::string>& linesOut) {
+	std::ifstream ifs(filePath);
+	if (!ifs) return false;
 
-	file.open(fileName, std::ios::in | std::ios::out);
-
-	if (!file.is_open()) {
-		std::ofstream(fileName).close();
-		file.open(fileName, std::ios::in | std::ios::out);
+	std::string line;
+	while (std::getline(ifs, line)) {
+		linesOut.push_back(line);
 	}
-
-	readPoint = 0;
-
-	return file.is_open();
+	return true;
 }
 
-void FileInterface::fileClose() 
-{
-	if (file.is_open()) {
-	    file.close();
+bool FileInterface::writeLine(const std::string& filePath, const std::string& line, bool append) {
+	std::ofstream ofs(filePath, append ? std::ios::app : std::ios::trunc);
+	if (!ofs) return false;
+	ofs << line << '\n';
+	return ofs.good();
+}
+
+bool FileInterface::writeAllLines(const std::string& filePath, const std::vector<std::string>& lines, bool append) {
+	std::ofstream ofs(filePath, append ? std::ios::app : std::ios::trunc);
+	if (!ofs) return false;
+
+	for (const auto& line : lines) {
+		ofs << line << '\n';
+		if (!ofs) return false;
 	}
+	return true;
 }
 
-bool 
-FileInterface::fileClear() 
-{
-	std::ofstream file(fileName, std::ios::trunc);
-	if (file.is_open()) {
-		file.close();
+bool FileInterface::clearFile(const std::string& filePath) {
+	std::ofstream ofs(filePath, std::ios::trunc);
+	return ofs.is_open();
+}
+
+size_t FileInterface::getFileSize(const std::string& filePath) {
+	std::error_code ec;
+	auto size = fs::file_size(filePath, ec);
+	return ec ? 0 : static_cast<size_t>(size);
+}
+
+bool FileInterface::fileExists(const std::string& filePath) {
+	return fs::is_regular_file(filePath);
+}
+
+bool FileInterface::renameFile(const std::string& oldPath, const std::string& newPath) {
+	try {
+		fs::rename(oldPath, newPath);
 		return true;
 	}
-	return false;
-}
-
-bool 
-FileInterface::fileReadOneline(std::string& str) 
-{
-	if (!file.is_open()) return false;
-
-	file.clear();
-	file.seekg(readPoint, std::ios::beg);
-	getline(file, str);
-	readPoint = static_cast<unsigned>(file.tellg());
-
-	return file.good();
-}
-
-bool 
-FileInterface::setReadPoint(unsigned point) 
-{
-	if (!file.is_open()) return false;
-
-	readPoint = point;
-	return file.good();
-}
-
-bool 
-FileInterface::fileWriteOneline(const std::string str) 
-{
-	if (!file.is_open()) return false;
-
-	file.seekp(0, std::ios::end);
-	file << str << '\n';
-
-	if (!file.good()) {
-		std::cout << "[Error] write failed: fail=" << file.fail()
-			<< ", bad=" << file.bad() << std::endl;
+	catch (...) {
+		return false;
 	}
-
-	return file.good();
 }
 
-int
-FileInterface::checkSize() 
-{
-	std::ofstream file(fileName, std::ios::app);
-
-	if (file.is_open())
-		file.close();
-
-	file.open(fileName, std::ios::in | std::ios::out);
-
-	if (!file.is_open()) {
-		std::ofstream(fileName).close();
-		file.open(fileName, std::ios::in | std::ios::out);
+bool FileInterface::removeFile(const std::string& filePath) {
+	try {
+		return fs::remove(filePath);
 	}
-	
-	file.seekp(0, std::ios::end);
-	int size = static_cast<int>(file.tellp());
-	file.close();
-	return size;
+	catch (...) {
+		return false;
+	}
+}
+
+bool FileInterface::createDirectory(const std::string& dirPath) {
+	try {
+		return fs::create_directories(dirPath);
+	}
+	catch (...) {
+		return false;
+	}
+}
+
+bool FileInterface::directoryExists(const std::string& dirPath) {
+	return fs::exists(dirPath) && fs::is_directory(dirPath);
+}
+
+bool FileInterface::clearDirectory(const std::string& dirPath) {
+	try {
+		for (const auto& entry : fs::directory_iterator(dirPath)) {
+			if (fs::is_regular_file(entry)) {
+				fs::remove(entry.path());
+			}
+		}
+		return true;
+	}
+	catch (...) {
+		return false;
+	}
 }
