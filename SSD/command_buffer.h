@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#if __DEBUG
+#if _DEBUG
 #define PRINT_DEBUG_CMDB 1
 #endif
 using std::vector;
