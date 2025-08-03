@@ -87,41 +87,40 @@ bool
 CommandBuffer::optimizeBuffer()
 {
 	int bufSize = static_cast<int>(buffer.size());
-	CMD_BUF in;
-	CMD_BUF out;
-	int inBufIdx = 0;
+	ReduceCmd in;
+	ReduceCmd out;
 
 	for (int bufIdx = 0; bufIdx < bufSize; bufIdx++) {
 		auto cmd = buffer.at(bufIdx);
 		auto type = cmd->getCmdType();
+
 #ifdef PRINT_DEBUG_CMDB
 		std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
 #endif
 		if (type == CmdType::WRITE) {
 			std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
-
-			in.op[inBufIdx] = cmd->getCmdType();
-			in.lba[inBufIdx] = cmd->getLBA();
-			in.data[inBufIdx] = wCmdPtr->getValue();
-			in.size[inBufIdx] = 1;
+			
+			in.op.push_back(cmd->getCmdType());
+			in.lba.push_back(cmd->getLBA());
+			in.size.push_back(1);
+			in.data.push_back(wCmdPtr->getValue());
 #ifdef PRINT_DEBUG_CMDB
 			std::cout << "IN CMD -> WRITE" << " " << in.lba[inBufIdx] << " " << in.data[inBufIdx] << "\n";
 #endif
-			inBufIdx++;
 		}
 		if (type == CmdType::ERASE) {
 			std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
-			in.op[inBufIdx] = cmd->getCmdType();
-			in.lba[inBufIdx] = cmd->getLBA();
-			in.size[inBufIdx] = eCmdPtr->getSize();
+			in.op.push_back(cmd->getCmdType());
+			in.lba.push_back(cmd->getLBA());
+			in.size.push_back(1);
+			in.data.push_back("");
 #ifdef PRINT_DEBUG_CMDB
 			std::cout << "IN CMD -> ERASE" << " " << in.lba[inBufIdx] << " " << in.size[inBufIdx] << "\n";
 #endif
-			inBufIdx++;
 		}
 	}
 
-	int new_buf_size = reduceCMDBuffer(in, out, inBufIdx);
+	int new_buf_size = reduceCMDBuffer(in, out);
 	if (new_buf_size < bufSize)
 	{
 		std::shared_ptr<SSDCommandBuilder> builder;
@@ -309,14 +308,15 @@ CommandBuffer::updateToDirectory()
 }
 
 int
-CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount)
+CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 {
 	const int BUF_MAX = 100;
 	const int OP_NULL = 9;
 	const int OP_E = 7;
 	const int OP_W_MAX = 5;
+	int cmdCount = in.op.size();
 
-	// Step 1: Replace "W" commands with data "0x00000000" by "E" commands size=1
+	// Step 1: Replace WRITE with 0x00000000 by ERASE
 	for (int i = 0; i < cmdCount; i++) {
 		if (in.op[i] == CmdType::WRITE && in.data[i] == "0x00000000") {
 			in.op[i] = CmdType::ERASE;
@@ -325,11 +325,8 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount)
 		}
 	}
 
-	// Step 2: Build virtualMap array
-	int virtualMap[BUF_MAX];
-	for (int i = 0; i < BUF_MAX; i++) {
-		virtualMap[i] = OP_NULL;
-	}
+	// Step 2: Build virtualMap
+	std::vector<int> virtualMap(BUF_MAX, OP_NULL);
 
 	for (int i = 0; i < cmdCount; i++) {
 		if (in.op[i] == CmdType::WRITE) {
@@ -344,94 +341,78 @@ CommandBuffer::reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount)
 			}
 		}
 	}
-#ifdef _DEBUG
-	for (int idxLba = 0; idxLba < 100; idxLba++) {
-		if (virtualMap[idxLba] == OP_NULL)
-			std::cout << "." << " ";
-		else if (virtualMap[idxLba] == OP_E)
-			std::cout << "E" << " ";
-		else
-			std::cout << "W" << " ";
 
-		if (idxLba % 10 == 9)
-			std::cout << "\n";
+#ifdef _DEBUG
+	for (int i = 0; i < BUF_MAX; ++i) {
+		if (virtualMap[i] == OP_NULL) std::cout << ". ";
+		else if (virtualMap[i] == OP_E) std::cout << "E ";
+		else std::cout << "W ";
+		if (i % 10 == 9) std::cout << "\n";
 	}
 #endif
 
-	// Step 3: Construct new commands (ERS_CMD and WR_CMD)
-	CMD_BUF ERS_CMD, WR_CMD;
-	int continueErsCMD = 0;
-	int ersCmdConunt = 0;
-	int wrCmdConunt = 0;
+	// Step 3: Construct ERS_CMD and WR_CMD
+	ReduceCmd ERS_CMD, WR_CMD;
+	int eraseCmdSequence = 0;
+	bool isEraseRange = false;
 
-	for (int idx_lba = 0; idx_lba < 100; idx_lba++) {
+	for (int idx_lba = 0; idx_lba < BUF_MAX; idx_lba++) {
 		int vmp = virtualMap[idx_lba];
 
-		// Check E and W
 		if (vmp != OP_NULL) {
-			if (continueErsCMD == 0) {  // First erase range
-				if (vmp == OP_E) {  // First erase range + Construct new ERS commands 
-					ERS_CMD.op[ersCmdConunt] = CmdType::ERASE;
-					ERS_CMD.lba[ersCmdConunt] = idx_lba;
-					ERS_CMD.size[ersCmdConunt] = 1;
-					continueErsCMD = 1;
+			if (eraseCmdSequence == 0) {  // First erase range
+				if (vmp == OP_E) {  // First erase range and Construct new ERS commands 
+					ERS_CMD.op.push_back(CmdType::ERASE);
+					ERS_CMD.lba.push_back(idx_lba);
+					ERS_CMD.size.push_back(1);
+					ERS_CMD.data.push_back("");
+					eraseCmdSequence = 1;
 				}
-				else {              // First erase range and WR command
-					WR_CMD.op[wrCmdConunt] = CmdType::WRITE;
-					WR_CMD.lba[wrCmdConunt] = idx_lba;
-					WR_CMD.size[wrCmdConunt] = 1;
-					WR_CMD.data[wrCmdConunt] = in.data[vmp];
-					wrCmdConunt++;
+				else {
+					WR_CMD.op.push_back(CmdType::WRITE);
+					WR_CMD.lba.push_back(idx_lba);
+					WR_CMD.size.push_back(1);
+					WR_CMD.data.push_back(in.data[vmp]);
 				}
 			}
-			else {      // Erase range loop
-				ERS_CMD.size[ersCmdConunt]++;
-				continueErsCMD++;
-				if (vmp <= OP_W_MAX) {  // Construct new WR commands 
-					WR_CMD.op[wrCmdConunt] = CmdType::WRITE;
-					WR_CMD.lba[wrCmdConunt] = idx_lba;
-					WR_CMD.size[wrCmdConunt] = 1;
-					WR_CMD.data[wrCmdConunt] = in.data[vmp];
-					wrCmdConunt++;
+			else {         // Erase range loop
+				ERS_CMD.size.back() += 1;
+				eraseCmdSequence++;
+				if (vmp <= OP_W_MAX) {
+					WR_CMD.op.push_back(CmdType::WRITE);
+					WR_CMD.lba.push_back(idx_lba);
+					WR_CMD.size.push_back(1);
+					WR_CMD.data.push_back(in.data[vmp]);
 				}
 
 				// Check if erase range ends
 				bool erase_end = false;
-				if (continueErsCMD == 10)
-					erase_end = true;
-				else if (idx_lba == BUF_MAX - 1)
-					erase_end = true;
-				else if (virtualMap[idx_lba + 1] == OP_NULL)
+				if (eraseCmdSequence == 10 || idx_lba == BUF_MAX - 1 || virtualMap[idx_lba + 1] == OP_NULL)
 					erase_end = true;
 
 				if (erase_end) {
-					ersCmdConunt++;
-					continueErsCMD = 0;
+					eraseCmdSequence = 0;
 				}
 			}
 		}
-		else if (continueErsCMD > 0) {
-			continueErsCMD = 0;
-			ersCmdConunt++;
+		else if (eraseCmdSequence > 0) {
+			eraseCmdSequence = 0;
 		}
 	}
 
-	// Step 3: Combine ERS_CMD and WR_CMD to out
-	int outCmdCount = 0;
-	for (int idx_lba = 0; idx_lba < ersCmdConunt; idx_lba++) {
-		out.op[outCmdCount] = ERS_CMD.op[idx_lba];
-		out.lba[outCmdCount] = ERS_CMD.lba[idx_lba];
-		out.size[outCmdCount] = ERS_CMD.size[idx_lba];
-		out.data[outCmdCount] = ERS_CMD.data[idx_lba];
-		outCmdCount++;
-	}
-	for (int idx_lba = 0; idx_lba < wrCmdConunt; idx_lba++) {
-		out.op[outCmdCount] = WR_CMD.op[idx_lba];
-		out.lba[outCmdCount] = WR_CMD.lba[idx_lba];
-		out.size[outCmdCount] = WR_CMD.size[idx_lba];
-		out.data[outCmdCount] = WR_CMD.data[idx_lba];
-		outCmdCount++;
-	}
+	// Step 4: Combine ERS_CMD and WR_CMD into out
 
-	return outCmdCount;
+	// Append erase commands
+	out.op.insert(out.op.end(), ERS_CMD.op.begin(), ERS_CMD.op.end());
+	out.lba.insert(out.lba.end(), ERS_CMD.lba.begin(), ERS_CMD.lba.end());
+	out.size.insert(out.size.end(), ERS_CMD.size.begin(), ERS_CMD.size.end());
+	out.data.insert(out.data.end(), ERS_CMD.data.begin(), ERS_CMD.data.end());
+
+	// Append write commands
+	out.op.insert(out.op.end(), WR_CMD.op.begin(), WR_CMD.op.end());
+	out.lba.insert(out.lba.end(), WR_CMD.lba.begin(), WR_CMD.lba.end());
+	out.size.insert(out.size.end(), WR_CMD.size.begin(), WR_CMD.size.end());
+	out.data.insert(out.data.end(), WR_CMD.data.begin(), WR_CMD.data.end());
+
+	return static_cast<int>(out.op.size());
 }

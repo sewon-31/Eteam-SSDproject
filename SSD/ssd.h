@@ -36,7 +36,7 @@ public:
 
 	int reduceCMDBufferTest(TEST_CMD in, TEST_CMD& out);
 private:
-	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount);
+	int reduceCMDBuffer(ReduceCmd in, ReduceCmd& out);
 
 	NandData& storage;
 	CommandBuffer& cmdBuf;

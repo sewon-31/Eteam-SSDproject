@@ -8,12 +8,11 @@
 using std::vector;
 using std::string;
 
-struct CMD_BUF {
-public:
-	CmdType op[6];
-	int lba[6];
-	int size[6];
-	string data[6];
+struct ReduceCmd {
+	std::vector<CmdType> op;
+	std::vector<int> lba;
+	std::vector<int> size;
+	std::vector<std::string> data;
 };
 
 class CommandBuffer
@@ -44,7 +43,7 @@ private:
 
 	void initDirectory();
 	void updateFromDirectory();
-	int reduceCMDBuffer(CMD_BUF in, CMD_BUF& out, int cmdCount);
+	int reduceCMDBuffer(ReduceCmd in, ReduceCmd& out);
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;
