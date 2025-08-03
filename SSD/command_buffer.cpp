@@ -351,46 +351,50 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 	}
 #endif
 
-	// Step 3: Construct ERS_CMD and WR_CMD
-	ReduceCmd ERS_CMD, WR_CMD;
+	// Step 3: Construct ersCmd and wrCmd
+	ReduceCmd ersCmd, wrCmd;
 	int eraseCmdSequence = 0;
 	bool isEraseRange = false;
 
-	for (int idx_lba = 0; idx_lba < BUF_MAX; idx_lba++) {
-		int vmp = virtualMap[idx_lba];
+	for (int idxLba = 0; idxLba < BUF_MAX; idxLba++) {
+		int vmp = virtualMap[idxLba];
 
 		if (vmp != OP_NULL) {
-			if (eraseCmdSequence == 0) {  // First erase range
-				if (vmp == OP_E) {  // First erase range and Construct new ERS commands 
-					ERS_CMD.op.push_back(CmdType::ERASE);
-					ERS_CMD.lba.push_back(idx_lba);
-					ERS_CMD.size.push_back(1);
-					ERS_CMD.data.push_back("");
+			if (eraseCmdSequence == 0) {	// First erase range
+				if (vmp == OP_E) {			// First erase range and Construct new ERS commands 
+					ersCmd.op.push_back(CmdType::ERASE);
+					ersCmd.lba.push_back(idxLba);
+					ersCmd.size.push_back(1);
+					ersCmd.data.push_back("");
 					eraseCmdSequence = 1;
 				}
 				else {
-					WR_CMD.op.push_back(CmdType::WRITE);
-					WR_CMD.lba.push_back(idx_lba);
-					WR_CMD.size.push_back(1);
-					WR_CMD.data.push_back(in.data[vmp]);
+					wrCmd.op.push_back(CmdType::WRITE);
+					wrCmd.lba.push_back(idxLba);
+					wrCmd.size.push_back(1);
+					wrCmd.data.push_back(in.data[vmp]);
 				}
 			}
-			else {         // Erase range loop
-				ERS_CMD.size.back() += 1;
+			else {							// Erase range loop
+				ersCmd.size.back() += 1;
 				eraseCmdSequence++;
 				if (vmp <= OP_W_MAX) {
-					WR_CMD.op.push_back(CmdType::WRITE);
-					WR_CMD.lba.push_back(idx_lba);
-					WR_CMD.size.push_back(1);
-					WR_CMD.data.push_back(in.data[vmp]);
+					wrCmd.op.push_back(CmdType::WRITE);
+					wrCmd.lba.push_back(idxLba);
+					wrCmd.size.push_back(1);
+					wrCmd.data.push_back(in.data[vmp]);
 				}
 
 				// Check if erase range ends
-				bool erase_end = false;
-				if (eraseCmdSequence == 10 || idx_lba == BUF_MAX - 1 || virtualMap[idx_lba + 1] == OP_NULL)
-					erase_end = true;
+				bool eraseEnd = false;
+				if (eraseCmdSequence == 10 || idxLba == BUF_MAX - 1)
+					eraseEnd = true;
 
-				if (erase_end) {
+				if (idxLba + 1 < BUF_MAX)
+					if (virtualMap[idxLba + 1] == OP_NULL)
+						eraseEnd = true;
+
+				if (eraseEnd) {
 					eraseCmdSequence = 0;
 				}
 			}
@@ -400,19 +404,18 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 		}
 	}
 
-	// Step 4: Combine ERS_CMD and WR_CMD into out
-
+	// Step 4: Combine ersCmd and wrCmd into out
 	// Append erase commands
-	out.op.insert(out.op.end(), ERS_CMD.op.begin(), ERS_CMD.op.end());
-	out.lba.insert(out.lba.end(), ERS_CMD.lba.begin(), ERS_CMD.lba.end());
-	out.size.insert(out.size.end(), ERS_CMD.size.begin(), ERS_CMD.size.end());
-	out.data.insert(out.data.end(), ERS_CMD.data.begin(), ERS_CMD.data.end());
+	out.op.insert(out.op.end(), ersCmd.op.begin(), ersCmd.op.end());
+	out.lba.insert(out.lba.end(), ersCmd.lba.begin(), ersCmd.lba.end());
+	out.size.insert(out.size.end(), ersCmd.size.begin(), ersCmd.size.end());
+	out.data.insert(out.data.end(), ersCmd.data.begin(), ersCmd.data.end());
 
 	// Append write commands
-	out.op.insert(out.op.end(), WR_CMD.op.begin(), WR_CMD.op.end());
-	out.lba.insert(out.lba.end(), WR_CMD.lba.begin(), WR_CMD.lba.end());
-	out.size.insert(out.size.end(), WR_CMD.size.begin(), WR_CMD.size.end());
-	out.data.insert(out.data.end(), WR_CMD.data.begin(), WR_CMD.data.end());
+	out.op.insert(out.op.end(), wrCmd.op.begin(), wrCmd.op.end());
+	out.lba.insert(out.lba.end(), wrCmd.lba.begin(), wrCmd.lba.end());
+	out.size.insert(out.size.end(), wrCmd.size.begin(), wrCmd.size.end());
+	out.data.insert(out.data.end(), wrCmd.data.begin(), wrCmd.data.end());
 
 	return static_cast<int>(out.op.size());
 }

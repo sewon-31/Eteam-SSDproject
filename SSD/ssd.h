@@ -7,7 +7,7 @@
 
 using std::string;
 
-class TEST_CMD {
+class TestCmdFormat {
 public:
 	string op[6];
 	int lba[6];
@@ -34,7 +34,7 @@ public:
 	void clearBufferAndDirectory();
 	void clearBuffer();
 
-	int reduceCMDBufferTest(TEST_CMD in, TEST_CMD& out);
+	int reduceCMDBufferTest(TestCmdFormat in, TestCmdFormat& out);
 private:
 	int reduceCMDBuffer(ReduceCmd in, ReduceCmd& out);
 

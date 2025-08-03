@@ -44,8 +44,8 @@ public:
 
 	FileInterface nandFile{ "../ssd_nand.txt" };
 	FileInterface outputFile{ "../ssd_output.txt" };
-	TEST_CMD test_in;
-	TEST_CMD test_out;
+	TestCmdFormat test_in;
+	TestCmdFormat test_out;
 
 	void processMockBuilderFunctions()
 	{
