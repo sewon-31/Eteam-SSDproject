@@ -94,9 +94,6 @@ CommandBuffer::optimizeBuffer()
 		auto cmd = buffer.at(bufIdx);
 		auto type = cmd->getCmdType();
 
-#ifdef PRINT_DEBUG_CMDB
-		std::cout << "optimizeBuffer : buffer_size" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
-#endif
 		if (type == CmdType::WRITE) {
 			std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
 			
@@ -105,17 +102,17 @@ CommandBuffer::optimizeBuffer()
 			in.size.push_back(1);
 			in.data.push_back(wCmdPtr->getValue());
 #ifdef PRINT_DEBUG_CMDB
-			std::cout << "IN CMD -> WRITE" << " " << in.lba[inBufIdx] << " " << in.data[inBufIdx] << "\n";
+			std::cout << "IN CMD -> WRITE" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
 #endif
 		}
 		if (type == CmdType::ERASE) {
 			std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
 			in.op.push_back(cmd->getCmdType());
 			in.lba.push_back(cmd->getLBA());
-			in.size.push_back(1);
+			in.size.push_back(eCmdPtr->getSize());
 			in.data.push_back("");
 #ifdef PRINT_DEBUG_CMDB
-			std::cout << "IN CMD -> ERASE" << " " << in.lba[inBufIdx] << " " << in.size[inBufIdx] << "\n";
+			std::cout << "IN CMD -> ERASE" << " " << in.lba[bufIdx] << " " << in.size[bufIdx] << "\n";
 #endif
 		}
 	}
@@ -342,7 +339,7 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 		}
 	}
 
-#ifdef 1
+#ifdef PRINT_DEBUG_CMDB
 	printVirtualMap(virtualMap);
 #endif
 
@@ -414,8 +411,8 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 
 	return static_cast<int>(out.op.size());
 }
-#ifdef 1
-void CommandBuffer::printVirtualMap(std::vector<int>& virtualMap)
+
+void CommandBuffer::printVirtualMap(const std::vector<int>& virtualMap)
 {
 	const int BUF_MAX = 100;
 	const int OP_NULL = 9;
@@ -435,4 +432,3 @@ void CommandBuffer::printVirtualMap(std::vector<int>& virtualMap)
 	}
 	std::cout << "\n";
 }
-#endif

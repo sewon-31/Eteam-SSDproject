@@ -5,6 +5,9 @@
 #include <memory>
 #include <string>
 
+#if __DEBUG
+#define PRINT_DEBUG_CMDB 1
+#endif
 using std::vector;
 using std::string;
 
@@ -47,7 +50,5 @@ private:
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;
-#ifdef 1
-	void printVirtualMap(std::vector<int>& virtualMap);
-#endif
+	void printVirtualMap(const std::vector<int>& virtualMap);
 };
