@@ -47,7 +47,7 @@ private:
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;
-#ifdef _DEBUG
+#ifdef 1
 	void printVirtualMap(std::vector<int>& virtualMap);
 #endif
 };

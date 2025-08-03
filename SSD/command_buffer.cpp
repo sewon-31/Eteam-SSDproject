@@ -342,7 +342,7 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 		}
 	}
 
-#ifdef _DEBUG
+#ifdef 1
 	printVirtualMap(virtualMap);
 #endif
 
@@ -414,7 +414,7 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 
 	return static_cast<int>(out.op.size());
 }
-#ifdef _DEBUG
+#ifdef 1
 void CommandBuffer::printVirtualMap(std::vector<int>& virtualMap)
 {
 	const int BUF_MAX = 100;
@@ -422,7 +422,7 @@ void CommandBuffer::printVirtualMap(std::vector<int>& virtualMap)
 	const int OP_E = 7;
 
 	int lineStart = 0;
-	std::cout << "\nMap: 0 1 2 3 4 5 6 7 8 9\n" << lineStart << "  : ";
+	std::cout << "Map: 0 1 2 3 4 5 6 7 8 9\n" << lineStart << "  : ";
 	lineStart += 10;
 	for (int i = 0; i < BUF_MAX; ++i) {
 		if (virtualMap[i] == OP_NULL) std::cout << ". ";
@@ -433,5 +433,6 @@ void CommandBuffer::printVirtualMap(std::vector<int>& virtualMap)
 			lineStart += 10;
 		}
 	}
+	std::cout << "\n";
 }
 #endif
