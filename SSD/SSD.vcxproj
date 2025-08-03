@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="command.cpp" />
     <ClCompile Include="command_buffer.cpp" />
+    <ClCompile Include="command_buffer_test.cpp" />
     <ClCompile Include="file_interface.cpp" />
     <ClCompile Include="file_interface_test.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">   %(AdditionalOptions)</AdditionalOptions>

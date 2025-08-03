@@ -35,6 +35,7 @@ public:
 	static const int BUFFER_MAX = 5;
 	static constexpr const char* EMPTY = "empty";
 
+	int reduceCMDBuffer(ReduceCmd in, ReduceCmd& out);
 private:
 	CommandBuffer(const string& dirPath);
 	CommandBuffer(const CommandBuffer&) = delete;
@@ -43,8 +44,10 @@ private:
 
 	void initDirectory();
 	void updateFromDirectory();
-	int reduceCMDBuffer(ReduceCmd in, ReduceCmd& out);
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;
+#ifdef _DEBUG
+	void printVirtualMap(std::vector<int>& virtualMap);
+#endif
 };

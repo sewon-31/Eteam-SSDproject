@@ -307,7 +307,7 @@ CommandBuffer::updateToDirectory()
 	}
 }
 
-int
+int 
 CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 {
 	const int BUF_MAX = 100;
@@ -343,12 +343,7 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 	}
 
 #ifdef _DEBUG
-	for (int i = 0; i < BUF_MAX; ++i) {
-		if (virtualMap[i] == OP_NULL) std::cout << ". ";
-		else if (virtualMap[i] == OP_E) std::cout << "E ";
-		else std::cout << "W ";
-		if (i % 10 == 9) std::cout << "\n";
-	}
+	printVirtualMap(virtualMap);
 #endif
 
 	// Step 3: Construct ersCmd and wrCmd
@@ -419,3 +414,24 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 
 	return static_cast<int>(out.op.size());
 }
+#ifdef _DEBUG
+void CommandBuffer::printVirtualMap(std::vector<int>& virtualMap)
+{
+	const int BUF_MAX = 100;
+	const int OP_NULL = 9;
+	const int OP_E = 7;
+
+	int lineStart = 0;
+	std::cout << "\nMap: 0 1 2 3 4 5 6 7 8 9\n" << lineStart << "  : ";
+	lineStart += 10;
+	for (int i = 0; i < BUF_MAX; ++i) {
+		if (virtualMap[i] == OP_NULL) std::cout << ". ";
+		else if (virtualMap[i] == OP_E) std::cout << "E ";
+		else std::cout << "W ";
+		if (i % 10 == 9 && i != BUF_MAX - 1) {
+			std::cout << "\n" << lineStart << " : ";
+			lineStart += 10;
+		}
+	}
+}
+#endif
