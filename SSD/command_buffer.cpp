@@ -86,38 +86,19 @@ CommandBuffer::addCommandToBuffer(std::shared_ptr<ICommand> command)
 bool
 CommandBuffer::optimizeBuffer()
 {
-	int bufSize = static_cast<int>(buffer.size());
 	MergeCmd in;
 	MergeCmd out;
 
-	for (int bufIdx = 0; bufIdx < bufSize; bufIdx++) {
-		auto cmd = buffer.at(bufIdx);
-		auto type = cmd->getCmdType();
-
-		if (type == CmdType::WRITE) {
-			std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
-			
-			in.op.push_back(cmd->getCmdType());
-			in.lba.push_back(cmd->getLBA());
-			in.size.push_back(1);
-			in.data.push_back(wCmdPtr->getValue());
-#ifdef PRINT_DEBUG_CMDB
-			std::cout << "IN CMD -> WRITE" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
-#endif
-		}
-		if (type == CmdType::ERASE) {
-			std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
-			in.op.push_back(cmd->getCmdType());
-			in.lba.push_back(cmd->getLBA());
-			in.size.push_back(eCmdPtr->getSize());
-			in.data.push_back("");
-#ifdef PRINT_DEBUG_CMDB
-			std::cout << "IN CMD -> ERASE" << " " << in.lba[bufIdx] << " " << in.size[bufIdx] << "\n";
-#endif
-		}
-	}
-
+	getMergeCmd(in);
 	int new_buf_size = mergeCmdBuffer(in, out);
+	updateMergeCmd(new_buf_size, out);
+	return true;
+}
+
+void CommandBuffer::updateMergeCmd(int new_buf_size, MergeCmd& out)
+{
+	int bufSize = static_cast<int>(buffer.size());
+
 	if (new_buf_size < bufSize)
 	{
 		std::shared_ptr<SSDCommandBuilder> builder;
@@ -147,7 +128,38 @@ CommandBuffer::optimizeBuffer()
 			}
 		}
 	}
-	return true;
+}
+
+void CommandBuffer::getMergeCmd(MergeCmd& in)
+{
+	int bufSize = static_cast<int>(buffer.size());
+
+	for (int bufIdx = 0; bufIdx < bufSize; bufIdx++) {
+		auto cmd = buffer.at(bufIdx);
+		auto type = cmd->getCmdType();
+
+		if (type == CmdType::WRITE) {
+			std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
+
+			in.op.push_back(cmd->getCmdType());
+			in.lba.push_back(cmd->getLBA());
+			in.size.push_back(1);
+			in.data.push_back(wCmdPtr->getValue());
+#ifdef PRINT_DEBUG_CMDB
+			std::cout << "IN CMD -> WRITE" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
+#endif
+		}
+		if (type == CmdType::ERASE) {
+			std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
+			in.op.push_back(cmd->getCmdType());
+			in.lba.push_back(cmd->getLBA());
+			in.size.push_back(eCmdPtr->getSize());
+			in.data.push_back("");
+#ifdef PRINT_DEBUG_CMDB
+			std::cout << "IN CMD -> ERASE" << " " << in.lba[bufIdx] << " " << in.size[bufIdx] << "\n";
+#endif
+		}
+	}
 }
 
 void

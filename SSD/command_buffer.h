@@ -5,9 +5,6 @@
 #include <memory>
 #include <string>
 
-#if _DEBUG
-#define PRINT_DEBUG_CMDB 1
-#endif
 using std::vector;
 using std::string;
 
@@ -47,6 +44,10 @@ private:
 
 	void initDirectory();
 	void updateFromDirectory();
+
+	void updateMergeCmd(int new_buf_size, MergeCmd& out);
+	void getMergeCmd(MergeCmd& in);
+
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	//std::shared_ptr<SSD> ssd;
