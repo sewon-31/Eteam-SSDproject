@@ -150,7 +150,7 @@ CommandBuffer::initDirectory()
 	if (!FileInterface::directoryExists(bufferDirPath)) {
 		FileInterface::createDirectory(bufferDirPath);
 		for (int i = 1; i <= BUFFER_MAX; ++i) {
-			string path = bufferDirPath + "/" + std::to_string(i) + "_empty";
+			string path = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
 			FileInterface::writeLine(path, "", false);
 		}
 	}

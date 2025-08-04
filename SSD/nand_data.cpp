@@ -55,7 +55,7 @@ NandData::updateFromFile()
 		return false;
 	}
 
-	for (int i = 0; i < LBA::SIZE; ++i) {
+	for (int i = LBA::MIN; i <= LBA::MAX; ++i) {
 		data[i] = lines[i];
 	}
 
