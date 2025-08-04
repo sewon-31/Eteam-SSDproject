@@ -1,4 +1,4 @@
-#include "logger.h"
+﻿#include "logger.h"
 #include <stdarg.h>
 #include <iostream>
 #include <sstream>
@@ -77,7 +77,13 @@ void Logger::zipOldLogFile() {
     const std::string newExt = ".zip";
     std::string newFileName = oldFileName.substr(0, oldFileName.size() - oldExt.size()) + newExt;
     if (std::rename(oldFileName.c_str(), newFileName.c_str()) != 0) {
-        std::cerr << "Failed to compress log file: " << oldFileName << "\n";
+        std::remove(newFileName.c_str());
+        if (std::rename(oldFileName.c_str(), newFileName.c_str()) != 0) {
+            std::cerr << "Failed to compress log file: " << oldFileName << "\n";
+            char buf[256];
+            strerror_s(buf, sizeof(buf), errno);
+            std::cerr << "Reason: " << buf << "\n";
+        }
     }
 }
 
@@ -88,8 +94,11 @@ void Logger::rotateLogIfFull(size_t size) {
     zipOldLogFile();
     auto backupFile = getBackupLogFileName();
     if (std::rename(LOG_FILE.c_str(), backupFile.c_str()) != 0) {
-        std::cerr << "Failed to rename log file for rotation\n";
-        return;
+        std::remove(backupFile.c_str());
+        if (std::rename(LOG_FILE.c_str(), backupFile.c_str()) != 0) {
+            std::cerr << "Failed to rename log file for rotation\n";
+            return;
+        }
     }
     FileUtil::clearFile(LOG_FILE);
 }
