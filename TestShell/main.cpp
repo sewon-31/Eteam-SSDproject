@@ -1,5 +1,5 @@
+#include "command_executor.h"
 #include "test_shell.h"
-
 
 #if _DEBUG
 using namespace testing;
@@ -12,16 +12,18 @@ int main() {
 #else
 
 int main(int argc, char* argv[]) {
-	TestShell ts(new SSDDriver());
+	std::unique_ptr<ICommandExecutor> executor;
 
 	if (argc == 1) {
-		ts.runShell();
+		executor = std::make_unique<TestShell>();
 	}
 
 	if (argc > 1) {
-		ts.runScript(argv[1]);
+		executor = std::make_unique<TestScript>(argv[1]);
 	}
-	
+
+	executor->execute();
+
 	return 0;
 }
 
