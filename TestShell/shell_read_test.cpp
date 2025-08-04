@@ -77,7 +77,7 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 }
 
 
-TEST_F(TestShellRead, ReadPassWithMockRunExe) {
+TEST_F(TestShellRead, SSDReadPassWithMockRunExe) {
 	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(true));
@@ -85,7 +85,7 @@ TEST_F(TestShellRead, ReadPassWithMockRunExe) {
 	EXPECT_EQ("0xAAAAAAAA", mockSSD.read(0));
 }
 
-TEST(TestShellRead, ReadFailWithMockRunExe) {
+TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(false));
@@ -99,7 +99,7 @@ TEST(TestShellRead, ReadFailWithMockRunExe) {
 	}
 }
 
-TEST_F(TestShellRead, ReadPassWithMockRunExe) {
+TEST_F(TestShellRead, ShellReadPassWithMockRunExe) {
 
 	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
@@ -119,7 +119,7 @@ TEST_F(TestShellRead, ReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, getLastLine(oss.str()));
 }
 
-TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
+TEST_F(TestShellRead, ShellFullReadPassWithMockRunExe) {
 	ssdReadFileSetUp();
 
 	EXPECT_CALL(mockSSD, runExe)
@@ -151,7 +151,7 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
-TEST_F(TestShellRead, ReadFailWithMockRunExe) {
+TEST_F(TestShellRead, ShellReadFailWithMockRunExe) {
 
 	EXPECT_CALL(mockSSD, runExe)
 		.WillRepeatedly(Return(false));
@@ -169,7 +169,7 @@ TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()", oss.str());
 }
 
-TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
+TEST_F(TestShellRead, ShellFullReadFailWithMockRunExe) {
 	ssdReadFileSetUp();
 
 	EXPECT_CALL(mockSSD, runExe)
