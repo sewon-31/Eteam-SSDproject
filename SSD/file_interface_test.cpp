@@ -16,14 +16,14 @@ public:
 	string read_str;
 };
 
-TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_SINGLE_LINE) {
+TEST_F(FileInterfaceFixture, TC_FileWriteAndReadSingleLine) {
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
 	EXPECT_TRUE(FileInterface::writeLine(testFilePath, expected_str));
 	EXPECT_TRUE(FileInterface::readLine(testFilePath, read_str));
 	EXPECT_EQ(read_str, expected_str);
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
+TEST_F(FileInterfaceFixture, TC_FileWriteAndReadMultiLine) {
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
 
 	EXPECT_TRUE(FileInterface::writeLine(testFilePath, expected_str));
@@ -40,7 +40,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
 	EXPECT_EQ(lines[3], expected_str3);
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_CLEAR) {
+TEST_F(FileInterfaceFixture, TC_FileClear) {
 	EXPECT_TRUE(FileInterface::writeLine(testFilePath, expected_str));
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
 
@@ -49,7 +49,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_CLEAR) {
 	EXPECT_TRUE(lines.empty());
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_SIZE_CHECK) {
+TEST_F(FileInterfaceFixture, TC_FileSizeCheck) {
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
 	EXPECT_TRUE(FileInterface::writeLine(testFilePath, expected_str));
 	EXPECT_EQ(FileInterface::getFileSize(testFilePath), expected_str.size() + 2); // +2 for \r\n (windows)
@@ -58,12 +58,12 @@ TEST_F(FileInterfaceFixture, TC_FILE_SIZE_CHECK) {
 	EXPECT_EQ(FileInterface::getFileSize(testFilePath), (expected_str.size() + 2) * 2);
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_EXIST_CHECK) {
+TEST_F(FileInterfaceFixture, TC_FileExistCheck) {
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
 	EXPECT_TRUE(FileInterface::fileExists(testFilePath));
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_RENAME) {
+TEST_F(FileInterfaceFixture, TC_FileRename) {
 	std::string newPath = "../ssd_interface_test_renamed.txt";
 
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
@@ -75,7 +75,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_RENAME) {
 	FileInterface::renameFile(newPath, testFilePath);
 }
 
-TEST_F(FileInterfaceFixture, TC_DIRECTORY_CREATE_AND_CLEAR) {
+TEST_F(FileInterfaceFixture, TC_DirectoryCreateAndClear) {
 	std::string testDir = "../test_dir";
 
 	if (FileInterface::directoryExists(testDir)) {

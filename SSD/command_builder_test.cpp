@@ -42,7 +42,7 @@ public:
 	}
 };
 
-TEST_F(SSDCommandParserTestFixture, InvalidParameterCount1)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidParameterCount1)
 {
 	builder.setCommandVector(vector<string>());
 	EXPECT_FALSE(builder.isValidCommand());
@@ -51,13 +51,13 @@ TEST_F(SSDCommandParserTestFixture, InvalidParameterCount1)
 	EXPECT_FALSE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidOperationCommand)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidOperationCommand)
 {
 	builder.setCommandVector({ CMD_INVALID, VALID_VALUE });
 	EXPECT_FALSE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidParameterCount2)
 {
 	builder.setCommandVector({ CMD_WRITE, VALID_LBA });
 	EXPECT_FALSE(builder.isValidCommand());
@@ -72,7 +72,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidParameterCount2)
 	EXPECT_FALSE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidLBA)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidLBA)
 {
 	builder.setCommandVector({ CMD_READ, INVALID_LBA_NOT_A_NUMBER });
 	EXPECT_FALSE(builder.isValidCommand());
@@ -81,7 +81,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidLBA)
 	EXPECT_FALSE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidValue)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidValue)
 {
 	builder.setCommandVector({ CMD_WRITE, VALID_LBA, INVALID_VALUE1 });
 	EXPECT_FALSE(builder.isValidCommand());
@@ -93,7 +93,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidValue)
 	EXPECT_FALSE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidSize)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidSize)
 {
 	builder.setCommandVector({ CMD_ERASE, VALID_LBA, INVALID_SIZE1 });
 	EXPECT_FALSE(builder.isValidCommand());
@@ -105,7 +105,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidSize)
 	EXPECT_TRUE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, InvalidLBARange)
+TEST_F(SSDCommandParserTestFixture, TC_InvalidLBARange)
 {
 	builder.setCommandVector({ CMD_ERASE, "90", MAX_SIZE});
 	EXPECT_TRUE(builder.isValidCommand());
@@ -117,7 +117,7 @@ TEST_F(SSDCommandParserTestFixture, InvalidLBARange)
 	EXPECT_TRUE(builder.isValidCommand());
 }
 
-TEST_F(SSDCommandParserTestFixture, ValidValue)
+TEST_F(SSDCommandParserTestFixture, TC_ValidValue)
 {
 	builder.setCommandVector({ CMD_WRITE, VALID_LBA, VALID_VALUE });
 	EXPECT_TRUE(builder.isValidCommand());

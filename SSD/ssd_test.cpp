@@ -51,7 +51,7 @@ public:
 	}
 };
 
-TEST_F(SSDTestFixture, RunCommandTest1) {
+TEST_F(SSDTestFixture, TC_SsdRunCommandTest1) {
 	processMockBuilderFunctions();
 	vector<string> input = { "R", "0" };
 
@@ -69,7 +69,7 @@ TEST_F(SSDTestFixture, RunCommandTest1) {
 }
 
 // DISABLED - WriteCommand::getValue cannot be mocked
-TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
+TEST_F(SSDTestFixture, TC_SsdDisabledRunCommandTest2) {
 	processMockBuilderFunctions();
 	vector<string> input = { "W", "0", "0x00001111" };
 
@@ -88,7 +88,7 @@ TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, GetInvalidCommandTest) {
+TEST_F(SSDTestFixture, TC_SsdGetInvalidCommandTest) {
 	processMockBuilderFunctions();
 	vector<string> input = { "R", "0", "0x00000000" };
 
@@ -106,7 +106,7 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, ReadTest) {
+TEST_F(SSDTestFixture, TC_SsdReadTest) {
 	app.run({ "R", "0" });
 
 	string actual;
@@ -125,7 +125,7 @@ TEST_F(SSDTestFixture, ReadTest) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, WriteText) {
+TEST_F(SSDTestFixture, TC_SsdWriteText) {
 	vector<string> input = { "W", "0", "0x11112222" };
 
 	app.run(input);
@@ -153,7 +153,7 @@ TEST_F(SSDTestFixture, WriteText) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_FULL_WRITE) {
+TEST_F(SSDTestFixture, TC_FileFullWrite) {
 	string str[100];
 	char buffer[16];
 
@@ -168,7 +168,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
+TEST_F(SSDTestFixture, TC_FileFullWriteAndRead) {
 	string str[100];
 	char buffer[16];
 
@@ -191,14 +191,14 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
+TEST_F(SSDTestFixture, TC_FileWriteAndChecksize) {
 	string expected_str = "0x12341234";
 
 	EXPECT_TRUE(app.updateOutputFile(expected_str));
 	EXPECT_EQ(12, FileInterface::getFileSize(outputFile));
 }
 
-TEST_F(SSDTestFixture, TC_ERASE) {
+TEST_F(SSDTestFixture, TC_FileErase) {
 	string str[100];
 	char buffer[16];
 
