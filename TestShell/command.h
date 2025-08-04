@@ -14,15 +14,24 @@ public:
     const static int NUM_OF_LBA = 100;
 };
 
-// concreate commands
-class ReadCommand : public Command {
+class IOCommand: public Command {
 public:
-    ReadCommand(SSDInterface* ssd) : ssd(ssd) {}
+    IOCommand(SSDInterface* ssd) :ssd(ssd) {}
+    virtual ~IOCommand() = default;
+protected:
+    SSDInterface* ssd;
+private:
+    IOCommand() = default;
+};
+
+// concreate commands
+class ReadCommand : public IOCommand {
+public:
+    ReadCommand(SSDInterface* ssd) : IOCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 protected:
     void ssdReadAndPrint(int addr);
 private:
-    SSDInterface* ssd;
     const string READ_HEADER = "[Read] LBA ";
     const string READ_MIDFIX = " : ";
     const string READ_FOOTER = "\n";
@@ -32,12 +41,11 @@ private:
     void read(int lba);
 };
 
-class WriteCommand : public Command {
+class WriteCommand : public IOCommand {
 public:
-    WriteCommand(SSDInterface* ssd) : ssd(ssd) {}
+    WriteCommand(SSDInterface* ssd) : IOCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 private:
-    SSDInterface* ssd;
     const int ARG_IDX_LBA = 0;
     const int ARG_IDX_VALUE = 1;
 
@@ -53,12 +61,11 @@ private:
     void fullRead();
 };
 
-class FullWriteCommand : public Command {
+class FullWriteCommand : public IOCommand {
 public:
-    FullWriteCommand(SSDInterface* ssd) : ssd(ssd) {}
+    FullWriteCommand(SSDInterface* ssd) : IOCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 private:
-    SSDInterface* ssd;
     const int ARG_IDX_VALUE = 0;
 
     void fullWrite(std::string value);
@@ -74,9 +81,9 @@ public:
     bool execute(const std::vector<std::string>& args) override;
 };
 
-class EraseCommand : public Command {
+class EraseCommand : public IOCommand {
 public:
-    EraseCommand(SSDInterface* ssd) : ssd(ssd) {}
+    EraseCommand(SSDInterface* ssd) : IOCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 
 protected:
@@ -87,8 +94,6 @@ protected:
     void erase(int lba, int size);
     void parseSizeAndErase(int lba, int size);
 
-private:
-    SSDInterface* ssd;
 };
 
 class EraseRangeCommand : public EraseCommand {
@@ -103,13 +108,11 @@ private:
     void eraseRange(int startLba, int endLba);
 };
 
-class FlushCommand : public Command {
+class FlushCommand : public IOCommand {
 public:
-    FlushCommand(SSDInterface* ssd) : ssd(ssd) {}
+    FlushCommand(SSDInterface* ssd) : IOCommand(ssd) {}
     bool execute(const std::vector<std::string>& args) override;
 
 private:
-    SSDInterface* ssd;
-
     void flush();
 };
