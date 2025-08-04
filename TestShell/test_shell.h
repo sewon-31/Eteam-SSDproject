@@ -34,10 +34,6 @@ public:
 		this->ssd = ssd;
 	}
 
-	void setFilename(const string& filename) {
-		this->filename = filename;
-	}
-
 	void execute() override;
 	bool ExecuteCommand(const vector<string>& commandVector);
 

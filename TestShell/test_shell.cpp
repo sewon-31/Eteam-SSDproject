@@ -7,25 +7,6 @@
 
 using std::cout;
 
-bool TestShell::ExecuteCommand(const vector<string>& commandVector)
-{
-    std::string opCommand = commandVector.at(0);
-
-    std::unique_ptr<Command> command = CommandFactory::createCommand(commandVector, ssd);
-
-    if (command) {
-        std::vector<std::string> args(commandVector.begin() + 1, commandVector.end());
-        return command->execute(args);
-    }
-    else {
-        PRINT_LOG("[Error] Unknown command: ");
-        std::cout << "[Error] Unknown command: " << commandVector.at(0) << std::endl;
-        return true;
-    }
-
-    return true;
-}
-
 void TestShell::execute()
 {
     std::string inputLine;
@@ -47,6 +28,25 @@ void TestShell::execute()
 
         if (false == ExecuteCommand(commandParser.getCommandVector())) return;
     }
+}
+
+bool TestShell::ExecuteCommand(const vector<string>& commandVector)
+{
+    std::string opCommand = commandVector.at(0);
+
+    std::unique_ptr<Command> command = CommandFactory::createCommand(commandVector, ssd);
+
+    if (command) {
+        std::vector<std::string> args(commandVector.begin() + 1, commandVector.end());
+        return command->execute(args);
+    }
+    else {
+        PRINT_LOG("[Error] Unknown command: ");
+        std::cout << "[Error] Unknown command: " << commandVector.at(0) << std::endl;
+        return true;
+    }
+
+    return true;
 }
 
 void TestScript::execute()
