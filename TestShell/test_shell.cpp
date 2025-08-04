@@ -78,7 +78,7 @@ void TestScript::execute()
     }
 }
 
-bool TestScript::ExecuteCommand(const vector<string>& commandVector)
+bool TestScript::executeCommand(const vector<string>& commandVector)
 {
     std::string opCommand = commandVector.at(0);
 
