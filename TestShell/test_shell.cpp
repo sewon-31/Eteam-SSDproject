@@ -6,7 +6,8 @@
 #include "logger.h"
 
 using std::cout;
-bool TestShell::ExecuteCommand(vector<string> commandVector)
+
+bool TestShell::ExecuteCommand(const vector<string>& commandVector)
 {
     std::string opCommand = commandVector.at(0);
 
@@ -25,7 +26,7 @@ bool TestShell::ExecuteCommand(vector<string> commandVector)
     return true;
 }
 
-void TestShell::runShell()
+void TestShell::execute()
 {
     std::string inputLine;
 
@@ -48,7 +49,7 @@ void TestShell::runShell()
     }
 }
 
-void TestShell::runScript(std::string filename)
+void TestScript::execute()
 {
     if (fileUtil.fileExists(filename) == false) {
         PRINT_LOG("[Error] Invalid File Name.");
@@ -68,11 +69,30 @@ void TestShell::runScript(std::string filename)
 
         std::unique_ptr<Command> command = CommandFactory::createScriptCommand(commandVector, ssd);
 
-       if(command == nullptr) {
+        if (command == nullptr) {
             cout << FAIL;
             break;
         }
 
         if (command->execute(commandVector) == false) break;
     }
+}
+
+bool TestScript::ExecuteCommand(const vector<string>& commandVector)
+{
+    std::string opCommand = commandVector.at(0);
+
+    std::unique_ptr<Command> command = CommandFactory::createCommand(commandVector, ssd);
+
+    if (command) {
+        std::vector<std::string> args(commandVector.begin() + 1, commandVector.end());
+        return command->execute(args);
+    }
+    else {
+        PRINT_LOG("[Error] Unknown command: ");
+        std::cout << "[Error] Unknown command: " << commandVector.at(0) << std::endl;
+        return true;
+    }
+
+    return true;
 }

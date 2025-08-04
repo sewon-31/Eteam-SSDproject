@@ -5,16 +5,17 @@
 class ShellRunScript : public testing::Test, public HandleConsoleOutputFixture {
 public:
 	FileUtil fileUtil;
-	TestShell shell;
+	TestScript shell;
 	std::ostringstream oss;
 
 	void testRun(string argv) {
 		shell.setSSD(new SSDDriver());
+		shell.setFilename(argv);
 
 		auto oldCoutStreamBuf = std::cout.rdbuf();
 		std::cout.rdbuf(oss.rdbuf());
 
-		shell.runScript(argv);
+		shell.execute();
 
 		std::cout.rdbuf(oldCoutStreamBuf);
 	}
