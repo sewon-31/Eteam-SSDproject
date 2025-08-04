@@ -319,13 +319,33 @@ CommandBuffer::updateToDirectory()
 int 
 CommandBuffer::mergeCmdBuffer(MergeCmd in, MergeCmd& out)
 {
-	const int BUF_MAX = 100;
-	const int OP_NULL = 9;
-	const int OP_E = 7;
-	const int OP_W_MAX = 5;
+	// Step 1: Replace WRITE with 0x00000000 by ERASE
+	replaceZeroWriteCmdToEraseCmd(in);
+
+	// Step 2: Build virtualMap
+	std::vector<int> virtualMap(BUF_MAX, OP_NULL);
+
+	buildVirtualMap(in, virtualMap);
+
+#ifdef PRINT_DEBUG_CMDB
+	printVirtualMap(virtualMap);
+#endif
+
+	// Step 3: Construct ersCmd and wrCmd
+	MergeCmd ersCmd, wrCmd;
+
+	buildMergedCmd(virtualMap, ersCmd, wrCmd, in);
+
+	// Step 4: Combine ersCmd and wrCmd into out
+	updateCommandBuffer(out, ersCmd, wrCmd);
+
+	return static_cast<int>(out.op.size());
+}
+
+void CommandBuffer::replaceZeroWriteCmdToEraseCmd(MergeCmd& in)
+{
 	int cmdCount = in.op.size();
 
-	// Step 1: Replace WRITE with 0x00000000 by ERASE
 	for (int i = 0; i < cmdCount; i++) {
 		if (in.op[i] == CmdType::WRITE && in.data[i] == "0x00000000") {
 			in.op[i] = CmdType::ERASE;
@@ -333,9 +353,11 @@ CommandBuffer::mergeCmdBuffer(MergeCmd in, MergeCmd& out)
 			in.data[i] = "";
 		}
 	}
+}
 
-	// Step 2: Build virtualMap
-	std::vector<int> virtualMap(BUF_MAX, OP_NULL);
+void CommandBuffer::buildVirtualMap(const MergeCmd& in, std::vector<int>& virtualMap)
+{
+	int cmdCount = in.op.size();
 
 	for (int i = 0; i < cmdCount; i++) {
 		if (in.op[i] == CmdType::WRITE) {
@@ -350,15 +372,11 @@ CommandBuffer::mergeCmdBuffer(MergeCmd in, MergeCmd& out)
 			}
 		}
 	}
+}
 
-#ifdef PRINT_DEBUG_CMDB
-	printVirtualMap(virtualMap);
-#endif
-
-	// Step 3: Construct ersCmd and wrCmd
-	MergeCmd ersCmd, wrCmd;
+void CommandBuffer::buildMergedCmd(const std::vector<int>& virtualMap, MergeCmd& ersCmd, MergeCmd& wrCmd, const  MergeCmd& in)
+{
 	int eraseCmdSequence = 0;
-	bool isEraseRange = false;
 
 	for (int idxLba = 0; idxLba < BUF_MAX; idxLba++) {
 		int vmp = virtualMap[idxLba];
@@ -407,29 +425,23 @@ CommandBuffer::mergeCmdBuffer(MergeCmd in, MergeCmd& out)
 			eraseCmdSequence = 0;
 		}
 	}
+}
 
-	// Step 4: Combine ersCmd and wrCmd into out
-	// Append erase commands
+void CommandBuffer::updateCommandBuffer(MergeCmd& out, const  MergeCmd& ersCmd, const  MergeCmd& wrCmd)
+{
 	out.op.insert(out.op.end(), ersCmd.op.begin(), ersCmd.op.end());
 	out.lba.insert(out.lba.end(), ersCmd.lba.begin(), ersCmd.lba.end());
 	out.size.insert(out.size.end(), ersCmd.size.begin(), ersCmd.size.end());
 	out.data.insert(out.data.end(), ersCmd.data.begin(), ersCmd.data.end());
 
-	// Append write commands
 	out.op.insert(out.op.end(), wrCmd.op.begin(), wrCmd.op.end());
 	out.lba.insert(out.lba.end(), wrCmd.lba.begin(), wrCmd.lba.end());
 	out.size.insert(out.size.end(), wrCmd.size.begin(), wrCmd.size.end());
 	out.data.insert(out.data.end(), wrCmd.data.begin(), wrCmd.data.end());
-
-	return static_cast<int>(out.op.size());
 }
 
 void CommandBuffer::printVirtualMap(const std::vector<int>& virtualMap)
 {
-	const int BUF_MAX = 100;
-	const int OP_NULL = 9;
-	const int OP_E = 7;
-
 	int lineStart = 0;
 	std::cout << "Map: 0 1 2 3 4 5 6 7 8 9\n" << lineStart << "  : ";
 	lineStart += 10;
