@@ -45,7 +45,7 @@ private:
 	void initDirectory();
 	void updateFromDirectory();
 
-	void updateMergeCmd(int new_buf_size, MergeCmd& out);
+	void updateMergeCmd(int newBufSize, MergeCmd& out);
 	void getMergeCmd(MergeCmd& in);
 
 	void replaceZeroWriteCmdToEraseCmd(MergeCmd& in);

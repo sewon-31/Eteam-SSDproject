@@ -95,11 +95,11 @@ CommandBuffer::optimizeBuffer()
 	return true;
 }
 
-void CommandBuffer::updateMergeCmd(int new_buf_size, MergeCmd& out)
+void CommandBuffer::updateMergeCmd(int newBufSize, MergeCmd& out)
 {
 	int bufSize = static_cast<int>(buffer.size());
 
-	if (new_buf_size < bufSize)
+	if (newBufSize < bufSize)
 	{
 		std::shared_ptr<SSDCommandBuilder> builder;
 
@@ -108,7 +108,7 @@ void CommandBuffer::updateMergeCmd(int new_buf_size, MergeCmd& out)
 		}
 		buffer.clear();
 
-		for (int bufIdx = 0; bufIdx < newSize; ++bufIdx) {
+		for (int bufIdx = 0; bufIdx < newBufSize; ++bufIdx) {
 			vector<string> commandVector;
 			if (out.op[bufIdx] == CmdType::WRITE) {
 				commandVector = { "W", std::to_string(out.lba[bufIdx]), out.data[bufIdx] };

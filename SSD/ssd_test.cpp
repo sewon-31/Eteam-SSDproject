@@ -191,14 +191,8 @@ TEST_F(SSDTestFixture, TC_FileFullWriteAndRead) {
 	app.clearBufferAndDirectory();
 }
 
-<<<<<<< HEAD
-TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
+TEST_F(SSDTestFixture, TC_FileWriteAndChecksize) {
 	string expected_str = "0x12341234";
-=======
-TEST_F(SSDTestFixture, TC_FileWrite) {
-	char ret = true;
-	std::string expected_str = "0x12341234";
->>>>>>> 67ebf83 ([Refactor] Modifed SSD TC name)
 
 	EXPECT_TRUE(app.updateOutputFile(expected_str));
 	EXPECT_EQ(12, FileInterface::getFileSize(outputFile));
