@@ -2,7 +2,7 @@
 #include "command.h"
 #include "common_test_fixture.h"
 
-class ShellRunScript : public testing::Test, public HandleConsoleOutputFixture {
+class ShellRunScriptTestFixture : public testing::Test, public HandleConsoleOutputFixture {
 public:
 	FileUtil fileUtil;
 	std::ostringstream oss;
@@ -19,7 +19,7 @@ public:
 	}
 };
 
-TEST_F(ShellRunScript, NoFile) {		
+TEST_F(ShellRunScriptTestFixture, NoFile) {		
 	std::string argv = "AAAAAAAA";
 
 	testRun(argv);
@@ -28,7 +28,7 @@ TEST_F(ShellRunScript, NoFile) {
 }
 
 
-TEST_F(ShellRunScript, ExistFileButWrongCommand) {
+TEST_F(ShellRunScriptTestFixture, ExistFileButWrongCommand) {
 	std::string argv = "ssd_script.txt";
 	std::ofstream outfile(argv);
 	outfile << "read 1" << std::endl;
@@ -39,7 +39,7 @@ TEST_F(ShellRunScript, ExistFileButWrongCommand) {
 	EXPECT_EQ("read 1   ___   Run ... FAIL\n", getLastLine(oss.str()));
 }
 
-TEST_F(ShellRunScript, ExistFileAndGoodCommand) {
+TEST_F(ShellRunScriptTestFixture, ExistFileAndGoodCommand) {
 	if (fileUtil.fileExists("SSD.exe") == false) {
 		GTEST_SKIP() << "SSD.exe not found, skipping test.";
 	}

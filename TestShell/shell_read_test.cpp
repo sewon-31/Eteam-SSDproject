@@ -4,10 +4,10 @@
 
 using namespace testing;
 
-class TestShellRead : public Test, public HandleConsoleOutputFixture {
+class ShellReadTestFixture : public Test, public HandleConsoleOutputFixture {
 public:
 	MockSSDDriver mockSSD;
-	MockSSDDriverForRunExe SSDwithMockRunExe;
+	MockSSDDriverForRunExe ssdWithMockRunExe;
 	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
@@ -23,7 +23,7 @@ public:
 	}
 };
 
-TEST_F(TestShellRead, ReadPassWithMockSSD) {
+TEST_F(ShellReadTestFixture, ReadPassWithMockSSD) {
 	ssdReadFileSetUp();
 
 	EXPECT_CALL(mockSSD, read(0))
@@ -44,7 +44,7 @@ TEST_F(TestShellRead, ReadPassWithMockSSD) {
 	EXPECT_EQ(expect, getLastLine(oss.str()));
 }
 
-TEST_F(TestShellRead, FullReadPassWithMockSSD) {
+TEST_F(ShellReadTestFixture, FullReadPassWithMockSSD) {
 	ssdReadFileSetUp();
 
 	EXPECT_CALL(mockSSD, read)
@@ -77,24 +77,21 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
-
-TEST_F(TestShellRead, SSDReadPassWithMockRunExe) {
-
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+TEST_F(ShellReadTestFixture, SSDReadPassWithMockRunExe) {
+	EXPECT_CALL(ssdWithMockRunExe, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	EXPECT_EQ("0xAAAAAAAA", SSDwithMockRunExe.read(0));
+	EXPECT_EQ("0xAAAAAAAA", ssdWithMockRunExe.read(0));
 }
 
-TEST_F(TestShellRead, ShellReadFailWithMockRunExe) {
-
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+TEST_F(ShellReadTestFixture, ShellReadFailWithMockRunExe) {
+	EXPECT_CALL(ssdWithMockRunExe, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(false));
 
 	try {
-		SSDwithMockRunExe.read(0);
+		ssdWithMockRunExe.read(0);
 		FAIL();
 	}
 	catch (std::runtime_error e) {
@@ -102,13 +99,12 @@ TEST_F(TestShellRead, ShellReadFailWithMockRunExe) {
 	}
 }
 
-TEST_F(TestShellRead, CMDReadPassWithMockRunExe) {
-
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+TEST_F(ShellReadTestFixture, CMDReadPassWithMockRunExe) {
+	EXPECT_CALL(ssdWithMockRunExe, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	ReadCommand cmd{ &SSDwithMockRunExe };
+	ReadCommand cmd{ &ssdWithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -122,14 +118,14 @@ TEST_F(TestShellRead, CMDReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, getLastLine(oss.str()));
 }
 
-TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
+TEST_F(ShellReadTestFixture, FullReadPassWithMockRunExe) {
 	ssdReadFileSetUp();
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(ssdWithMockRunExe, runExe)
 		.Times(100)
 		.WillRepeatedly(Return(true));
 
-	FullReadCommand cmd{ &SSDwithMockRunExe };
+	FullReadCommand cmd{ &ssdWithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -154,12 +150,12 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
-TEST_F(TestShellRead, CMDReadFailWithMockRunExe) {
+TEST_F(ShellReadTestFixture, CMDReadFailWithMockRunExe) {
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(ssdWithMockRunExe, runExe)
 		.WillRepeatedly(Return(false));
 
-	ReadCommand cmd{ &SSDwithMockRunExe };
+	ReadCommand cmd{ &ssdWithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -172,13 +168,13 @@ TEST_F(TestShellRead, CMDReadFailWithMockRunExe) {
 	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()\n", oss.str());
 }
 
-TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
+TEST_F(ShellReadTestFixture, FullReadFailWithMockRunExe) {
 	ssdReadFileSetUp();
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(ssdWithMockRunExe, runExe)
 		.WillRepeatedly(Return(false));
 
-	FullReadCommand cmd{ &SSDwithMockRunExe };
+	FullReadCommand cmd{ &ssdWithMockRunExe };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();

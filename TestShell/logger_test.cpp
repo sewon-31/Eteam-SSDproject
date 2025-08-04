@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <regex>
 
-class LoggerTest :public testing::Test {
+class LoggerTestFixture :public testing::Test {
 protected:
 	Logger& logger = Logger::getInstance();
 	bool checkFormat(const std::string& output, const std::string& msg) {
@@ -23,14 +23,14 @@ protected:
 	}
 };
 
-TEST_F(LoggerTest, TestLogInteger) {
+TEST_F(LoggerTestFixture, LogInteger) {
 	testing::internal::CaptureStdout();
 	logger.log("LoggerTest.TestLogInteger()", "Integer: %d", 42);
 	std::string output = testing::internal::GetCapturedStdout();
 	EXPECT_TRUE(checkFormat(output, "Integer: 42"));
 }
 
-TEST_F(LoggerTest, TestLogString) {
+TEST_F(LoggerTestFixture, LogString) {
 	testing::internal::CaptureStdout();
 	logger.log("LoggerTest.PrintString()", "String: hello");
 	std::string output = testing::internal::GetCapturedStdout();

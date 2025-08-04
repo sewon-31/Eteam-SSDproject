@@ -6,7 +6,7 @@
 using namespace testing;
 using namespace std;
 
-class TestScriptsFixture : public Test {
+class ScriptsTestFixture : public Test {
 public:
 	void makeTests(std::string scriptName) {
 		if (scriptName == "FullWriteAndReadCompare") script = new ScriptsFullWriteAndReadCompare(&mockSSD);
@@ -23,7 +23,7 @@ public:
 	ScriptsCommand* script;
 };
 
-TEST_F(TestScriptsFixture, Success) {
+TEST_F(ScriptsTestFixture, Success) {
 	makeTests("FullWriteAndReadCompare");
 
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -35,7 +35,7 @@ TEST_F(TestScriptsFixture, Success) {
 	EXPECT_TRUE(script->run());
 }
 
-TEST_F(TestScriptsFixture, FailWithInvalidData) {
+TEST_F(ScriptsTestFixture, FailWithInvalidData) {
 	makeTests("FullWriteAndReadCompare");
 
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -46,7 +46,7 @@ TEST_F(TestScriptsFixture, FailWithInvalidData) {
 	EXPECT_FALSE(script->run());
 }
 
-TEST_F(TestScriptsFixture, TestScript2) {
+TEST_F(ScriptsTestFixture, Script2) {
 	makeTests("PartialLBAWrite");
 
 	// Write expectations
@@ -60,7 +60,7 @@ TEST_F(TestScriptsFixture, TestScript2) {
 	EXPECT_TRUE(script->run());
 }
 
-TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
+TEST_F(ScriptsTestFixture, WriteReadAging_CallsExpectedSequence) {
 	makeTests("WriteReadAging");
 
 	std::string val0 = "0x00001111";
@@ -80,7 +80,7 @@ TEST_F(TestScriptsFixture, WriteReadAging_CallsExpectedSequence) {
 	EXPECT_TRUE(script->run());
 }
 
-TEST_F(TestScriptsFixture, EraseAndWriteAgingSuccess) {
+TEST_F(ScriptsTestFixture, EraseAndWriteAgingSuccess) {
 	makeTests("EraseAndWriteAging");
 
 	std::string writeValue = "0x00001111";
