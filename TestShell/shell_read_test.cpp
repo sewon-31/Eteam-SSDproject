@@ -78,8 +78,7 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 }
 
 
-TEST(SSDDriverRead, ReadPassWithMockRunExe) {
-	MockSSDDriverForRunExe SSDwithMockRunExe;
+TEST_F(TestShellRead, SSDReadPassWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -88,8 +87,7 @@ TEST(SSDDriverRead, ReadPassWithMockRunExe) {
 	EXPECT_EQ("0xAAAAAAAA", SSDwithMockRunExe.read(0));
 }
 
-TEST(SSDDriverRead, ReadFailWithMockRunExe) {
-	MockSSDDriverForRunExe SSDwithMockRunExe;
+TEST_F(TestShellRead, ShellReadFailWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -104,7 +102,7 @@ TEST(SSDDriverRead, ReadFailWithMockRunExe) {
 	}
 }
 
-TEST_F(TestShellRead, ReadPassWithMockRunExe) {
+TEST_F(TestShellRead, CMDReadPassWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -156,7 +154,7 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
-TEST_F(TestShellRead, ReadFailWithMockRunExe) {
+TEST_F(TestShellRead, CMDReadFailWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.WillRepeatedly(Return(false));
