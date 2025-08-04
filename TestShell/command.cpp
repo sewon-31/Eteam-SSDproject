@@ -38,7 +38,7 @@ bool WriteCommand::execute(const std::vector<std::string>& args)
     return true;
 }
 
-void WriteCommand::write(int lba, std::string value)
+void WriteCommand::write(int lba, const std::string& value)
 {
 	if (ssd == nullptr) return;
 	if (lba > MAX_LBA || lba < MIN_LBA)
@@ -84,7 +84,7 @@ bool FullWriteCommand::execute(const std::vector<std::string>& args)
     return true;
 }
 
-void FullWriteCommand::fullWrite(std::string value) {
+void FullWriteCommand::fullWrite(const std::string& value) {
 	if (ssd == nullptr) return;
 	try {
 		for (int i = MIN_LBA; i <= MAX_LBA; i++)

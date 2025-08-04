@@ -49,7 +49,7 @@ private:
     const int ARG_IDX_LBA = 0;
     const int ARG_IDX_VALUE = 1;
 
-    void write(int lba, std::string value);
+    void write(int lba, const std::string& value);
 };
 
 class FullReadCommand : public ReadCommand {
@@ -68,7 +68,7 @@ public:
 private:
     const int ARG_IDX_VALUE = 0;
 
-    void fullWrite(std::string value);
+    void fullWrite(const std::string& value);
 };
 
 class ExitCommand : public Command {
