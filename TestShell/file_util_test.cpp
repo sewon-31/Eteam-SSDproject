@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-class FileUtilTest : public ::testing::Test {
+class FileUtilTestFixture : public ::testing::Test {
 protected:
     std::string testDir = "test_dir";
     std::string testFile = "test_dir/test_file.txt";
@@ -21,23 +21,23 @@ protected:
     }
 };
 
-TEST_F(FileUtilTest, DirectoryCreationAndExistence) {
+TEST_F(FileUtilTestFixture, DirectoryCreationAndExistence) {
     EXPECT_TRUE(FileUtil::directoryExists(testDir));
 }
 
-TEST_F(FileUtilTest, FileWriteAndExistence) {
+TEST_F(FileUtilTestFixture, FileWriteAndExistence) {
     EXPECT_TRUE(FileUtil::writeLine(testFile, "Test line"));
     EXPECT_TRUE(FileUtil::fileExists(testFile));
 }
 
-TEST_F(FileUtilTest, FileReadLine) {
+TEST_F(FileUtilTestFixture, FileReadLine) {
     FileUtil::writeLine(testFile, "Line to read");
     std::string readLine;
     EXPECT_TRUE(FileUtil::readLine(testFile, readLine));
     EXPECT_EQ(readLine, "Line to read");
 }
 
-TEST_F(FileUtilTest, FileClear) {
+TEST_F(FileUtilTestFixture, FileClear) {
     FileUtil::writeLine(testFile, "Line1");
     FileUtil::clearFile(testFile);
     std::ifstream ifs(testFile.c_str());
@@ -46,14 +46,14 @@ TEST_F(FileUtilTest, FileClear) {
     EXPECT_TRUE(content.empty());
 }
 
-TEST_F(FileUtilTest, ReadLineFailsOnEmptyFile) {
+TEST_F(FileUtilTestFixture, ReadLineFailsOnEmptyFile) {
     FileUtil::clearFile(testFile);
     std::string line;
     bool result = FileUtil::readLine(testFile, line);
     EXPECT_FALSE(result);
 }
 
-TEST_F(FileUtilTest, WriteAndReadAllLines) {
+TEST_F(FileUtilTestFixture, WriteAndReadAllLines) {
     std::vector<std::string> inputLines = {
         "Line 1", "Line 2", "Line 3"
     };
@@ -69,7 +69,7 @@ TEST_F(FileUtilTest, WriteAndReadAllLines) {
     }
 }
 
-TEST_F(FileUtilTest, AppendLines) {
+TEST_F(FileUtilTestFixture, AppendLines) {
     std::vector<std::string> firstLines = { "A", "B" };
     std::vector<std::string> secondLines = { "C", "D" };
 

@@ -44,36 +44,36 @@ protected:
 	}
 
 };
-TEST_F(WriteTestFixture, TestBasicWrite) {	
+TEST_F(WriteTestFixture, BasicWrite) {	
 	EXPECT_CALL(mockSSD, write(VALID_LBA, value)).Times(1);
 	executeWrite(VALID_LBA, value);
 	EXPECT_EQ(WRITE_DONE, getLastLine(oss.str()));
 }
 
-TEST_F(WriteTestFixture, TestWriteInvalidLBAOverUpperBound) {
+TEST_F(WriteTestFixture, WriteInvalidLBAOverUpperBound) {
 	EXPECT_CALL(mockSSD, write).Times(0);
 	executeWrite(OVER_LBA, value);
 }
 
-TEST_F(WriteTestFixture, TestWriteInvalidLBAUnderLowerBound) {
+TEST_F(WriteTestFixture, WriteInvalidLBAUnderLowerBound) {
 	EXPECT_CALL(mockSSD, write).Times(0);
 	executeWrite(UNDER_LBA, value);
 }
-TEST_F(WriteTestFixture, TestInvalidSSD) {
+TEST_F(WriteTestFixture, InvalidSSD) {
 	TestShell shell;
 	vector<string> commandVector = { "write", std::to_string(VALID_LBA), value};
 	EXPECT_CALL(mockSSD, write).Times(0);
 	shell.ExecuteCommand(commandVector);
 }
 
-TEST_F(WriteTestFixture, TestFullWrite) {
+TEST_F(WriteTestFixture, FullWrite) {
 	for (int i = 0; i < 100; i++)
 		EXPECT_CALL(mockSSD, write(i, value)).Times(1);
 	executeFullWrite(value);
 	EXPECT_EQ(FULL_WRITE_DONE, getLastLine(oss.str()));
 }
 
-TEST_F(WriteTestFixture, TestRealSSDWriteFail) {
+TEST_F(WriteTestFixture, RealSSDWriteFail) {
 	if (isFileExists(SSD_EXE_FILE)) {
 		GTEST_SKIP() << SSD_EXE_FILE << " not found, skipping test.";
 	}
@@ -83,7 +83,7 @@ TEST_F(WriteTestFixture, TestRealSSDWriteFail) {
 	EXPECT_EQ(WRITE_FAIL, getLastLine(oss.str()));
 }
 
-TEST_F(WriteTestFixture, TestMockSSDDriverWrite) {
+TEST_F(WriteTestFixture, MockSSDDriverWrite) {
 	TestShell shell{ &mockSSDDriver };
 	vector<string> commandVector = { "write", std::to_string(VALID_LBA), value };
 	EXPECT_CALL(mockSSDDriver, runExe)
@@ -92,7 +92,7 @@ TEST_F(WriteTestFixture, TestMockSSDDriverWrite) {
 	EXPECT_EQ(WRITE_DONE, getLastLine(oss.str()));
 }
 
-TEST_F(WriteTestFixture, TestRealSSDWrite) {
+TEST_F(WriteTestFixture, RealSSDWrite) {
 	if (!isFileExists(SSD_EXE_FILE)) {
 		GTEST_SKIP() << SSD_EXE_FILE << " not found, skipping test.";
 	}

@@ -6,7 +6,7 @@
 using namespace testing;
 using namespace std;
 
-class TestShellCommandOperatorFixture : public Test {
+class ShellCommandOperatorTestFixture : public Test {
 public:
 	TestShell app;
 
@@ -18,7 +18,7 @@ public:
 	string testData = "0x00012345";
 };
 
-TEST_F(TestShellCommandOperatorFixture, Read) {
+TEST_F(ShellCommandOperatorTestFixture, Read) {
 	vector<string> commandVector = { "read", "3" };
 
 	EXPECT_CALL(mockSSD, read(_))
@@ -26,7 +26,7 @@ TEST_F(TestShellCommandOperatorFixture, Read) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, Write) {
+TEST_F(ShellCommandOperatorTestFixture, Write) {
 	vector<string> commandVector = { "write", "3", "0xAAAAAAAA"};
 
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -34,7 +34,7 @@ TEST_F(TestShellCommandOperatorFixture, Write) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, FullRead) {
+TEST_F(ShellCommandOperatorTestFixture, FullRead) {
 	vector<string> commandVector = { "fullread" };
 
 	EXPECT_CALL(mockSSD, read(_))
@@ -42,7 +42,7 @@ TEST_F(TestShellCommandOperatorFixture, FullRead) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, FullWrite) {
+TEST_F(ShellCommandOperatorTestFixture, FullWrite) {
 	vector<string> commandVector = { "fullwrite", "0xAAAAAAAA"};
 
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -50,7 +50,7 @@ TEST_F(TestShellCommandOperatorFixture, FullWrite) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, Erase) {
+TEST_F(ShellCommandOperatorTestFixture, Erase) {
 	vector<string> commandVector = { "erase", "5", "2"};
 
 	EXPECT_CALL(mockSSD, erase(5, 2))
@@ -58,7 +58,7 @@ TEST_F(TestShellCommandOperatorFixture, Erase) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, EraseRange) {
+TEST_F(ShellCommandOperatorTestFixture, EraseRange) {
 	vector<string> commandVector = { "erase_range", "1", "4" };
 
 	EXPECT_CALL(mockSSD, erase(1, 4))
@@ -66,7 +66,7 @@ TEST_F(TestShellCommandOperatorFixture, EraseRange) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, Flush) {
+TEST_F(ShellCommandOperatorTestFixture, Flush) {
 	vector<string> commandVector = { "flush" };
 
 	EXPECT_CALL(mockSSD, flush())
@@ -74,7 +74,7 @@ TEST_F(TestShellCommandOperatorFixture, Flush) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, TestScript1) {
+TEST_F(ShellCommandOperatorTestFixture, TestScript1) {
 	vector<string> commandVector = { "1_" };
 
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -85,7 +85,7 @@ TEST_F(TestShellCommandOperatorFixture, TestScript1) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, TestScript2) {
+TEST_F(ShellCommandOperatorTestFixture, TestScript2) {
 	vector<string> commandVector = { "2_" };
 
 	EXPECT_CALL(mockSSD, write(_, _))
@@ -96,7 +96,7 @@ TEST_F(TestShellCommandOperatorFixture, TestScript2) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, TestScript3) {
+TEST_F(ShellCommandOperatorTestFixture, TestScript3) {
 	vector<string> commandVector = { "3_" };
 
 	std::string val0 = "0x00001111";
@@ -115,7 +115,7 @@ TEST_F(TestShellCommandOperatorFixture, TestScript3) {
 
 	app.ExecuteCommand(commandVector);
 }
-TEST_F(TestShellCommandOperatorFixture, TestScript4) {
+TEST_F(ShellCommandOperatorTestFixture, TestScript4) {
 	vector<string> commandVector = { "4_" };
 
 	string writeValue = "0x00001111";
