@@ -53,7 +53,7 @@ public:
 	}
 };
 
-TEST_F(SSDTestFixture, RunCommandTest1) {
+TEST_F(SSDTestFixture, TC_RunCommandTest1) {
 	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "R", "0" };
@@ -73,7 +73,7 @@ TEST_F(SSDTestFixture, RunCommandTest1) {
 }
 
 // DISABLED - WriteCommand::getValue cannot be mocked
-TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
+TEST_F(SSDTestFixture, TC_DISABLED_RunCommandTest2) {
 	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "W", "0", "0x00001111" };
@@ -95,7 +95,7 @@ TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, GetInvalidCommandTest) {
+TEST_F(SSDTestFixture, TC_GetInvalidCommandTest) {
 	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "R", "0", "0x00000000" };
@@ -117,7 +117,7 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, ReadTest) {
+TEST_F(SSDTestFixture, TC_ReadTest) {
 	app.run({ "R", "0" });
 
 	// actual
@@ -143,7 +143,7 @@ TEST_F(SSDTestFixture, ReadTest) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, WriteText) {
+TEST_F(SSDTestFixture, TC_WriteText) {
 	vector<string> input = { "W", "0", "0x11112222" };
 
 	app.run(input);
