@@ -9,9 +9,9 @@ public:
 	const int VALID_LBA = 10;
 	const int OVER_LBA = 100;
 	const int UNDER_LBA = -1;
-	MockSSD mockSSD;
+	MockSSDDriver mockSSD;
 	SSDDriver realSSD;
-	MockSSDDriver mockSSDDriver;
+	MockSSDDriverForRunExe mockSSDDriver;
 	WriteCommand writeCmd{ &mockSSD };
 	FullWriteCommand fullWriteCmd{ &mockSSD };
 	std::string value = "0x12345678";

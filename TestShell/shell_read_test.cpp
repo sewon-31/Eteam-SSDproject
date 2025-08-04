@@ -6,8 +6,8 @@ using namespace testing;
 
 class TestShellRead : public Test, public HandleConsoleOutputFixture {
 public:
-	MockSSD mockSSD;
-	MockSSDDriver SSDwithMockRunExe;
+	MockSSDDriver mockSSD;
+	MockSSDDriverForRunExe SSDwithMockRunExe;
 	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
@@ -78,8 +78,7 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 }
 
 
-TEST(SSDDriverRead, ReadPassWithMockRunExe) {
-	MockSSDDriver SSDwithMockRunExe;
+TEST_F(TestShellRead, SSDReadPassWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -88,8 +87,7 @@ TEST(SSDDriverRead, ReadPassWithMockRunExe) {
 	EXPECT_EQ("0xAAAAAAAA", SSDwithMockRunExe.read(0));
 }
 
-TEST(SSDDriverRead, ReadFailWithMockRunExe) {
-	MockSSDDriver SSDwithMockRunExe;
+TEST_F(TestShellRead, ShellReadFailWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -100,11 +98,11 @@ TEST(SSDDriverRead, ReadFailWithMockRunExe) {
 		FAIL();
 	}
 	catch (std::runtime_error e) {
-		EXPECT_EQ(std::string(e.what()), "Failed to execute ssd.exe for read()");
+		EXPECT_EQ(std::string(e.what()), "Failed to execute ssd.exe for read()\n");
 	}
 }
 
-TEST_F(TestShellRead, ReadPassWithMockRunExe) {
+TEST_F(TestShellRead, CMDReadPassWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -156,7 +154,7 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	EXPECT_EQ(expect, excludeFirstLine(oss.str()));
 }
 
-TEST_F(TestShellRead, ReadFailWithMockRunExe) {
+TEST_F(TestShellRead, CMDReadFailWithMockRunExe) {
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.WillRepeatedly(Return(false));
@@ -171,7 +169,7 @@ TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()", oss.str());
+	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()\n", oss.str());
 }
 
 TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
@@ -190,5 +188,5 @@ TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("Executing fullread\nFailed to execute ssd.exe for read()", oss.str());
+	EXPECT_EQ("Executing fullread\nFailed to execute ssd.exe for read()\n", oss.str());
 }
