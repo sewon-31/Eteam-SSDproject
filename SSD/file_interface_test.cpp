@@ -16,6 +16,7 @@ public:
 	string read_str;
 };
 
+
 TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_SINGLE_LINE) {
 	EXPECT_TRUE(FileInterface::clearFile(testFilePath));
 	EXPECT_TRUE(FileInterface::writeLine(testFilePath, expected_str));
