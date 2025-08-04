@@ -26,6 +26,24 @@ SSD 제품을 테스트할 수 있는 **Test Shell**을 제작하는 프로젝�
 
 ---
 
+## 📁 파일 설명 및 위치
+
+### 1. `SSD.exe, TestShell.exe/` 
+- 프로젝트의 결과물
+- git clone 및 Solution Build 시 x64/Release 폴더에 생성됨
+- SSD.exe가 TestShell.exe와 같은 폴더에 있어야 정상 동작
+
+### 2. `ssd_nand.txt, ssd_out.txt/` 
+- ssd.exe의 결과물
+- exe의 상위 폴더에 생성됨
+
+### 3. `buffer/` 폴더
+- ssd.exe의 결과물
+- exe와 동일한 폴더에 생성됨
+- ssd 명령어 5개까지 buffer 폴더 안에 저장됨
+
+---
+
 ## 👥 Contributors
 
 | 역할   | 이름               |
