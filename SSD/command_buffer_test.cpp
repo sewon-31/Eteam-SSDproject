@@ -39,7 +39,7 @@ public:
 			testCmdIn.size.push_back(in.size[i]);
 			testCmdIn.data.push_back(in.data[i]);
 		}
-#if PRINT_DEBUG_CMDB
+#ifdef PRINT_DEBUG_CMDB
 		std::cout << "=== Input Commands ===\n";
 		for (int i = 0; i < testCmdIn.op.size(); ++i) {
 			if (in.op[i] != "W" && in.op[i] != "E") break;
@@ -68,7 +68,7 @@ public:
 			out.size[i] = testCmdOut.size[i];
 			out.data[i] = testCmdOut.data[i];
 		}
-#if PRINT_DEBUG_CMDB
+#ifdef PRINT_DEBUG_CMDB
 		std::cout << "=== Optimized Command Output ===\n";
 		for (int i = 0; i < newCMDCount; ++i) {
 			std::cout << "[" << i << "] "
