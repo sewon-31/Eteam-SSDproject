@@ -100,12 +100,14 @@ void CommandBuffer::updateMergeCmd(int newBufSize, MergeCmd& out)
 	int bufSize = static_cast<int>(buffer.size());
 
 	if (newBufSize < bufSize)
+
 	{
 		std::shared_ptr<SSDCommandBuilder> builder;
 
 		if (!builder) {
 			builder = std::make_shared<SSDCommandBuilder>();
 		}
+
 		buffer.clear();
 
 		for (int bufIdx = 0; bufIdx < newBufSize; ++bufIdx) {
