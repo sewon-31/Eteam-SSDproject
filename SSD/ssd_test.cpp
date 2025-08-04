@@ -53,7 +53,7 @@ public:
 	}
 };
 
-TEST_F(SSDTestFixture, TC_RunCommandTest1) {
+TEST_F(SSDTestFixture, TC_SsdRunCommandTest1) {
 	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "R", "0" };
@@ -73,7 +73,7 @@ TEST_F(SSDTestFixture, TC_RunCommandTest1) {
 }
 
 // DISABLED - WriteCommand::getValue cannot be mocked
-TEST_F(SSDTestFixture, TC_DISABLED_RunCommandTest2) {
+TEST_F(SSDTestFixture, TC_SsdDisabledRunCommandTest2) {
 	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "W", "0", "0x00001111" };
@@ -95,7 +95,7 @@ TEST_F(SSDTestFixture, TC_DISABLED_RunCommandTest2) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_GetInvalidCommandTest) {
+TEST_F(SSDTestFixture, TC_SsdGetInvalidCommandTest) {
 	processMockBuilderFunctions();
 
 	std::vector<std::string> input = { "R", "0", "0x00000000" };
@@ -117,7 +117,7 @@ TEST_F(SSDTestFixture, TC_GetInvalidCommandTest) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_ReadTest) {
+TEST_F(SSDTestFixture, TC_SsdReadTest) {
 	app.run({ "R", "0" });
 
 	// actual
@@ -143,7 +143,7 @@ TEST_F(SSDTestFixture, TC_ReadTest) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_WriteText) {
+TEST_F(SSDTestFixture, TC_SsdWriteText) {
 	vector<string> input = { "W", "0", "0x11112222" };
 
 	app.run(input);
@@ -179,7 +179,7 @@ TEST_F(SSDTestFixture, TC_WriteText) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_FULL_WRITE) {
+TEST_F(SSDTestFixture, TC_FileFullWrite) {
 	string str[100];
 	char buffer[16];
 
@@ -194,7 +194,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
+TEST_F(SSDTestFixture, TC_FileFullWriteAndRead) {
 	string str[100];
 	char buffer[16];
 	char ret = true;
@@ -231,7 +231,7 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	app.clearBufferAndDirectory();
 }
 
-TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
+TEST_F(SSDTestFixture, TC_FileWrite) {
 	char ret = true;
 	std::string expected_str = "0x12341234";
 
@@ -239,7 +239,7 @@ TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
 	EXPECT_EQ(12, outputFile.checkSize());
 }
 
-TEST_F(SSDTestFixture, TC_ERASE) {
+TEST_F(SSDTestFixture, TC_FileErase) {
 	string str[100];
 	char buffer[16];
 	char ret = true;

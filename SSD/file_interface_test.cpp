@@ -15,18 +15,18 @@ public:
 	std::string read_str;
 };
 
-TEST_F(FileInterfaceFixture, TC_FILE_OPEN) {
+TEST_F(FileInterfaceFixture, TC_FileOpen) {
 	EXPECT_TRUE(fileInterface.fileOpen());
 	fileInterface.fileClose();
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_MAKEFILE) {
+TEST_F(FileInterfaceFixture, TC_FileMakeFile) {
 	fileInterface.fileClear();
 	EXPECT_TRUE(fileInterface.fileOpen());
 	fileInterface.fileClose();
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
+TEST_F(FileInterfaceFixture, TC_FileWriteAndRead) {
 	fileInterface.fileClear();
 	fileInterface.fileOpen();
 	EXPECT_TRUE(fileInterface.fileWriteOneline(expected_str));
@@ -35,7 +35,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ) {
 	fileInterface.fileClose();
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
+TEST_F(FileInterfaceFixture, TC_FileWriteAndReadMultiLine) {
 	fileInterface.fileClear();
 	fileInterface.fileOpen();
 	fileInterface.fileWriteOneline(expected_str);
@@ -53,7 +53,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_WRITE_READ_MULTILINE) {
 	fileInterface.fileClose();
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_CLEAR) {
+TEST_F(FileInterfaceFixture, TC_FileClear) {
 	fileInterface.fileOpen();
 	fileInterface.fileWriteOneline(expected_str);
 	fileInterface.fileClose();
@@ -64,7 +64,7 @@ TEST_F(FileInterfaceFixture, TC_FILE_CLEAR) {
 	EXPECT_EQ(read_str, "");
 }
 
-TEST_F(FileInterfaceFixture, TC_FILE_CHECK_EMPTY_FILE) {
+TEST_F(FileInterfaceFixture, TC_FileCheckEmpty) {
 	fileInterface.fileClear();
 	EXPECT_EQ(0, fileInterface.checkSize());
 }
