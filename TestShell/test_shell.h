@@ -35,7 +35,7 @@ public:
 	}
 
 	void execute() override;
-	bool ExecuteCommand(const vector<string>& commandVector);
+	bool executeCommand(const vector<string>& commandVector);
 
 private:
 	SSDInterface* ssd;
