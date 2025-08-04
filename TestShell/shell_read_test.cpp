@@ -6,8 +6,8 @@ using namespace testing;
 
 class TestShellRead : public Test, public HandleConsoleOutputFixture {
 public:
-	MockSSD mockSSD;
-	MockSSDDriver SSDwithMockRunExe;
+	MockSSDDriver mockSSD;
+	MockSSDDriverForRunExe SSDwithMockRunExe;
 	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
@@ -79,7 +79,7 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 
 
 TEST(SSDDriverRead, ReadPassWithMockRunExe) {
-	MockSSDDriver SSDwithMockRunExe;
+	MockSSDDriverForRunExe SSDwithMockRunExe;
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -89,7 +89,7 @@ TEST(SSDDriverRead, ReadPassWithMockRunExe) {
 }
 
 TEST(SSDDriverRead, ReadFailWithMockRunExe) {
-	MockSSDDriver SSDwithMockRunExe;
+	MockSSDDriverForRunExe SSDwithMockRunExe;
 
 	EXPECT_CALL(SSDwithMockRunExe, runExe)
 		.Times(1)
@@ -100,7 +100,7 @@ TEST(SSDDriverRead, ReadFailWithMockRunExe) {
 		FAIL();
 	}
 	catch (std::runtime_error e) {
-		EXPECT_EQ(std::string(e.what()), "Failed to execute ssd.exe for read()");
+		EXPECT_EQ(std::string(e.what()), "Failed to execute ssd.exe for read()\n");
 	}
 }
 
@@ -171,7 +171,7 @@ TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()", oss.str());
+	EXPECT_EQ("Executing read from LBA 0\nFailed to execute ssd.exe for read()\n", oss.str());
 }
 
 TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
@@ -190,5 +190,5 @@ TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
 	cmd.execute(args);
 	std::cout.rdbuf(oldCoutStreamBuf);
 
-	EXPECT_EQ("Executing fullread\nFailed to execute ssd.exe for read()", oss.str());
+	EXPECT_EQ("Executing fullread\nFailed to execute ssd.exe for read()\n", oss.str());
 }
