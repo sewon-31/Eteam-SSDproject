@@ -87,8 +87,8 @@ bool
 CommandBuffer::optimizeBuffer()
 {
 	int bufSize = static_cast<int>(buffer.size());
-	ReduceCmd in;
-	ReduceCmd out;
+	MergeCmd in;
+	MergeCmd out;
 
 	for (int bufIdx = 0; bufIdx < bufSize; bufIdx++) {
 		auto cmd = buffer.at(bufIdx);
@@ -117,7 +117,7 @@ CommandBuffer::optimizeBuffer()
 		}
 	}
 
-	int new_buf_size = reduceCMDBuffer(in, out);
+	int new_buf_size = mergeCmdBuffer(in, out);
 	if (new_buf_size < bufSize)
 	{
 		std::shared_ptr<SSDCommandBuilder> builder;
@@ -305,7 +305,7 @@ CommandBuffer::updateToDirectory()
 }
 
 int 
-CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
+CommandBuffer::mergeCmdBuffer(MergeCmd in, MergeCmd& out)
 {
 	const int BUF_MAX = 100;
 	const int OP_NULL = 9;
@@ -344,7 +344,7 @@ CommandBuffer::reduceCMDBuffer(ReduceCmd in, ReduceCmd& out)
 #endif
 
 	// Step 3: Construct ersCmd and wrCmd
-	ReduceCmd ersCmd, wrCmd;
+	MergeCmd ersCmd, wrCmd;
 	int eraseCmdSequence = 0;
 	bool isEraseRange = false;
 

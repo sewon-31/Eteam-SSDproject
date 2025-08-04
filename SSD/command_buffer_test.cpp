@@ -24,7 +24,7 @@ public:
 	CommandBuffer& testCmdBuf = CommandBuffer::getInstance();
 
 	int convertCmdTypeAndTest(TestCmdFormat in, TestCmdFormat& out) {
-		ReduceCmd testCmdIn, testCmdOut;
+		MergeCmd testCmdIn, testCmdOut;
 
 		// Convert ReduceCmd format
 		for (int i = 0; i < 6; ++i) {
@@ -53,7 +53,7 @@ public:
 		std::cout << "=======================\n";
 
 		// Run reduceCMDBuffer
-		int newCMDCount = testCmdBuf.reduceCMDBuffer(testCmdIn, testCmdOut);
+		int newCMDCount = testCmdBuf.mergeCmdBuffer(testCmdIn, testCmdOut);
 
 		// Convert TestCmdFormat format
 		for (int i = 0; i < newCMDCount; ++i) {

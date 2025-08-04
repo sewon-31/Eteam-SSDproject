@@ -11,7 +11,7 @@
 using std::vector;
 using std::string;
 
-struct ReduceCmd {
+struct MergeCmd {
 	std::vector<CmdType> op;
 	std::vector<int> lba;
 	std::vector<int> size;
@@ -38,7 +38,7 @@ public:
 	static const int BUFFER_MAX = 5;
 	static constexpr const char* EMPTY = "empty";
 
-	int reduceCMDBuffer(ReduceCmd in, ReduceCmd& out);
+	int mergeCmdBuffer(MergeCmd in, MergeCmd& out);
 private:
 	CommandBuffer(const string& dirPath);
 	CommandBuffer(const CommandBuffer&) = delete;
