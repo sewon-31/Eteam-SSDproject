@@ -94,7 +94,7 @@ public:
 	}
 };
 
-TEST_F(CMDBufTestFixture, mergeCMD_REPLACE_W0_TO_E) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_REPLACE_W0_TO_E) {
 	string op[6] = { "W","E","E","W","W","E" };
 	int lba[6] = { 1,12,23,34,45,56 };
 	int size[6] = { 1,2,3,1,1,6 };
@@ -118,7 +118,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_REPLACE_W0_TO_E) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_MERCE_SEQ_CMD) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_MERCE_SEQ_CMD) {
 	string op[6] = { "W","E","E","W","W","E" };
 	int lba[6] = { 1,12,20,34,45,56 };
 	int size[6] = { 1,9, 1,1,1,6 };
@@ -142,7 +142,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_MERCE_SEQ_CMD) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_ERS_RANGE_OVER) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_ERS_RANGE_OVER) {
 	string op[6] = { "W","E","W","E","E","E" };
 	int lba[6] = { 1,12,34,45,56 ,62 };
 	int size[6] = { 1,9,1,1,6, 5 };
@@ -166,7 +166,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_ERS_RANGE_OVER) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC00) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC00) {
 	string op[6] = { "W","E","N","N","N","N" };
 	int lba[6] = { 1,12,34,45,56 ,62 };
 	int size[6] = { 1,9,1,1,6, 5 };
@@ -190,7 +190,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC00) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC01) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC01) {
 	string op[6] = { "W","E","W","E","W","E" };
 	int lba[6] = { 1,10,15,16,45,56 };
 	int size[6] = { 1,5, 1,3,1,6 };
@@ -214,7 +214,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC01) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC02) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC02) {
 	string op[6] = { "E","W","E","E","W","E" };
 	int lba[6] = { 0,  4,  5, 15, 16, 17 };
 	int size[6] = { 4,  1, 10,  1,  1,  4 };
@@ -238,7 +238,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC02) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC03) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC03) {
 	string op[6] = { "E","W","E","E","W","E" };
 	int lba[6] = { 0,  4,  5, 15, 16, 17 };
 	int size[6] = { 4,  1, 10,  1,  1,  3 };
@@ -262,7 +262,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC03) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC04) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC04) {
 	string op[6] = { "E","W","E","E","W","E" };
 	int lba[6] = { 0,  4,  5, 15, 16, 17 };
 	int size[6] = { 4,  1, 10,  1,  1,  3 };
@@ -286,7 +286,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC04) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC05) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC05) {
 	string op[6] = { "E","W","W","E","E","E" };
 	int lba[6] = { 1, 2, 3, 4, 5, 6 };
 	int size[6] = { 1, 1, 1, 1, 1, 1 };
@@ -310,7 +310,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC05) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC06) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC06) {
 	string op[6] = { "E","W","W","E","E","E" };
 	int lba[6] = { 1, 2, 3, 4, 5, 6 };
 	int size[6] = { 1, 1, 1, 1, 1, 6 };
@@ -339,7 +339,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC06) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC07) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC07) {
 	string op[6] = { "E","W","W","E","W","E" };
 	int lba[6] = { 1, 2, 3, 4, 20, 26 };
 	int size[6] = { 1, 1, 1, 1, 1, 6 };
@@ -363,7 +363,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC07) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC08) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC08) {
 	string op[6] = { "W","E","E","W","E","N" };
 	int lba[6] = { 20, 15, 19, 22,  14,  0 };
 	int size[6] = { 0, 10, 10, 0, 8, 0 };
@@ -387,7 +387,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC08) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC09) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC09) {
 	string op[6] = { "E","W","W" };
 	int lba[6] = { 20, 15, 19 };
 	int size[6] = { 9, 10, 10 };
@@ -411,7 +411,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC09) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC10) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC10) {
 	string op[6] = { "E","W","W","W","E","N" };
 	int lba[6] = { 20, 15, 19, 22,  17,  0 };
 	int size[6] = { 9, 10, 10, 0, 4, 0 };
@@ -435,7 +435,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC10) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC11) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC11) {
 	string op[6] = { "E","W","W","W","E","N" };
 	int lba[6] = { 20, 15, 19, 22,  16,  0 };
 	int size[6] = { 9, 10, 10, 0, 6, 0 };
@@ -459,7 +459,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC11) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC12) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC12) {
 	string op[6] = { "E","W","W","W","E","N" };
 	int lba[6] = { 20, 15, 19, 22,  15,  0 };
 	int size[6] = { 9, 10, 10, 0, 8, 0 };
@@ -483,7 +483,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC12) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC13) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC13) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 20, 30, 20, 30,  16,  0 };
 	int size[6] = { 1, 1,  10, 5, 6, 0 };
@@ -507,7 +507,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC13) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC14) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC14) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 20, 30, 21, 30,  30,  0 };
 	int size[6] = { 1, 1,  10, 2, 1, 0 };
@@ -531,7 +531,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC14) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC15) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC15) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 21, 30, 21, 30,  30,  0 };
 	int size[6] = { 1, 1,  10, 2, 1, 0 };
@@ -555,7 +555,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC15) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC16) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC16) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 30, 30, 21, 30,  30,  0 };
 	int size[6] = { 1, 1,  10, 2, 1, 0 };
@@ -579,7 +579,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC16) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC17) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC17) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 30, 31, 30, 31, 30,  0 };
 	int size[6] = { 1, 1,  10, 2, 1, 0 };
@@ -603,7 +603,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC17) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC18) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC18) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 30, 30, 30, 30,  30,  0 };
 	int size[6] = { 1, 1,  10, 2, 1, 0 };
@@ -627,7 +627,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC18) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC19) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC19) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 32, 31, 30, 31, 31,  0 };
 	int size[6] = { 1, 1,  10, 2, 1, 0 };
@@ -651,7 +651,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC19) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC20) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC20) {
 	string op[6] = { "W","W","E","E","W","N" };
 	int lba[6] = { 98, 99, 90, 99, 97,  0 };
 	int size[6] = { 1, 1,  10, 1, 1, 0 };
@@ -675,7 +675,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC20) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC21) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC21) {
 	string op[6] = { "W","W","E","E","N","N" };
 	int lba[6] = { 98, 99, 90, 99, 0,  0 };
 	int size[6] = { 1, 1,  10, 1, 0, 0 };
@@ -699,7 +699,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC21) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC22) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC22) {
 	string op[6] = { "W","W","W" };
 	int lba[6] = { 20, 21, 20, 0,  0,  0 };
 	int size[6] = { 1, 1, 1, 0, 0, 0 };
@@ -723,7 +723,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC22) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC23) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC23) {
 	string op[6] = { "E","W","E","N","N","N" };
 	int lba[6] = { 18, 21, 18, 0,  0,  0 };
 	int size[6] = { 3, 1, 5, 0, 0, 0 };
@@ -747,7 +747,7 @@ TEST_F(CMDBufTestFixture, mergeCMD_TC23) {
 	}
 }
 
-TEST_F(CMDBufTestFixture, mergeCMD_TC24) {
+TEST_F(CMDBufTestFixture, TC_mergeCMP_TC24) {
 	string op[6] = { "W","E" };
 	int lba[6] = { 1, 1 };
 	int size[6] = { 1,  1 };
