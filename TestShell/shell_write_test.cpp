@@ -9,7 +9,7 @@ public:
 	const int VALID_LBA = 10;
 	const int OVER_LBA = 100;
 	const int UNDER_LBA = -1;
-	MockSSD mockSSD;
+	MockSSDDriver mockSSD;
 	SSDDriver realSSD;
 	MockSSDDriver mockSSDDriver;
 	WriteCommand writeCmd{ &mockSSD };

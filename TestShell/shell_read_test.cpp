@@ -6,8 +6,7 @@ using namespace testing;
 
 class TestShellRead : public Test, public HandleConsoleOutputFixture {
 public:
-	MockSSD mockSSD;
-	MockSSDDriver SSDwithMockRunExe;
+	MockSSDDriver mockSSD;
 	TestShell shell;
 
 	const string HEADER = "[Read] LBA ";
@@ -78,25 +77,21 @@ TEST_F(TestShellRead, FullReadPassWithMockSSD) {
 }
 
 
-TEST(SSDDriverRead, ReadPassWithMockRunExe) {
-	MockSSDDriver SSDwithMockRunExe;
-
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+TEST_F(TestShellRead, ReadPassWithMockRunExe) {
+	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	EXPECT_EQ("0xAAAAAAAA", SSDwithMockRunExe.read(0));
+	EXPECT_EQ("0xAAAAAAAA", mockSSD.read(0));
 }
 
-TEST(SSDDriverRead, ReadFailWithMockRunExe) {
-	MockSSDDriver SSDwithMockRunExe;
-
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+TEST(TestShellRead, ReadFailWithMockRunExe) {
+	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(false));
 
 	try {
-		SSDwithMockRunExe.read(0);
+		mockSSD.read(0);
 		FAIL();
 	}
 	catch (std::runtime_error e) {
@@ -106,11 +101,11 @@ TEST(SSDDriverRead, ReadFailWithMockRunExe) {
 
 TEST_F(TestShellRead, ReadPassWithMockRunExe) {
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(mockSSD, runExe)
 		.Times(1)
 		.WillRepeatedly(Return(true));
 
-	ReadCommand cmd{ &SSDwithMockRunExe };
+	ReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -127,11 +122,11 @@ TEST_F(TestShellRead, ReadPassWithMockRunExe) {
 TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 	ssdReadFileSetUp();
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(mockSSD, runExe)
 		.Times(100)
 		.WillRepeatedly(Return(true));
 
-	FullReadCommand cmd{ &SSDwithMockRunExe };
+	FullReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -158,10 +153,10 @@ TEST_F(TestShellRead, FullReadPassWithMockRunExe) {
 
 TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(mockSSD, runExe)
 		.WillRepeatedly(Return(false));
 
-	ReadCommand cmd{ &SSDwithMockRunExe };
+	ReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();
@@ -177,10 +172,10 @@ TEST_F(TestShellRead, ReadFailWithMockRunExe) {
 TEST_F(TestShellRead, FullReadFailWithMockRunExe) {
 	ssdReadFileSetUp();
 
-	EXPECT_CALL(SSDwithMockRunExe, runExe)
+	EXPECT_CALL(mockSSD, runExe)
 		.WillRepeatedly(Return(false));
 
-	FullReadCommand cmd{ &SSDwithMockRunExe };
+	FullReadCommand cmd{ &mockSSD };
 
 	std::ostringstream oss;
 	auto oldCoutStreamBuf = std::cout.rdbuf();

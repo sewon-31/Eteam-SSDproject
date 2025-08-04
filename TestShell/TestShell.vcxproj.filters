@@ -101,9 +101,6 @@
     <ClInclude Include="test_script.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="mock_ssd.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="file_util.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -115,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="command_factory.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="mock_ssd.h">
+      <Filter>테스트 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
