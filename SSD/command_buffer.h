@@ -49,10 +49,9 @@ private:
 	void getMergeCmd(MergeCmd& in);
 
 	void replaceZeroWriteCmdToEraseCmd(MergeCmd& in);
-	void buildVirtualMap(const MergeCmd& in, std::vector<int>& virtualMap);
-	void buildMergedCmd(const std::vector<int>& virtualMap, MergeCmd& ersCmd, MergeCmd& wrCmd, const MergeCmd& in);
-	void updateCommandBuffer(MergeCmd& out, const  MergeCmd& ersCmd, const  MergeCmd& wrCmd);
-
+	void buildVirtualMap(std::vector<int>& virtualMap, const MergeCmd& in);
+	void buildMergedCmd(const std::vector<int>& virtualMap, const  MergeCmd& in, MergeCmd& out);
+	
 	std::vector<std::shared_ptr<ICommand>> buffer;
 	string bufferDirPath;
 	void printVirtualMap(const std::vector<int>& virtualMap);

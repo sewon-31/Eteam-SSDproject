@@ -245,19 +245,14 @@ CommandBuffer::mergeCmdBuffer(MergeCmd in, MergeCmd& out)
 	// Step 2: Build virtualMap
 	std::vector<int> virtualMap(BUF_MAX, OP_NULL);
 
-	buildVirtualMap(in, virtualMap);
+	buildVirtualMap(virtualMap, in);
 
 #ifdef PRINT_DEBUG_CMDB
 	printVirtualMap(virtualMap);
 #endif
 
-	// Step 3: Construct ersCmd and wrCmd
-	MergeCmd ersCmd, wrCmd;
-
-	buildMergedCmd(virtualMap, ersCmd, wrCmd, in);
-
-	// Step 4: Combine ersCmd and wrCmd into out
-	updateCommandBuffer(out, ersCmd, wrCmd);
+	// Step 3: Construct merged Cmd
+	buildMergedCmd(virtualMap, in, out);
 
 	return static_cast<int>(out.op.size());
 }
@@ -275,7 +270,7 @@ void CommandBuffer::replaceZeroWriteCmdToEraseCmd(MergeCmd& in)
 	}
 }
 
-void CommandBuffer::buildVirtualMap(const MergeCmd& in, std::vector<int>& virtualMap)
+void CommandBuffer::buildVirtualMap(std::vector<int>& virtualMap, const MergeCmd& in )
 {
 	int cmdCount = in.op.size();
 
@@ -294,8 +289,9 @@ void CommandBuffer::buildVirtualMap(const MergeCmd& in, std::vector<int>& virtua
 	}
 }
 
-void CommandBuffer::buildMergedCmd(const std::vector<int>& virtualMap, MergeCmd& ersCmd, MergeCmd& wrCmd, const  MergeCmd& in)
+void CommandBuffer::buildMergedCmd(const std::vector<int>& virtualMap, const  MergeCmd& in, MergeCmd& out)
 {
+	MergeCmd ersCmd, wrCmd;
 	int eraseCmdSequence = 0;
 
 	for (int idxLba = 0; idxLba < BUF_MAX; idxLba++) {
@@ -345,10 +341,7 @@ void CommandBuffer::buildMergedCmd(const std::vector<int>& virtualMap, MergeCmd&
 			eraseCmdSequence = 0;
 		}
 	}
-}
 
-void CommandBuffer::updateCommandBuffer(MergeCmd& out, const  MergeCmd& ersCmd, const  MergeCmd& wrCmd)
-{
 	out.op.insert(out.op.end(), ersCmd.op.begin(), ersCmd.op.end());
 	out.lba.insert(out.lba.end(), ersCmd.lba.begin(), ersCmd.lba.end());
 	out.size.insert(out.size.end(), ersCmd.size.begin(), ersCmd.size.end());
