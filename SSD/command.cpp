@@ -1,4 +1,5 @@
 #include "command.h"
+#include <iostream>
 
 // BaseCommand
 BaseCommand::BaseCommand(int lba)

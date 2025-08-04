@@ -1,11 +1,11 @@
 #include "command_buffer.h"
 #include "ssd_command_builder.h"
-
-#include <filesystem>
+#include "file_interface.h"
 
 #include <iostream>
-#include <algorithm>
 #include <sstream>
+#include <algorithm>
+#include <filesystem>
 
 namespace fs = std::filesystem;
 
@@ -49,7 +49,7 @@ CommandBuffer::addCommand(std::shared_ptr<ICommand> command)
 	}
 	else if (bufSize == CommandBuffer::BUFFER_MAX) {
 		flushBuffer();
-		addCommandToBuffer(command);;
+		addCommandToBuffer(command);
 	}
 	else {
 		addCommandToBuffer(command);
@@ -69,7 +69,7 @@ CommandBuffer::flushBuffer()
 	NandData::getInstance().updateFromFile();
 
 	string result;
-	for (auto cmd : buffer) {
+	for (auto& cmd : buffer) {
 		cmd->execute(result);
 	}
 
@@ -101,6 +101,7 @@ CommandBuffer::optimizeBuffer()
 			in.lba.push_back(cmd->getLBA());
 			in.size.push_back(1);
 			in.data.push_back(wCmdPtr->getValue());
+
 #ifdef PRINT_DEBUG_CMDB
 			std::cout << "IN CMD -> WRITE" << " " << in.lba[bufIdx] << " " << in.data[bufIdx] << "\n";
 #endif
@@ -111,40 +112,33 @@ CommandBuffer::optimizeBuffer()
 			in.lba.push_back(cmd->getLBA());
 			in.size.push_back(eCmdPtr->getSize());
 			in.data.push_back("");
+
 #ifdef PRINT_DEBUG_CMDB
 			std::cout << "IN CMD -> ERASE" << " " << in.lba[bufIdx] << " " << in.size[bufIdx] << "\n";
 #endif
 		}
 	}
 
-	int new_buf_size = mergeCmdBuffer(in, out);
-	if (new_buf_size < bufSize)
+	int newSize = mergeCmdBuffer(in, out);
+	if (newSize < bufSize)
 	{
 		std::shared_ptr<SSDCommandBuilder> builder;
 
 		if (!builder) {
 			builder = std::make_shared<SSDCommandBuilder>();
 		}
-
 		buffer.clear();
 
-		for (int bufIdx = 0; bufIdx < new_buf_size; bufIdx++) {
+		for (int bufIdx = 0; bufIdx < newSize; ++bufIdx) {
+			vector<string> commandVector;
 			if (out.op[bufIdx] == CmdType::WRITE) {
-				vector<string> commandVector = { "W" , std::to_string(out.lba[bufIdx])  , out.data[bufIdx] };
-				auto newCmd = builder->createCommand(commandVector);
-				buffer.push_back(newCmd);
-#ifdef PRINT_DEBUG_CMDB
-				std::cout << "OUT CMD -> WRITE" << " " << out.lba[bufIdx] << " " << out.data[bufIdx] << "\n";
-#endif
+				commandVector = { "W", std::to_string(out.lba[bufIdx]), out.data[bufIdx] };
 			}
 			else if (out.op[bufIdx] == CmdType::ERASE) {
-				vector<string> commandVector = { "E" , std::to_string(out.lba[bufIdx])  , std::to_string(out.size[bufIdx]) };
-				auto newCmd = builder->createCommand(commandVector);
-				buffer.push_back(newCmd);
-#ifdef PRINT_DEBUG_CMDB
-				std::cout << "OUT CMD -> ERASE" << " " << out.lba[bufIdx] << " " << out.size[bufIdx] << "\n";
-#endif
+				commandVector = { "E", std::to_string(out.lba[bufIdx]), std::to_string(out.size[bufIdx]) };
 			}
+			auto newCmd = builder->createCommand(commandVector);
+			buffer.push_back(newCmd);
 		}
 	}
 	return true;
@@ -153,21 +147,11 @@ CommandBuffer::optimizeBuffer()
 void
 CommandBuffer::initDirectory()
 {
-	// create buffer directory (if needed)
-	bool bufferDirExists = fs::exists(bufferDirPath) && fs::is_directory(bufferDirPath);
-
-	if (!bufferDirExists) {
-		if (fs::create_directory(bufferDirPath)) {
-			for (int i = 1; i <= BUFFER_MAX; ++i) {
-				string filePath = bufferDirPath + "/" + std::to_string(i) + "_empty";
-				std::ofstream file(filePath);
-
-				if (!file) {
-#if _DEBUG
-					std::cerr << "Failed to create " << filePath << std::endl;
-#endif
-				}
-			}
+	if (!FileInterface::directoryExists(bufferDirPath)) {
+		FileInterface::createDirectory(bufferDirPath);
+		for (int i = 1; i <= BUFFER_MAX; ++i) {
+			string path = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
+			FileInterface::writeLine(path, "", false);
 		}
 	}
 }
@@ -175,132 +159,70 @@ CommandBuffer::initDirectory()
 void
 CommandBuffer::updateFromDirectory()
 {
-	// read file names from directory
 	vector<string> fileNames;
-
 	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
 		if (fs::is_regular_file(file.path())) {
 			fileNames.push_back(file.path().filename().string());
 		}
 	}
 
-#if _DEBUG
-	if (fileNames.size() != BUFFER_MAX) {
-		std::cout << "Why not 5 files?\n";
-	}
-#endif
-
-	// sort filenames
 	std::sort(fileNames.begin(), fileNames.end());
-
 	SSDCommandBuilder builder;
 
-	auto startsWith = [](const string& str, const string& prefix) -> bool {
-		return str.compare(0, prefix.size(), prefix) == 0;
-		};
-
 	int fileNum = 1;
-	for (const auto& fileName : std::as_const(fileNames)) {
+	for (const auto& fileName : fileNames) {
 		string prefix = std::to_string(fileNum++) + "_";
-		if (startsWith(fileName, prefix)) {
-			string noPrefix = fileName.substr(prefix.length());
+		if (fileName.rfind(prefix, 0) == 0) {
+			string commandStr = fileName.substr(prefix.size());
 
-			if (noPrefix == EMPTY) {
-				break;
-			}
+			if (commandStr == EMPTY) break;
 
-			vector<string> commandVector;
-			std::stringstream ss(noPrefix);
-
+			std::stringstream ss(commandStr);
+			vector<string> tokens;
 			string token;
 			while (std::getline(ss, token, '_')) {
-				commandVector.push_back(token);
+				tokens.push_back(token);
 			}
-
-			auto cmd = builder.createCommand(commandVector);
-			if (cmd == nullptr) {
-				std::cout << "Commmand not created - " << noPrefix << std::endl;
-			}
-			buffer.push_back(cmd);
-
-		}
-		else {
-			std::cout << "Weird file " << fileName << std::endl;
+			auto cmd = builder.createCommand(tokens);
+			if (cmd) buffer.push_back(cmd);
 		}
 	}
 
-	// delete all the files
+	// cleanup
 	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
-		if (fs::is_regular_file(file.path())) {
-			fs::remove(file.path());
-		}
+		fs::remove(file.path());
 	}
 }
 
 void
 CommandBuffer::updateToDirectory()
 {
-	// delete all the files
 	for (const auto& file : fs::directory_iterator(bufferDirPath)) {
-		if (fs::is_regular_file(file.path())) {
-			fs::remove(file.path());
-		}
+		fs::remove(file.path());
 	}
 
-	if (buffer.size() > BUFFER_MAX) {
-		std::cout << "vector size error" << std::endl;
-	}
+	for (int i = 1; i <= BUFFER_MAX; ++i) {
+		string path = bufferDirPath + "/" + std::to_string(i) + "_";
 
-	// create cmd file
-	if (buffer.size() > 0) {
-		for (int i = 1; i <= buffer.size(); ++i) {
-			string filePath = bufferDirPath + "/" + std::to_string(i) + "_";
-			auto cmd = buffer.at(i - 1);
-			if (cmd == nullptr) {
-				filePath += EMPTY;
+		if (i <= buffer.size()) {
+			auto cmd = buffer[i - 1];
+			auto type = cmd->getCmdType();
+			path += (type == CmdType::WRITE ? "W_" : "E_") + std::to_string(cmd->getLBA()) + "_";
+
+			if (type == CmdType::WRITE) {
+				auto w = std::dynamic_pointer_cast<WriteCommand>(cmd);
+				path += w ? w->getValue() : "";
 			}
-			else {
-				// concat type, lba, value/size
-				auto type = cmd->getCmdType();
-				string lbaStr = std::to_string(cmd->getLBA());
-
-				if (type == CmdType::WRITE) {
-					filePath += "W_" + lbaStr + "_";
-
-					std::shared_ptr<WriteCommand> wCmdPtr = std::dynamic_pointer_cast<WriteCommand>(cmd);
-					if (wCmdPtr) {
-						filePath += wCmdPtr->getValue();
-					}
-				}
-				if (type == CmdType::ERASE) {
-					filePath += "E_" + lbaStr + "_";
-					std::shared_ptr<EraseCommand> eCmdPtr = std::dynamic_pointer_cast<EraseCommand>(cmd);
-					if (eCmdPtr) {
-						filePath += std::to_string(eCmdPtr->getSize());
-					}
-				}
-			}
-
-			// create file
-			std::ofstream file(filePath);
-			if (!file) {
-#if _DEBUG
-				std::cout << "Failed to create " << filePath << std::endl;
-#endif
+			else if (type == CmdType::ERASE) {
+				auto e = std::dynamic_pointer_cast<EraseCommand>(cmd);
+				path += e ? std::to_string(e->getSize()) : "";
 			}
 		}
-	}
-
-	for (int i = buffer.size() + 1; i <= BUFFER_MAX; ++i) {
-		string filePath = bufferDirPath + "/" + std::to_string(i) + "_" + EMPTY;
-
-		// create file
-		std::ofstream file(filePath);
-		if (!file) {
-#if _DEBUG
-			std::cout << "Failed to create " << filePath << std::endl;
-#endif
+		else {
+			path += EMPTY;
 		}
+
+		FileInterface::writeLine(path, "", false);
 	}
 }
 

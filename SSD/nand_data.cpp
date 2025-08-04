@@ -1,10 +1,14 @@
 #include "nand_data.h"
+#include <vector>
 
-NandData& 
+NandData&
 NandData::getInstance(const std::string& path) {
 	static NandData instance(path);
 	return instance;
 }
+
+NandData::NandData(const string& filePath)
+	: filePath(filePath) { }
 
 string
 NandData::read(int lba) const
@@ -40,56 +44,33 @@ NandData::clear()
 bool
 NandData::updateFromFile()
 {
-	file.fileOpen();
-
-	if (file.checkSize() != 1200) {
+	std::vector<std::string> lines;
+	if (!FileInterface::fileExists(filePath) || FileInterface::getFileSize(filePath) == 0) {
 		clear();
-		file.fileClose();
 		return false;
 	}
 
-	bool ret;
-	for (int i = 0; i <= NandData::LBA::MAX; i++)
-	{
-		string data;
-		ret = file.fileReadOneline(data);
-		write(i, data);
-
-		if (!ret) {
-			break;
-		}
+	if (!FileInterface::readAllLines(filePath, lines) || lines.size() != LBA::SIZE) {
+		clear();
+		return false;
 	}
 
-	file.fileClose();
-	return ret;
+	for (int i = LBA::MIN; i <= LBA::MAX; ++i) {
+		data[i] = lines[i];
+	}
+
+	return true;
 }
 
 bool
 NandData::updateToFile()
 {
-	file.fileClear();
-	file.fileOpen();
-
-	bool ret;
-	for (int i = NandData::LBA::MIN; i <= NandData::LBA::MAX; i++) {
-		ret = file.fileWriteOneline(read(i));
-
-		if (!ret) {
-			break;
-		}
-	}
-
-	file.fileClose();
-	return ret;
-}
-
-NandData::NandData(const string& filePath)
-	: file(filePath)
-{
+	std::vector<std::string> lines(data, data + LBA::SIZE);
+	return FileInterface::writeAllLines(filePath, lines, /*append=*/false);
 }
 
 bool
 NandData::isInvalidLBA(int lba) const
 {
-	return lba<MIN || lba>MAX;
+	return lba < LBA::MIN || lba > LBA::MAX;
 }

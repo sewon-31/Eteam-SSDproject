@@ -4,10 +4,11 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 SSD::SSD(const std::string& nandPath, const std::string& outputPath)
-	: outputFile(outputPath),
-	storage(NandData::getInstance()),
+	: outputPath(outputPath),
+	storage(NandData::getInstance(nandPath)),
 	cmdBuf(CommandBuffer::getInstance())
 {
 }
@@ -32,12 +33,9 @@ SSD::run(vector<string> commandVector)
 
 	auto type = cmd->getCmdType();
 	if (type == CmdType::READ || type == CmdType::FLUSH)
-	{
 		cmd->run(result);
-	}
-	else if (type == CmdType::WRITE || type == CmdType::ERASE) {
+	else if (type == CmdType::WRITE || type == CmdType::ERASE)
 		cmdBuf.addCommand(cmd);
-	}
 
 	cmdBuf.updateToDirectory();
 
@@ -49,13 +47,8 @@ SSD::run(vector<string> commandVector)
 bool
 SSD::updateOutputFile(const string& result)
 {
-	outputFile.fileClear();
-	outputFile.fileOpen();
-
-	bool ret = outputFile.fileWriteOneline(result);
-
-	outputFile.fileClose();
-	return ret;
+	FileInterface::clearFile(outputPath);
+	return FileInterface::writeLine(outputPath, result, /*append=*/false);
 }
 
 string

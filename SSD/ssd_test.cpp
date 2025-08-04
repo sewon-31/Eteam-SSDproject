@@ -1,6 +1,8 @@
 #include "gmock/gmock.h"
 #include "ssd_command_builder.h"
 #include "ssd.h"
+#include "file_interface.h"
+
 #include <random>
 #include <cstdlib>
 #include <ctime>
@@ -21,7 +23,7 @@ public:
 	MOCK_METHOD(void, setCommandVector, (vector<string> commandVector), (override));
 	MOCK_METHOD(bool, isValidCommand, (), (const, override));
 	MOCK_METHOD(vector<string>, getCommandVector, (), (const, override));
-	MOCK_METHOD(std::shared_ptr<ICommand>, createCommand, (std::vector<std::string>), (override));
+	MOCK_METHOD(std::shared_ptr<ICommand>, createCommand, (vector<string>), (override));
 };
 
 class SSDTestFixture : public Test
@@ -32,18 +34,14 @@ protected:
 		mockBuilder = std::make_shared<MockBuilder>();
 	}
 
-	//void TearDown() override {
-	//	app.clearBufferDirectory();
-	//}
-
 public:
 	std::shared_ptr<MockCommand> mockCmd;
 	std::shared_ptr<MockBuilder> mockBuilder;
 
 	SSD app;
 
-	FileInterface nandFile{ "../ssd_nand.txt" };
-	FileInterface outputFile{ "../ssd_output.txt" };
+	string nandFile = "../ssd_nand.txt";
+	string outputFile = "../ssd_output.txt";
 
 	void processMockBuilderFunctions()
 	{
@@ -55,8 +53,7 @@ public:
 
 TEST_F(SSDTestFixture, RunCommandTest1) {
 	processMockBuilderFunctions();
-
-	std::vector<std::string> input = { "R", "0" };
+	vector<string> input = { "R", "0" };
 
 	EXPECT_CALL(*mockBuilder, createCommand(input))
 		.WillOnce(Return(mockCmd));
@@ -64,7 +61,6 @@ TEST_F(SSDTestFixture, RunCommandTest1) {
 	// if READ or FLUSH, directly call run
 	EXPECT_CALL(*mockCmd, getCmdType)
 		.WillOnce(Return(CmdType::READ));
-
 	EXPECT_CALL(*mockCmd, run)
 		.Times(1);
 
@@ -75,8 +71,7 @@ TEST_F(SSDTestFixture, RunCommandTest1) {
 // DISABLED - WriteCommand::getValue cannot be mocked
 TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
 	processMockBuilderFunctions();
-
-	std::vector<std::string> input = { "W", "0", "0x00001111" };
+	vector<string> input = { "W", "0", "0x00001111" };
 
 	EXPECT_CALL(*mockBuilder, createCommand(input))
 		.WillOnce(Return(mockCmd));
@@ -84,10 +79,8 @@ TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
 	// if WRITE or ERASE, go to buffer
 	EXPECT_CALL(*mockCmd, getCmdType)
 		.WillRepeatedly(Return(CmdType::WRITE));
-
 	EXPECT_CALL(*mockCmd, getLBA)
 		.WillRepeatedly(Return(0));
-
 	EXPECT_CALL(*mockCmd, run)
 		.Times(0);
 
@@ -97,21 +90,17 @@ TEST_F(SSDTestFixture, DISABLED_RunCommandTest2) {
 
 TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 	processMockBuilderFunctions();
-
-	std::vector<std::string> input = { "R", "0", "0x00000000" };
+	vector<string> input = { "R", "0", "0x00000000" };
 
 	EXPECT_CALL(*mockBuilder, isValidCommand)
 		.WillRepeatedly(Return(false));
-
 	EXPECT_CALL(*mockBuilder, createCommand(input))
 		.WillOnce(Return(nullptr));
 
 	app.run(input);
 
 	string expected;
-	outputFile.fileOpen();
-	outputFile.fileReadOneline(expected);
-	outputFile.fileClose();
+	FileInterface::readLine(outputFile, expected);
 
 	EXPECT_EQ(expected, "ERROR");
 	app.clearBufferAndDirectory();
@@ -120,22 +109,15 @@ TEST_F(SSDTestFixture, GetInvalidCommandTest) {
 TEST_F(SSDTestFixture, ReadTest) {
 	app.run({ "R", "0" });
 
-	// actual
 	string actual;
-	outputFile.fileOpen();
-	outputFile.fileReadOneline(actual);
-	outputFile.fileClose();
+	FileInterface::readLine(outputFile, actual);
 
-	// expected
 	string expected;
-	nandFile.fileOpen();
-	if (nandFile.checkSize() >= 12)
-		nandFile.fileReadOneline(expected);
+	if (FileInterface::getFileSize(nandFile) >= 12)
+		FileInterface::readLine(nandFile, expected);
 	else
 		expected = "0x00000000";
-	nandFile.fileClose();
 
-	// storage
 	string storageData = app.getData(0);
 
 	EXPECT_EQ(expected, storageData);
@@ -147,31 +129,23 @@ TEST_F(SSDTestFixture, WriteText) {
 	vector<string> input = { "W", "0", "0x11112222" };
 
 	app.run(input);
-	app.clearBuffer();	// in real case, it would be re-created
+	app.clearBuffer();
 
-	// storage
 	string storageData = app.getData(0);
 
-	// expected
 	string actual;
-	nandFile.fileOpen();
-	if (nandFile.checkSize() >= 12)
-		nandFile.fileReadOneline(actual);
+	if (FileInterface::getFileSize(nandFile) >= 12)
+		FileInterface::readLine(nandFile, actual);
 	else
 		actual = "0x00000000";
-	nandFile.fileClose();
 
-	// buffer makes it false
 	EXPECT_NE("0x11112222", actual);
 	EXPECT_NE("0x11112222", storageData);
 
 	app.run({ "R", "0" });
-	app.clearBuffer();	// in real case, it would be re-created
+	app.clearBuffer();
 
-	outputFile.fileOpen();
-	outputFile.fileReadOneline(actual);
-	outputFile.fileClose();
-
+	FileInterface::readLine(outputFile, actual);
 	EXPECT_EQ("0x11112222", actual);
 
 	app.clearData();
@@ -185,96 +159,73 @@ TEST_F(SSDTestFixture, TC_FULL_WRITE) {
 
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
-		str[i] = std::string(buffer);
+		str[i] = string(buffer);
 		app.run({ "W", std::to_string(i), str[i] });
-		app.clearBuffer();	// in real case, it would be re-created
+		app.clearBuffer();
 	}
 
-	EXPECT_EQ(1200, nandFile.checkSize());
+	EXPECT_EQ(1200, FileInterface::getFileSize(nandFile));
 	app.clearBufferAndDirectory();
 }
 
 TEST_F(SSDTestFixture, TC_FULL_WRITE_READ) {
 	string str[100];
 	char buffer[16];
-	char ret = true;
 
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
-		str[i] = std::string(buffer);
+		str[i] = string(buffer);
 		app.run({ "W", std::to_string(i), str[i] });
-		app.clearBuffer();	// in real case, it would be re-created
+		app.clearBuffer();
 	}
 
-	EXPECT_EQ(1200, nandFile.checkSize());
-
-	// to update storage from nand file
-	//app.run({ "R", "0" });
+	EXPECT_EQ(1200, FileInterface::getFileSize(nandFile));
 
 	string actual;
 	for (int i = 0; i < 100; i++) {
-
 		app.run({ "R", std::to_string(i) });
-		app.clearBuffer();	// in real case, it would be re-created
-
-		outputFile.fileOpen();
-		outputFile.fileReadOneline(actual);
-		outputFile.fileClose();
-
+		app.clearBuffer();
+		FileInterface::readLine(outputFile, actual);
 		EXPECT_EQ(actual, str[i]);
-		//if (app.getData(i) != str[i]) {
-		//	ret = false;
-		//	break;
-		//}
 	}
-	//EXPECT_TRUE(ret);
 	app.clearBufferAndDirectory();
 }
 
 TEST_F(SSDTestFixture, TC_WRITE_OUTPUT) {
-	char ret = true;
-	std::string expected_str = "0x12341234";
+	string expected_str = "0x12341234";
 
 	EXPECT_TRUE(app.updateOutputFile(expected_str));
-	EXPECT_EQ(12, outputFile.checkSize());
+	EXPECT_EQ(12, FileInterface::getFileSize(outputFile));
 }
 
 TEST_F(SSDTestFixture, TC_ERASE) {
 	string str[100];
 	char buffer[16];
-	char ret = true;
 
-	nandFile.fileClear();
+	FileInterface::clearFile(nandFile);
 
 	for (int i = 0; i < 100; i++) {
 		std::snprintf(buffer, sizeof(buffer), "0x%04X%04X", std::rand(), std::rand());
-		str[i] = std::string(buffer);
+		str[i] = string(buffer);
 		app.run({ "W", std::to_string(i), str[i] });
-		app.clearBuffer();	// in real case, it would be re-created
+		app.clearBuffer();
 	}
 
-	EXPECT_EQ(1200, nandFile.checkSize());
+	EXPECT_EQ(1200, FileInterface::getFileSize(nandFile));
 
 	app.run({ "E", "0", "10" });
-	app.clearBuffer();	// in real case, it would be re-created
+	app.clearBuffer();
 
 	string actual;
 
 	app.run({ "R", "9" });
-	app.clearBuffer();	// in real case, it would be re-created
-
-	outputFile.fileOpen();
-	outputFile.fileReadOneline(actual);
-	outputFile.fileClose();
-
+	app.clearBuffer();
+	FileInterface::readLine(outputFile, actual);
 	EXPECT_EQ(actual, "0x00000000");
 
 	app.run({ "R", "10" });
-	app.clearBuffer();	// in real case, it would be re-created
-
-	outputFile.fileOpen();
-	outputFile.fileReadOneline(actual);
-	outputFile.fileClose();
+	app.clearBuffer();
+	FileInterface::readLine(outputFile, actual);
 	EXPECT_EQ(actual, str[10]);
 
 	app.clearBufferAndDirectory();
