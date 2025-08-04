@@ -14,7 +14,7 @@ public:
 		app.setSSD(&mockSSD);
 	}
 public:
-	MockSSD mockSSD;
+	MockSSDDriver mockSSD;
 	string testData = "0x00012345";
 };
 

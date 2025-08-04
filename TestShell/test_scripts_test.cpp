@@ -15,7 +15,7 @@ public:
 		if (scriptName == "EraseAndWriteAging") script = new ScriptsEraseAndWriteAging(&mockSSD);
 
 	}
-	NiceMock<MockSSD> mockSSD;
+	NiceMock<MockSSDDriver> mockSSD;
 	string invalidData = "0xFFFFFFFF";
 	string testData = "0x00012345";
 	string erasedData = "0x00000000";
